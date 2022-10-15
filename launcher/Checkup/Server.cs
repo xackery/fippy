@@ -55,7 +55,7 @@ namespace EQEmu_Launcher
         public static void FixCheck()
         {
             Console.WriteLine("running fix check");
-            FixTask = Task.Run(() => Fix(true));
+            FixTask = Task.Run(() => Fix(false));
             Check();
         }
 
@@ -159,6 +159,8 @@ namespace EQEmu_Launcher
                 }
             }
             StatusLibrary.SetStatusBar("downloaded eqemu_config.json");
+            Config.Load();
+            
             return 0;
         }
 

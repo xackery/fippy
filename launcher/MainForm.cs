@@ -1,5 +1,6 @@
 ﻿using EQEmu_Launcher.Manage;
 using Microsoft.Win32;
+using MS.WindowsAPICodePack.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,6 +13,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using YamlDotNet.Serialization;
@@ -32,13 +34,14 @@ namespace EQEmu_Launcher
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+
             int darkThemeValue = (int)Registry.GetValue("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "AppsUseLightTheme", -1);
             bool isDarkTheme = darkThemeValue == 0;
             if (isDarkTheme)
             {
                 var preference = Convert.ToInt32(true);
-                UtilityLibrary.DwmSetWindowAttribute(this.Handle,
-                                      UtilityLibrary.DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
+                WinLibrary.DwmSetWindowAttribute(this.Handle,
+                                      WinLibrary.DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
                                       ref preference, sizeof(uint));
                 ChangeTheme(this.Controls, true);
             }
@@ -164,8 +167,8 @@ namespace EQEmu_Launcher
             Zone.Check();
 
             StatusLibrary.SubscribeText(StatusType.StatusBar, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblStatusBar.Text = value; Console.WriteLine("StatusBar: "+value); }); }));
-                       
 
+            ConfigLoad();
             Text = $"Emu Launcher v{Assembly.GetEntryAssembly().GetName().Version}";
             menuLauncher.Text = Text;
         }
@@ -325,7 +328,135 @@ namespace EQEmu_Launcher
             Zone.Stop();
             Zone.Check();
         }
+
+        private void btnHeidi_Click(object sender, EventArgs e)
+        {
+            
+            Process[] processes = Process.GetProcessesByName("heidisql");
+            if (processes.Length > 0)
+            {
+
+                StatusLibrary.SetStatusBar("switching to Heidi");
+                WinLibrary.SetForegroundWindow(processes[0].Handle);
+                return;
+            }
+            string path = $"{Application.StartupPath}\\db\\heidi\\heidisql.exe";
+            if (!File.Exists(path))
+            {
+                string result = $"heidi was not found at {path}. Go to the Checkup tab and press the fix database button to download the portable version";
+                StatusLibrary.SetStatusBar(result);
+                MessageBox.Show(result, "Start Heidi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            StatusLibrary.SetStatusBar("starting heidi");
+            var proc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = path,
+                    Arguments = $"-h {Config.Data?["server"]?["database"]?["host"]} -u {Config.Data?["server"]?["database"]?["username"]} -p {Config.Data?["server"]?["database"]?["password"]} -P {Config.Data?["server"]?["database"]?["port"]}",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = false,
+                    CreateNoWindow = true
+                }
+            };
+            proc.Start();
+        }
+
+        public void ConfigLoad()
+        {
+            Config.Load();
+            txtKey.Text = Config.Data?["server"]?["world"]?["key"];
+            txtLongName.Text = Config.Data?["server"]?["world"]?["longname"];
+            txtShortName.Text = Config.Data?["server"]?["world"]?["shortname"];
+            txtUsername.Text = Config.Data?["server"]?["database"]?["username"];
+            txtPassword.Text = Config.Data?["server"]?["database"]?["password"];
+            txtPort.Text = Config.Data?["server"]?["database"]?["port"];
+            txtHost.Text = Config.Data?["server"]?["database"]?["host"];
+            txtDatabase.Text = Config.Data?["server"]?["database"]?["db"];
+        }
+
+        private void btnConfigLoad_Click(object sender, EventArgs e)
+        {
+            ConfigLoad();
+        }
+
+        private void btnConfigSave_Click(object sender, EventArgs e)
+        {
+
+            if (Config.Data["server"]["database"]["username"] == "root" && !Config.Data["server"]["database"]["password"].Equals(txtPassword.Text))
+            {
+                Process[] processes = Process.GetProcessesByName("mysqld");
+                if (processes.Length > 0)
+                {
+                    var response = MessageBox.Show("SQL is currently running and you want to change the root password.\nRestart SQL to apply it?", "Restart SQL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
+                    if (response == DialogResult.Cancel)
+                    {
+                        return;
+                    }
+                    if (response == DialogResult.Yes)
+                    {
+                        if (!SQL.Stop())
+                        {
+                            return;
+                        }
+                        StatusLibrary.SetStatusBar("setting password");
+                        string path = $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqladmin.exe";
+                        var proc = new Process
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                FileName = path,
+                                Arguments = $"-u root flush-privileges password {txtPassword.Text}",
+                                UseShellExecute = false,
+                                RedirectStandardOutput = false,
+                                CreateNoWindow = true
+                            }
+                        };
+                        proc.Start();
+                        StatusLibrary.SetStatusBar("password changed");
+                        SQL.Start();
+                    }
+
+                }
+            }
+
+            Config.Data["server"]["world"]["key"] = txtKey.Text;
+            Config.Data["server"]["world"]["longname"] = txtLongName.Text;
+            Config.Data["server"]["world"]["shortname"] = txtShortName.Text;
+            Config.Data["server"]["database"]["username"] = txtUsername.Text;
+            Config.Data["server"]["database"]["password"] = txtPassword.Text;
+            Config.Data["server"]["database"]["port"] = txtPort.Text;
+            Config.Data["server"]["database"]["host"] = txtHost.Text;
+            Config.Data["server"]["database"]["db"] = txtDatabase.Text;
+            Config.Save();
+        }
+
+        private void txtShortName_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblDescription.Text = "Short Name is used for a prefix on profiles of players when they create characters on your server.";
+        }
+
+        private void lblDatabase_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnRandomizePassword_Click(object sender, EventArgs e)
+        {
+            
+            txtPassword.Text = WinLibrary.RandomString(32);
+            StatusLibrary.SetStatusBar("random password generated");
+        }
+
+        private void btnRandomize_Click(object sender, EventArgs e)
+        {
+            txtKey.Text = WinLibrary.RandomString(64);
+            StatusLibrary.SetStatusBar("random key generated");
+        }
     }
 }
+
 
 

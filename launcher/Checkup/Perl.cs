@@ -65,7 +65,7 @@ namespace EQEmu_Launcher
         {
             Console.WriteLine("running fix check");
             CancellationToken ct = new CancellationToken();
-            FixTask = Task.Run(() => Fix(ct, true));
+            FixTask = Task.Run(() => Fix(ct, false));
             Check();
         }
 

@@ -61,7 +61,7 @@
             this.button10 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.grpSQL = new System.Windows.Forms.GroupBox();
-            this.button22 = new System.Windows.Forms.Button();
+            this.btnHeidi = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.btnSQLStop = new System.Windows.Forms.Button();
@@ -86,6 +86,33 @@
             this.menuUCS = new System.Windows.Forms.ToolStripMenuItem();
             this.menuQueryServ = new System.Windows.Forms.ToolStripMenuItem();
             this.manageTimer = new System.Windows.Forms.Timer(this.components);
+            this.tabConfig = new System.Windows.Forms.TabPage();
+            this.grpConfig = new System.Windows.Forms.GroupBox();
+            this.lblKey = new System.Windows.Forms.Label();
+            this.btnConfigSave = new System.Windows.Forms.Button();
+            this.txtKey = new System.Windows.Forms.TextBox();
+            this.btnConfigLoad = new System.Windows.Forms.Button();
+            this.btnRandomize = new System.Windows.Forms.Button();
+            this.grpConfigDatabase = new System.Windows.Forms.GroupBox();
+            this.lblUsername = new System.Windows.Forms.Label();
+            this.txtUsername = new System.Windows.Forms.TextBox();
+            this.txtPassword = new System.Windows.Forms.TextBox();
+            this.lblPassword = new System.Windows.Forms.Label();
+            this.txtHost = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtPort = new System.Windows.Forms.TextBox();
+            this.lblPort = new System.Windows.Forms.Label();
+            this.txtDatabase = new System.Windows.Forms.TextBox();
+            this.lblDatabase = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.grpInfo = new System.Windows.Forms.GroupBox();
+            this.txtShortName = new System.Windows.Forms.TextBox();
+            this.lblShortName = new System.Windows.Forms.Label();
+            this.txtLongName = new System.Windows.Forms.TextBox();
+            this.lblLongName = new System.Windows.Forms.Label();
+            this.grpOptions = new System.Windows.Forms.GroupBox();
+            this.chkAPI = new System.Windows.Forms.CheckBox();
+            this.btnRandomizePassword = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.tabManage.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -97,6 +124,11 @@
             this.grpLua.SuspendLayout();
             this.tabControlMain.SuspendLayout();
             this.contextSystrayMenu.SuspendLayout();
+            this.tabConfig.SuspendLayout();
+            this.grpConfig.SuspendLayout();
+            this.grpConfigDatabase.SuspendLayout();
+            this.grpInfo.SuspendLayout();
+            this.grpOptions.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -204,10 +236,9 @@
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(7, 20);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(101, 13);
+            this.label6.Size = new System.Drawing.Size(183, 13);
             this.label6.TabIndex = 0;
             this.label6.Text = "queryserv is running";
             // 
@@ -269,10 +300,9 @@
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(7, 20);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(72, 13);
+            this.label3.Size = new System.Drawing.Size(183, 13);
             this.label3.TabIndex = 0;
             this.label3.Text = "ucs is running";
             // 
@@ -345,10 +375,9 @@
             // 
             // lblZone
             // 
-            this.lblZone.AutoSize = true;
             this.lblZone.Location = new System.Drawing.Point(7, 20);
             this.lblZone.Name = "lblZone";
-            this.lblZone.Size = new System.Drawing.Size(164, 13);
+            this.lblZone.Size = new System.Drawing.Size(183, 13);
             this.lblZone.TabIndex = 0;
             this.lblZone.Text = "3 of          zone instances running";
             // 
@@ -410,10 +439,9 @@
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(7, 20);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(80, 13);
+            this.label2.Size = new System.Drawing.Size(183, 13);
             this.label2.TabIndex = 0;
             this.label2.Text = "world is running";
             // 
@@ -421,7 +449,7 @@
             // 
             this.grpSQL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpSQL.Controls.Add(this.button22);
+            this.grpSQL.Controls.Add(this.btnHeidi);
             this.grpSQL.Controls.Add(this.button5);
             this.grpSQL.Controls.Add(this.button4);
             this.grpSQL.Controls.Add(this.btnSQLStop);
@@ -435,15 +463,16 @@
             this.grpSQL.TabStop = false;
             this.grpSQL.Text = "SQL";
             // 
-            // button22
+            // btnHeidi
             // 
-            this.button22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button22.Location = new System.Drawing.Point(351, 15);
-            this.button22.Name = "button22";
-            this.button22.Size = new System.Drawing.Size(42, 23);
-            this.button22.TabIndex = 8;
-            this.button22.Text = "Heidi";
-            this.button22.UseVisualStyleBackColor = true;
+            this.btnHeidi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnHeidi.Location = new System.Drawing.Point(351, 15);
+            this.btnHeidi.Name = "btnHeidi";
+            this.btnHeidi.Size = new System.Drawing.Size(42, 23);
+            this.btnHeidi.TabIndex = 8;
+            this.btnHeidi.Text = "Heidi";
+            this.btnHeidi.UseVisualStyleBackColor = true;
+            this.btnHeidi.Click += new System.EventHandler(this.btnHeidi_Click);
             // 
             // button5
             // 
@@ -499,10 +528,9 @@
             // 
             // lblSQL
             // 
-            this.lblSQL.AutoSize = true;
             this.lblSQL.Location = new System.Drawing.Point(7, 20);
             this.lblSQL.Name = "lblSQL";
-            this.lblSQL.Size = new System.Drawing.Size(76, 13);
+            this.lblSQL.Size = new System.Drawing.Size(183, 13);
             this.lblSQL.TabIndex = 0;
             this.lblSQL.Text = "SQL is running";
             // 
@@ -565,10 +593,9 @@
             // 
             // lblLua
             // 
-            this.lblLua.AutoSize = true;
             this.lblLua.Location = new System.Drawing.Point(7, 20);
             this.lblLua.Name = "lblLua";
-            this.lblLua.Size = new System.Drawing.Size(94, 13);
+            this.lblLua.Size = new System.Drawing.Size(228, 13);
             this.lblLua.TabIndex = 0;
             this.lblLua.Text = "Lua is not installed";
             // 
@@ -578,6 +605,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControlMain.Controls.Add(this.tabCheckup);
+            this.tabControlMain.Controls.Add(this.tabConfig);
             this.tabControlMain.Controls.Add(this.tabManage);
             this.tabControlMain.Controls.Add(this.tabMonitor);
             this.tabControlMain.Controls.Add(this.tabGM);
@@ -664,6 +692,272 @@
             this.manageTimer.Interval = 6000;
             this.manageTimer.Tick += new System.EventHandler(this.manageTimer_Tick);
             // 
+            // tabConfig
+            // 
+            this.tabConfig.Controls.Add(this.grpConfig);
+            this.tabConfig.Location = new System.Drawing.Point(4, 22);
+            this.tabConfig.Name = "tabConfig";
+            this.tabConfig.Size = new System.Drawing.Size(545, 419);
+            this.tabConfig.TabIndex = 5;
+            this.tabConfig.Text = "Config";
+            this.tabConfig.UseVisualStyleBackColor = true;
+            // 
+            // grpConfig
+            // 
+            this.grpConfig.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpConfig.Controls.Add(this.grpOptions);
+            this.grpConfig.Controls.Add(this.grpInfo);
+            this.grpConfig.Controls.Add(this.grpConfigDatabase);
+            this.grpConfig.Controls.Add(this.btnRandomize);
+            this.grpConfig.Controls.Add(this.btnConfigLoad);
+            this.grpConfig.Controls.Add(this.txtKey);
+            this.grpConfig.Controls.Add(this.btnConfigSave);
+            this.grpConfig.Controls.Add(this.lblKey);
+            this.grpConfig.Location = new System.Drawing.Point(3, 3);
+            this.grpConfig.Name = "grpConfig";
+            this.grpConfig.Size = new System.Drawing.Size(533, 413);
+            this.grpConfig.TabIndex = 1;
+            this.grpConfig.TabStop = false;
+            this.grpConfig.Text = "eqemu_config.json";
+            // 
+            // lblKey
+            // 
+            this.lblKey.Location = new System.Drawing.Point(10, 306);
+            this.lblKey.Name = "lblKey";
+            this.lblKey.Size = new System.Drawing.Size(30, 13);
+            this.lblKey.TabIndex = 0;
+            this.lblKey.Text = "Key:";
+            // 
+            // btnConfigSave
+            // 
+            this.btnConfigSave.Location = new System.Drawing.Point(265, 343);
+            this.btnConfigSave.Name = "btnConfigSave";
+            this.btnConfigSave.Size = new System.Drawing.Size(262, 64);
+            this.btnConfigSave.TabIndex = 1;
+            this.btnConfigSave.Text = "Save";
+            this.btnConfigSave.UseVisualStyleBackColor = true;
+            this.btnConfigSave.Click += new System.EventHandler(this.btnConfigSave_Click);
+            // 
+            // txtKey
+            // 
+            this.txtKey.Location = new System.Drawing.Point(37, 303);
+            this.txtKey.Name = "txtKey";
+            this.txtKey.PasswordChar = '*';
+            this.txtKey.Size = new System.Drawing.Size(409, 20);
+            this.txtKey.TabIndex = 2;
+            // 
+            // btnConfigLoad
+            // 
+            this.btnConfigLoad.Location = new System.Drawing.Point(6, 378);
+            this.btnConfigLoad.Name = "btnConfigLoad";
+            this.btnConfigLoad.Size = new System.Drawing.Size(90, 29);
+            this.btnConfigLoad.TabIndex = 3;
+            this.btnConfigLoad.Text = "Reload File";
+            this.btnConfigLoad.UseVisualStyleBackColor = true;
+            this.btnConfigLoad.Click += new System.EventHandler(this.btnConfigLoad_Click);
+            // 
+            // btnRandomize
+            // 
+            this.btnRandomize.Location = new System.Drawing.Point(452, 301);
+            this.btnRandomize.Name = "btnRandomize";
+            this.btnRandomize.Size = new System.Drawing.Size(75, 23);
+            this.btnRandomize.TabIndex = 4;
+            this.btnRandomize.Text = "Randomize";
+            this.btnRandomize.UseVisualStyleBackColor = true;
+            this.btnRandomize.Click += new System.EventHandler(this.btnRandomize_Click);
+            // 
+            // grpConfigDatabase
+            // 
+            this.grpConfigDatabase.Controls.Add(this.btnRandomizePassword);
+            this.grpConfigDatabase.Controls.Add(this.txtDatabase);
+            this.grpConfigDatabase.Controls.Add(this.lblDatabase);
+            this.grpConfigDatabase.Controls.Add(this.txtPort);
+            this.grpConfigDatabase.Controls.Add(this.lblPort);
+            this.grpConfigDatabase.Controls.Add(this.txtHost);
+            this.grpConfigDatabase.Controls.Add(this.label1);
+            this.grpConfigDatabase.Controls.Add(this.txtPassword);
+            this.grpConfigDatabase.Controls.Add(this.lblPassword);
+            this.grpConfigDatabase.Controls.Add(this.txtUsername);
+            this.grpConfigDatabase.Controls.Add(this.lblUsername);
+            this.grpConfigDatabase.Location = new System.Drawing.Point(6, 78);
+            this.grpConfigDatabase.Name = "grpConfigDatabase";
+            this.grpConfigDatabase.Size = new System.Drawing.Size(521, 100);
+            this.grpConfigDatabase.TabIndex = 11;
+            this.grpConfigDatabase.TabStop = false;
+            this.grpConfigDatabase.Text = "Database";
+            // 
+            // lblUsername
+            // 
+            this.lblUsername.AutoSize = true;
+            this.lblUsername.Location = new System.Drawing.Point(7, 43);
+            this.lblUsername.Name = "lblUsername";
+            this.lblUsername.Size = new System.Drawing.Size(58, 13);
+            this.lblUsername.TabIndex = 10;
+            this.lblUsername.Text = "Username:";
+            this.lblUsername.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtUsername
+            // 
+            this.txtUsername.Location = new System.Drawing.Point(68, 40);
+            this.txtUsername.Name = "txtUsername";
+            this.txtUsername.Size = new System.Drawing.Size(155, 20);
+            this.txtUsername.TabIndex = 11;
+            // 
+            // txtPassword
+            // 
+            this.txtPassword.Location = new System.Drawing.Point(348, 40);
+            this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
+            this.txtPassword.Size = new System.Drawing.Size(155, 20);
+            this.txtPassword.TabIndex = 13;
+            // 
+            // lblPassword
+            // 
+            this.lblPassword.AutoSize = true;
+            this.lblPassword.Location = new System.Drawing.Point(286, 43);
+            this.lblPassword.Name = "lblPassword";
+            this.lblPassword.Size = new System.Drawing.Size(56, 13);
+            this.lblPassword.TabIndex = 12;
+            this.lblPassword.Text = "Password:";
+            // 
+            // txtHost
+            // 
+            this.txtHost.Location = new System.Drawing.Point(68, 13);
+            this.txtHost.Name = "txtHost";
+            this.txtHost.Size = new System.Drawing.Size(155, 20);
+            this.txtHost.TabIndex = 15;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(30, 16);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(32, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Host:";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtPort
+            // 
+            this.txtPort.Location = new System.Drawing.Point(348, 13);
+            this.txtPort.Name = "txtPort";
+            this.txtPort.Size = new System.Drawing.Size(155, 20);
+            this.txtPort.TabIndex = 17;
+            // 
+            // lblPort
+            // 
+            this.lblPort.AutoSize = true;
+            this.lblPort.Location = new System.Drawing.Point(313, 16);
+            this.lblPort.Name = "lblPort";
+            this.lblPort.Size = new System.Drawing.Size(29, 13);
+            this.lblPort.TabIndex = 16;
+            this.lblPort.Text = "Port:";
+            // 
+            // txtDatabase
+            // 
+            this.txtDatabase.Location = new System.Drawing.Point(68, 66);
+            this.txtDatabase.Name = "txtDatabase";
+            this.txtDatabase.Size = new System.Drawing.Size(155, 20);
+            this.txtDatabase.TabIndex = 19;
+            // 
+            // lblDatabase
+            // 
+            this.lblDatabase.AutoSize = true;
+            this.lblDatabase.Location = new System.Drawing.Point(9, 69);
+            this.lblDatabase.Name = "lblDatabase";
+            this.lblDatabase.Size = new System.Drawing.Size(56, 13);
+            this.lblDatabase.TabIndex = 18;
+            this.lblDatabase.Text = "DB Name:";
+            this.lblDatabase.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblDatabase.Click += new System.EventHandler(this.lblDatabase_Click);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(10, 19);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(84, 17);
+            this.checkBox1.TabIndex = 12;
+            this.checkBox1.Text = "Allow Telnet";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // grpInfo
+            // 
+            this.grpInfo.Controls.Add(this.txtShortName);
+            this.grpInfo.Controls.Add(this.lblShortName);
+            this.grpInfo.Controls.Add(this.txtLongName);
+            this.grpInfo.Controls.Add(this.lblLongName);
+            this.grpInfo.Location = new System.Drawing.Point(6, 19);
+            this.grpInfo.Name = "grpInfo";
+            this.grpInfo.Size = new System.Drawing.Size(521, 53);
+            this.grpInfo.TabIndex = 13;
+            this.grpInfo.TabStop = false;
+            this.grpInfo.Text = "Info";
+            // 
+            // txtShortName
+            // 
+            this.txtShortName.Location = new System.Drawing.Point(361, 18);
+            this.txtShortName.Name = "txtShortName";
+            this.txtShortName.Size = new System.Drawing.Size(154, 20);
+            this.txtShortName.TabIndex = 12;
+            // 
+            // lblShortName
+            // 
+            this.lblShortName.AutoSize = true;
+            this.lblShortName.Location = new System.Drawing.Point(289, 21);
+            this.lblShortName.Name = "lblShortName";
+            this.lblShortName.Size = new System.Drawing.Size(66, 13);
+            this.lblShortName.TabIndex = 11;
+            this.lblShortName.Text = "Short Name:";
+            // 
+            // txtLongName
+            // 
+            this.txtLongName.Location = new System.Drawing.Point(78, 18);
+            this.txtLongName.Name = "txtLongName";
+            this.txtLongName.Size = new System.Drawing.Size(154, 20);
+            this.txtLongName.TabIndex = 10;
+            // 
+            // lblLongName
+            // 
+            this.lblLongName.AutoSize = true;
+            this.lblLongName.Location = new System.Drawing.Point(7, 21);
+            this.lblLongName.Name = "lblLongName";
+            this.lblLongName.Size = new System.Drawing.Size(65, 13);
+            this.lblLongName.TabIndex = 9;
+            this.lblLongName.Text = "Long Name:";
+            // 
+            // grpOptions
+            // 
+            this.grpOptions.Controls.Add(this.chkAPI);
+            this.grpOptions.Controls.Add(this.checkBox1);
+            this.grpOptions.Location = new System.Drawing.Point(6, 184);
+            this.grpOptions.Name = "grpOptions";
+            this.grpOptions.Size = new System.Drawing.Size(521, 103);
+            this.grpOptions.TabIndex = 14;
+            this.grpOptions.TabStop = false;
+            this.grpOptions.Text = "Options";
+            // 
+            // chkAPI
+            // 
+            this.chkAPI.AutoSize = true;
+            this.chkAPI.Location = new System.Drawing.Point(10, 42);
+            this.chkAPI.Name = "chkAPI";
+            this.chkAPI.Size = new System.Drawing.Size(71, 17);
+            this.chkAPI.TabIndex = 13;
+            this.chkAPI.Text = "Allow API";
+            this.chkAPI.UseVisualStyleBackColor = true;
+            // 
+            // btnRandomizePassword
+            // 
+            this.btnRandomizePassword.Location = new System.Drawing.Point(289, 66);
+            this.btnRandomizePassword.Name = "btnRandomizePassword";
+            this.btnRandomizePassword.Size = new System.Drawing.Size(214, 23);
+            this.btnRandomizePassword.TabIndex = 20;
+            this.btnRandomizePassword.Text = "Randomize Password";
+            this.btnRandomizePassword.UseVisualStyleBackColor = true;
+            this.btnRandomizePassword.Click += new System.EventHandler(this.btnRandomizePassword_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -685,20 +979,24 @@
             this.statusStrip1.PerformLayout();
             this.tabManage.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.grpSQL.ResumeLayout(false);
-            this.grpSQL.PerformLayout();
             this.tabCheckup.ResumeLayout(false);
             this.grpLua.ResumeLayout(false);
-            this.grpLua.PerformLayout();
             this.tabControlMain.ResumeLayout(false);
             this.contextSystrayMenu.ResumeLayout(false);
+            this.tabConfig.ResumeLayout(false);
+            this.grpConfig.ResumeLayout(false);
+            this.grpConfig.PerformLayout();
+            this.grpConfigDatabase.ResumeLayout(false);
+            this.grpConfigDatabase.PerformLayout();
+            this.grpInfo.ResumeLayout(false);
+            this.grpInfo.PerformLayout();
+            this.grpOptions.ResumeLayout(false);
+            this.grpOptions.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -750,7 +1048,7 @@
         private System.Windows.Forms.Button btnZoneStart;
         private System.Windows.Forms.Label lblZone;
         private System.Windows.Forms.Button button13;
-        private System.Windows.Forms.Button button22;
+        private System.Windows.Forms.Button btnHeidi;
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenuStrip contextSystrayMenu;
         private System.Windows.Forms.ToolStripMenuItem menuSQL;
@@ -761,6 +1059,33 @@
         private System.Windows.Forms.ToolStripMenuItem menuLauncher;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.Timer manageTimer;
+        private System.Windows.Forms.TabPage tabConfig;
+        private System.Windows.Forms.GroupBox grpConfig;
+        private System.Windows.Forms.Label lblKey;
+        private System.Windows.Forms.Button btnConfigLoad;
+        private System.Windows.Forms.TextBox txtKey;
+        private System.Windows.Forms.Button btnConfigSave;
+        private System.Windows.Forms.Button btnRandomize;
+        private System.Windows.Forms.GroupBox grpConfigDatabase;
+        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.Label lblPassword;
+        private System.Windows.Forms.TextBox txtUsername;
+        private System.Windows.Forms.Label lblUsername;
+        private System.Windows.Forms.TextBox txtPort;
+        private System.Windows.Forms.Label lblPort;
+        private System.Windows.Forms.TextBox txtHost;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtDatabase;
+        private System.Windows.Forms.Label lblDatabase;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.GroupBox grpOptions;
+        private System.Windows.Forms.CheckBox chkAPI;
+        private System.Windows.Forms.GroupBox grpInfo;
+        private System.Windows.Forms.TextBox txtShortName;
+        private System.Windows.Forms.Label lblShortName;
+        private System.Windows.Forms.TextBox txtLongName;
+        private System.Windows.Forms.Label lblLongName;
+        private System.Windows.Forms.Button btnRandomizePassword;
     }
 }
 

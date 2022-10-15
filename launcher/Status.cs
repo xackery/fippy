@@ -9,8 +9,7 @@ namespace EQEmu_Launcher
 {
 
     enum StatusType
-    {
-        Database, // checkup section for database prep work
+    {        
         Lua, // checkup section for lua prep work
         Quest, // checkup section for quest prep work
         Perl, // checkup section for perl prep work
@@ -19,6 +18,7 @@ namespace EQEmu_Launcher
         StatusBar, // controls the bottom status bar text
         SQL, // manage section used for sql status text
         Zone, // manage section used for zone status text
+        Database, // checkup section for database prep work
     }
 
     /// <summary>

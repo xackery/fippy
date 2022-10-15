@@ -50,8 +50,9 @@ namespace EQEmu_Launcher
             Check();
         }
 
-        public static void Stop()
+        public static bool Stop()
         {
+            bool isStopped = true;
             int sqlCount = 0;
             try
             {
@@ -77,7 +78,9 @@ namespace EQEmu_Launcher
                 string result = $"failed to stop SQL: {e.Message}";
                 StatusLibrary.SetStatusBar("sql stop failed");
                 MessageBox.Show(result, "SQL Stop", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                isStopped = false;
             }
+            return isStopped;
         }
     }
 }
