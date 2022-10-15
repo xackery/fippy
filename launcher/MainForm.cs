@@ -69,7 +69,7 @@ namespace EQEmu_Launcher
                 };
                 label.MouseMove += new System.Windows.Forms.MouseEventHandler(MouseMoveDescription);
 
-                var button = new Button
+                var buttonFix = new Button
                 {
                     Width = btnLuaFix.Width,
                     Height = btnLuaFix.Height,
@@ -80,8 +80,22 @@ namespace EQEmu_Launcher
                     Parent = group,
                     Tag = status,
                 };
-                button.MouseMove += new System.Windows.Forms.MouseEventHandler(MouseMoveDescription);
-                button.Click += new EventHandler(FixClick);
+                buttonFix.MouseMove += new System.Windows.Forms.MouseEventHandler(MouseMoveDescription);
+                buttonFix.Click += new EventHandler(FixClick);
+
+                var buttonFixAll = new Button
+                {
+                    Width = btnLuaFixAll.Width,
+                    Height = btnLuaFixAll.Height,
+                    Left = btnLuaFixAll.Left,
+                    Top = btnLuaFixAll.Top,
+                    Anchor = btnLuaFixAll.Anchor,
+                    Text = "Fix All",
+                    Parent = group,
+                    Tag = status,
+                };
+                buttonFixAll.MouseMove += new System.Windows.Forms.MouseEventHandler(MouseMoveDescription);
+                buttonFixAll.Click += new EventHandler(FixAllClick);
 
 
                 var progress = new ProgressBar
@@ -98,7 +112,7 @@ namespace EQEmu_Launcher
                 progress.MouseMove += new System.Windows.Forms.MouseEventHandler(MouseMoveDescription);
                 
                 StatusLibrary.SubscribeText(status, new EventHandler<string>((object src, string value) => { label.Text = value; }));
-                StatusLibrary.SubscribeIsFixNeeded(status, new EventHandler<bool>((object src, bool value) => { button.Visible = value; label.ForeColor = (value == true ? Color.Red : Color.Black); }));
+                StatusLibrary.SubscribeIsFixNeeded(status, new EventHandler<bool>((object src, bool value) => { buttonFix.Visible = value; buttonFixAll.Visible = value; label.ForeColor = (value == true ? Color.Red : Color.Black); }));
                 StatusLibrary.SubscribeStage(status, new EventHandler<int>((object src, int value) => { progress.Value = value; }));
 
                 Type t = Type.GetType($"EQEmu_Launcher.{status}");
@@ -156,10 +170,42 @@ namespace EQEmu_Launcher
                 return;
             }
 
-            var method = t.GetMethod("Fix", BindingFlags.Static | BindingFlags.Public);
+            var method = t.GetMethod("FixCheck", BindingFlags.Static | BindingFlags.Public);
             if (method == null)
             {
-                MessageBox.Show($"failed to fix click (class {status} has no method Fix)", "Fix Click", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"failed to fix click (class {status} has no method FixCheck)", "Fix Click", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            method.Invoke(sender, null);
+        }
+
+        private void FixAllClick(object sender, EventArgs e)
+        {
+            Control control = sender as Control;
+            if (control == null)
+            {
+                MessageBox.Show($"failed to fix all click due to unknown control {sender} (expected Control)", "FixAll Click", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            StatusType? status = control.Tag as StatusType?;
+            if (status == null)
+            {
+                MessageBox.Show($"failed to fix all click (no tag)", "FixAll Click", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            Type t = Type.GetType($"EQEmu_Launcher.{status}");
+            if (t == null)
+            {
+                MessageBox.Show($"failed to fix all click (class {status} does not exist)", "FixAll Click", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var method = t.GetMethod("FixAll", BindingFlags.Static | BindingFlags.Public);
+            if (method == null)
+            {
+                MessageBox.Show($"failed to fix all click (class {status} has no method FixAll)", "FixAll Click", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             method.Invoke(sender, null);
@@ -189,6 +235,7 @@ namespace EQEmu_Launcher
 
             lblDescription.Text = StatusLibrary.Description(status ?? StatusType.Database);
         }
+
     }
 }
 

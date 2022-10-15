@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
+using System.Threading;
 
 namespace EQEmu_Launcher
 {
@@ -13,14 +14,15 @@ namespace EQEmu_Launcher
     class UtilityLibrary
     {
         //Download a file to current directory
-        public static string DownloadFile(string url, string outFile)
+        public static async Task<string> DownloadFile(CancellationToken ct, string url, string outFile)
         {
             try
             {
                 using (var client = new WebClient())
                 {
                     client.Encoding = Encoding.UTF8;
-                    client.DownloadFile(url, outFile);
+                    ct.Register(client.CancelAsync);
+                    await client.DownloadFileTaskAsync(url, outFile);
                 }
             } catch( IOException ie)
             {                

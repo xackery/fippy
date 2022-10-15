@@ -37,11 +37,11 @@
             this.tabCheckup = new System.Windows.Forms.TabPage();
             this.lblDescription = new System.Windows.Forms.Label();
             this.grpLua = new System.Windows.Forms.GroupBox();
+            this.btnLuaFixAll = new System.Windows.Forms.Button();
             this.prgLua = new System.Windows.Forms.ProgressBar();
             this.btnLuaFix = new System.Windows.Forms.Button();
             this.lblLua = new System.Windows.Forms.Label();
             this.tabControlMain = new System.Windows.Forms.TabControl();
-            this.emuHelpProvider = new System.Windows.Forms.HelpProvider();
             this.statusStrip1.SuspendLayout();
             this.tabCheckup.SuspendLayout();
             this.grpLua.SuspendLayout();
@@ -114,6 +114,7 @@
             // 
             this.grpLua.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpLua.Controls.Add(this.btnLuaFixAll);
             this.grpLua.Controls.Add(this.prgLua);
             this.grpLua.Controls.Add(this.btnLuaFix);
             this.grpLua.Controls.Add(this.lblLua);
@@ -124,22 +125,32 @@
             this.grpLua.TabStop = false;
             this.grpLua.Text = "Lua";
             // 
+            // btnLuaFixAll
+            // 
+            this.btnLuaFixAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLuaFixAll.Location = new System.Drawing.Point(485, 15);
+            this.btnLuaFixAll.Name = "btnLuaFixAll";
+            this.btnLuaFixAll.Size = new System.Drawing.Size(42, 23);
+            this.btnLuaFixAll.TabIndex = 4;
+            this.btnLuaFixAll.Text = "Fix All";
+            this.btnLuaFixAll.UseVisualStyleBackColor = true;
+            // 
             // prgLua
             // 
             this.prgLua.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.prgLua.Location = new System.Drawing.Point(153, 15);
+            this.prgLua.Location = new System.Drawing.Point(241, 15);
             this.prgLua.Name = "prgLua";
-            this.prgLua.Size = new System.Drawing.Size(293, 23);
+            this.prgLua.Size = new System.Drawing.Size(197, 23);
             this.prgLua.TabIndex = 3;
             this.prgLua.Visible = false;
             // 
             // btnLuaFix
             // 
             this.btnLuaFix.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLuaFix.Location = new System.Drawing.Point(452, 15);
+            this.btnLuaFix.Location = new System.Drawing.Point(444, 15);
             this.btnLuaFix.Name = "btnLuaFix";
-            this.btnLuaFix.Size = new System.Drawing.Size(75, 23);
+            this.btnLuaFix.Size = new System.Drawing.Size(35, 23);
             this.btnLuaFix.TabIndex = 1;
             this.btnLuaFix.Text = "Fix";
             this.btnLuaFix.UseVisualStyleBackColor = true;
@@ -206,8 +217,8 @@
         private System.Windows.Forms.Button btnLuaFix;
         private System.Windows.Forms.Label lblLua;
         private System.Windows.Forms.TabControl tabControlMain;
-        private System.Windows.Forms.HelpProvider emuHelpProvider;
         private System.Windows.Forms.Label lblDescription;
+        private System.Windows.Forms.Button btnLuaFixAll;
     }
 }
 

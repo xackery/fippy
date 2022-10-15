@@ -294,19 +294,18 @@ namespace EQEmu_Launcher
         internal class Status
         {
             string name;
-            public string Name { get { return name; } set { name = value; NameChange?.Invoke(this, value); } }
+            public string Name { get { return name; } set { name = value; NameChange?.BeginInvoke(this, value, null, null); } }
             public event EventHandler<string> NameChange;
 
             string text;
-            public string Text { get { return text; } set { text = value; TextChange?.Invoke(this, value); } }
+            public string Text { get { return text; } set { text = value; TextChange?.BeginInvoke(this, value, null, null); } }
             public event EventHandler<string> TextChange;
 
-            bool isFixNeeded;
-            public bool IsFixNeeded { get { return isFixNeeded; } set { isFixNeeded = value; IsFixNeededChange?.Invoke(this, value); } }
+            public bool IsFixNeeded { get { return stage != 100; } set { stage = 100; IsFixNeededChange?.BeginInvoke(this, value, null, null); } }
             public event EventHandler<bool> IsFixNeededChange;
 
             int stage;
-            public int Stage { get { return stage; } set { stage = value; StageChange?.Invoke(this, value); } }
+            public int Stage { get { return stage; } set { stage = value; StageChange?.BeginInvoke(this, value, null, null); if (stage == 100) IsFixNeeded = false; } }
             public event EventHandler<int> StageChange;
 
             string description;
