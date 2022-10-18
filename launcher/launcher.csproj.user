@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <StartWorkingDirectory>C:\src\emulauncher\launcher\bin\Release\</StartWorkingDirectory>
+    <StartWorkingDirectory>.</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup>
     <PublishUrlHistory>publish\</PublishUrlHistory>
