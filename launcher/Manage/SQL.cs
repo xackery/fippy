@@ -21,9 +21,11 @@ namespace EQEmu_Launcher
             if (pname.Length > 0)
             {
                 StatusLibrary.SetText(status, "SQL is running");
+                StatusLibrary.SetIsFixNeeded(status, false);
                 return;
             }
             StatusLibrary.SetText(status, "SQL is not running");
+            StatusLibrary.SetIsFixNeeded(status, true);
         }
 
         public static void Start() {            

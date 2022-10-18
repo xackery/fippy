@@ -34,8 +34,7 @@ namespace EQEmu_Launcher
         {
             Console.WriteLine("running fix check");
             CancellationToken ct = new CancellationToken();
-            FixTask = Task.Run(() => Fix(ct, false));
-            Check();
+            FixTask = Task.Run(() => { Fix(ct, false);  Check();});
         }
 
         public static async void Fix(CancellationToken ct, bool fixAll)
@@ -46,7 +45,7 @@ namespace EQEmu_Launcher
             if (stage == -1) {  return; }
             if (!fixAll && stage > startStage) {  return; }
 
-            stage = await FixDownloadMaps(ct);
+            stage = await DownloadMaps(ct);
             if (stage == -1) { return; }
             if (!fixAll && stage > startStage) { return; }
         }
@@ -55,8 +54,7 @@ namespace EQEmu_Launcher
         {
             Console.WriteLine("fixing all map issues");
             CancellationToken ct = new CancellationToken();
-            FixTask = Task.Run(() => Fix(ct, true));
-            Check();
+            FixTask = Task.Run(() => { Fix(ct, false);  Check();});
         }
 
         public static int FixPath(CancellationToken ct)
@@ -84,7 +82,7 @@ namespace EQEmu_Launcher
             return 0;
         }
 
-        public static async Task<int> FixDownloadMaps(CancellationToken ct)
+        public static async Task<int> DownloadMaps(CancellationToken ct)
         {
             Console.WriteLine("creating cache...");
             StatusLibrary.SetStage(status, 20);

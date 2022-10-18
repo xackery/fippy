@@ -18,6 +18,9 @@ namespace EQEmu_Launcher
         StatusBar, // controls the bottom status bar text
         SQL, // manage section used for sql status text
         Zone, // manage section used for zone status text
+        World, // manage section used for world status text
+        UCS, // manage section used for ucs status text
+        QueryServ, // manage section used for queryServ status text
         Database, // checkup section for database prep work
     }
 

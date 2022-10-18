@@ -34,7 +34,7 @@ namespace EQEmu_Launcher
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-
+            
             int darkThemeValue = (int)Registry.GetValue("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "AppsUseLightTheme", -1);
             bool isDarkTheme = darkThemeValue == 0;
             if (isDarkTheme)
@@ -53,6 +53,9 @@ namespace EQEmu_Launcher
                 StatusType.Lua,
                 StatusType.SQL,
                 StatusType.Zone,
+                StatusType.World,
+                StatusType.UCS,
+                StatusType.QueryServ,
             };
             int i = 0;
             foreach (StatusType status in Enum.GetValues(typeof(StatusType)))
@@ -149,24 +152,43 @@ namespace EQEmu_Launcher
                 }
                 method.Invoke(sender, null);
             }
-
-            StatusType lua = StatusType.Lua;
-            lblLua.Tag = lua;
-            btnLuaFix.Tag = lua;
-            prgLua.Tag = lua;
+            StatusType context = StatusType.Lua;
+            lblLua.Tag = context;
+            btnLuaFix.Tag = context;
+            prgLua.Tag = context;
             btnLuaFix.Click += new EventHandler(FixClick);
-            StatusLibrary.SubscribeText(lua, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblLua.Text = value; }); }));
-            StatusLibrary.SubscribeIsFixNeeded(lua, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { btnLuaFix.Visible = value; lblLua.ForeColor = (value == true ? Color.Red : Color.Black); }); }));
-            StatusLibrary.SubscribeStage(lua, new EventHandler<int>((object src, int value) => { Invoke((MethodInvoker)delegate { prgLua.Visible = (value != 100); prgLua.Value = value; }); }));
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblLua.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { btnLuaFix.Visible = value; lblLua.ForeColor = (value == true ? Color.Red : Color.Black); }); }));
+            StatusLibrary.SubscribeStage(context, new EventHandler<int>((object src, int value) => { Invoke((MethodInvoker)delegate { prgLua.Visible = (value != 100); prgLua.Value = value; }); }));
             Lua.Check();
 
-            StatusLibrary.SubscribeText(StatusType.SQL, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblSQL.Text = value; }); }));
+            context = StatusType.SQL;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblSQL.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picSQL.BackColor = value ? Color.Red : Color.Lime; }); }));
             SQL.Check();
 
-            StatusLibrary.SubscribeText(StatusType.Zone, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblZone.Text = value; }); }));
+            context = StatusType.Zone;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblZone.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picZone.BackColor = value ? Color.Red : Color.Lime; }); }));
             Zone.Check();
 
-            StatusLibrary.SubscribeText(StatusType.StatusBar, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblStatusBar.Text = value; Console.WriteLine("StatusBar: "+value); }); }));
+            context = StatusType.World;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblWorld.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picWorld.BackColor = value ? Color.Red : Color.Lime; }); }));
+            World.Check();
+
+            context = StatusType.UCS;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblUCS.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picUCS.BackColor = value ? Color.Red : Color.Lime; }); }));
+            UCS.Check();
+
+            context = StatusType.QueryServ;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblQueryServ.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picQueryServ.BackColor = value ? Color.Red : Color.Lime; }); }));
+            QueryServ.Check();
+
+            context = StatusType.StatusBar;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblStatusBar.Text = value; Console.WriteLine("StatusBar: "+value); }); }));
 
             ConfigLoad();
             Text = $"Emu Launcher v{Assembly.GetEntryAssembly().GetName().Version}";
@@ -388,36 +410,44 @@ namespace EQEmu_Launcher
             if (Config.Data["server"]["database"]["username"] == "root" && !Config.Data["server"]["database"]["password"].Equals(txtPassword.Text))
             {
                 Process[] processes = Process.GetProcessesByName("mysqld");
-                if (processes.Length > 0)
+                if (processes.Length == 0)
                 {
-                    var response = MessageBox.Show("SQL is currently running and you want to change the root password.\nRestart SQL to apply it?", "Restart SQL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
+                    var response = MessageBox.Show("SQL is not currently running and you want to change the root password.\nStart SQL to apply it?", "Start SQL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
                     if (response == DialogResult.Cancel)
                     {
                         return;
                     }
+
+                    if (response == DialogResult.No)
+                    {
+                        return;
+                    }
+
                     if (response == DialogResult.Yes)
                     {
-                        if (!SQL.Stop())
-                        {
-                            return;
-                        }
-                        StatusLibrary.SetStatusBar("setting password");
-                        string path = $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqladmin.exe";
-                        var proc = new Process
-                        {
-                            StartInfo = new ProcessStartInfo
-                            {
-                                FileName = path,
-                                Arguments = $"-u root flush-privileges password {txtPassword.Text}",
-                                UseShellExecute = false,
-                                RedirectStandardOutput = false,
-                                CreateNoWindow = true
-                            }
-                        };
-                        proc.Start();
-                        StatusLibrary.SetStatusBar("password changed");
                         SQL.Start();
                     }
+
+                    StatusLibrary.SetStatusBar("setting password");
+                    string path = $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqladmin.exe";
+                    var proc = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = path,
+                            Arguments = $"-u root flush-privileges password {txtPassword.Text}",
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            CreateNoWindow = true
+                        }
+                    };
+                    proc.Start();
+                    while (!proc.StandardOutput.EndOfStream)
+                    {
+                        string line = proc.StandardOutput.ReadLine();
+                        Console.WriteLine(line);
+                    }
+                    StatusLibrary.SetStatusBar("password changed");
 
                 }
             }
@@ -431,6 +461,7 @@ namespace EQEmu_Launcher
             Config.Data["server"]["database"]["host"] = txtHost.Text;
             Config.Data["server"]["database"]["db"] = txtDatabase.Text;
             Config.Save();
+            StatusLibrary.SetStatusBar("eqemu_config.json saved");
         }
 
         private void txtShortName_MouseMove(object sender, MouseEventArgs e)
@@ -454,6 +485,85 @@ namespace EQEmu_Launcher
         {
             txtKey.Text = WinLibrary.RandomString(64);
             StatusLibrary.SetStatusBar("random key generated");
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblSQL_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnWorldStart_Click(object sender, EventArgs e)
+        {
+            World.Start();
+            World.Check();
+        }
+
+        private void btnWorldStop_Click(object sender, EventArgs e)
+        {
+            World.Stop();
+            World.Check();
+        }
+
+        private void btnWorldRestart_Click(object sender, EventArgs e)
+        {
+            World.Stop();
+            World.Start();
+            World.Check();
+        }
+
+        private void btnZoneRestart_Click(object sender, EventArgs e)
+        {
+            Zone.Stop();
+            Zone.Start();
+            Zone.Check();
+        }
+
+        private void btnUCSStart_Click(object sender, EventArgs e)
+        {
+            UCS.Start();
+            UCS.Check();
+        }
+
+        private void btnUCSStop_Click(object sender, EventArgs e)
+        {
+            UCS.Stop();
+            UCS.Check();
+        }
+
+        private void btnUCSRestart_Click(object sender, EventArgs e)
+        {
+            UCS.Stop();
+            UCS.Start();
+            UCS.Check();
+        }
+
+        private void btnQueryServStart_Click(object sender, EventArgs e)
+        {
+            QueryServ.Start();
+            QueryServ.Check();
+        }
+
+        private void btnQueryServStop_Click(object sender, EventArgs e)
+        {
+            QueryServ.Stop();
+            QueryServ.Check();
+        }
+
+        private void btnQueryServRestart_Click(object sender, EventArgs e)
+        {
+            QueryServ.Stop();
+            QueryServ.Start();
+            QueryServ.Check();
+        }
+
+        private void btnLuaFix_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

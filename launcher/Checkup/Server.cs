@@ -55,8 +55,7 @@ namespace EQEmu_Launcher
         public static void FixCheck()
         {
             Console.WriteLine("running fix check");
-            FixTask = Task.Run(() => Fix(false));
-            Check();
+            FixTask = Task.Run(() => { Fix(false);  Check();});
         }
 
         public static async void Fix(bool fixAll)
@@ -87,8 +86,7 @@ namespace EQEmu_Launcher
         public static void FixAll()
         {
             Console.WriteLine("fixing all server issues");
-            FixTask = Task.Run(() => Fix(true));
-            Check();
+            FixTask = Task.Run(() => { Fix(true);  Check();});
         }
 
         public static int FixPath()

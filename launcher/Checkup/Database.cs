@@ -17,6 +17,7 @@ namespace EQEmu_Launcher
 
         public static void Check()
         {
+            Console.WriteLine("checking database");
             StatusLibrary.SetIsFixNeeded(status, true);
 
             string path = Application.StartupPath + "\\db";
@@ -53,6 +54,7 @@ namespace EQEmu_Launcher
             }
 
             StatusLibrary.SetIsFixNeeded(status, false);
+            StatusLibrary.SetStage(status, 100);
             StatusLibrary.SetText(status, "database found");
         }
 
@@ -60,8 +62,7 @@ namespace EQEmu_Launcher
         {
             Console.WriteLine("running fix check");
             CancellationToken ct = new CancellationToken();
-            FixTask = Task.Run(() => Fix(ct, false));
-            Check();
+            FixTask = Task.Run(() => { Fix(ct, false); Check();});
         }
 
         public static async void Fix(CancellationToken ct, bool fixAll)
@@ -96,8 +97,7 @@ namespace EQEmu_Launcher
         {
             Console.WriteLine("fixing all quest issues");
             CancellationToken ct = new CancellationToken();
-            FixTask = Task.Run(() => Fix(ct, true));
-            Check();
+            FixTask = Task.Run(() => { Fix(ct, true);  Check();});
         }
 
         public static int CreatePath(CancellationToken ct)

@@ -254,6 +254,9 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Manage\SQL.cs" />
+    <Compile Include="Manage\QueryServ.cs" />
+    <Compile Include="Manage\World.cs" />
+    <Compile Include="Manage\UCS.cs" />
     <Compile Include="Manage\Zone.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -23,6 +23,20 @@ namespace EQEmu_Launcher
             StatusLibrary.SetText(status, "perl not found");
             StatusLibrary.SetDescription(status, "perl is used for quests. This is required to use PEQ's latest quest files.");
 
+            string path = Application.StartupPath + "\\server\\perl-5.24.4.1-64bit-portable.zip";
+            try
+            {
+                if (File.Exists(path)) {
+                    StatusLibrary.SetStage(status, 100);
+                    StatusLibrary.SetIsFixNeeded(status, false);
+                    return;
+                }
+            } catch (Exception ex)
+            {
+                //we can squash errors for now
+                Console.WriteLine($"stat {path} failed (skipped): {ex.Message}");
+            }
+
             // Check if perl is installed
             var proc = new Process
             {
@@ -46,7 +60,7 @@ namespace EQEmu_Launcher
                 }
             }
             if (perlVersion.Length == 0)
-            {
+            {                
                 return;
             }
 
@@ -65,8 +79,7 @@ namespace EQEmu_Launcher
         {
             Console.WriteLine("running fix check");
             CancellationToken ct = new CancellationToken();
-            FixTask = Task.Run(() => Fix(ct, false));
-            Check();
+            FixTask = Task.Run(() => { Fix(ct, false);  Check();});
         }
 
         public static async void Fix(CancellationToken ct, bool fixAll)
@@ -81,8 +94,7 @@ namespace EQEmu_Launcher
         {
             Console.WriteLine("fixing all quest issues");
             CancellationToken ct = new CancellationToken();
-            FixTask = Task.Run(() => Fix(ct, true));
-            Check();
+            FixTask = Task.Run(() => { Fix(ct, true);  Check();});
         }
 
         public static async Task<int> FixDownloadPerl(CancellationToken ct)
@@ -106,14 +118,14 @@ namespace EQEmu_Launcher
                 MessageBox.Show(result, "Maps Fix", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return -1;
             }
-            path += "\\strawberry-perl-5.24.4.1-64bit.msi";
+            path += "\\perl-5.24.4.1-64bit-portable.zip";
             if (!File.Exists(path))
             {
                 StatusLibrary.SetStatusBar("downloading maps...");
-                result = await UtilityLibrary.DownloadFile(ct, "https://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.4.1-64bit.msi", path);
+                result = await UtilityLibrary.DownloadFile(ct, "https://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.4.1-64bit-portable.zip", path);
                 if (result != "")
                 {
-                    result = $"failed to download perl from https://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.4.1-64bit.msi: {result}";
+                    result = $"failed to download perl from https://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.4.1-64bit-portable.zip: {result}";
                     StatusLibrary.SetStatusBar("downloading perl failed");
                     MessageBox.Show(result, "Perl Fix", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return -1;
