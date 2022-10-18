@@ -15,6 +15,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -191,7 +192,13 @@ namespace EQEmu_Launcher
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblStatusBar.Text = value; Console.WriteLine("StatusBar: "+value); }); }));
 
             ConfigLoad();
-            Text = $"Emu Launcher v{Assembly.GetEntryAssembly().GetName().Version}";
+
+            string dirName = new DirectoryInfo($"{Application.StartupPath}").Name;
+            Text = $"Emu Launcher v{Assembly.GetEntryAssembly().GetName().Version} ({dirName} Folder)";
+            if (Assembly.GetEntryAssembly().GetName().Version.ToString().Equals("1.0.0.0"))
+            {
+                Text = $"Emu Launcher Dev Build ({dirName} Folder)";
+            }
             menuLauncher.Text = Text;
         }
 
@@ -409,47 +416,67 @@ namespace EQEmu_Launcher
 
             if (Config.Data["server"]["database"]["username"] == "root" && !Config.Data["server"]["database"]["password"].Equals(txtPassword.Text))
             {
+                
                 Process[] processes = Process.GetProcessesByName("mysqld");
-                if (processes.Length == 0)
+                bool wasSQLRunning = (processes.Length > 0);
+                if (wasSQLRunning)
                 {
-                    var response = MessageBox.Show("SQL is not currently running and you want to change the root password.\nStart SQL to apply it?", "Start SQL", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
+                    var response = MessageBox.Show("SQL is currently running and you want to change the root password.\nRestart SQL to apply it?", "Apply root password", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
                     if (response == DialogResult.Cancel)
                     {
+                        StatusLibrary.SetStatusBar("cancelled saving settings");
                         return;
                     }
 
                     if (response == DialogResult.No)
                     {
+                        StatusLibrary.SetStatusBar("cancelled saving settings");
                         return;
                     }
 
                     if (response == DialogResult.Yes)
                     {
-                        SQL.Start();
+                        SQL.Stop();
                     }
-
-                    StatusLibrary.SetStatusBar("setting password");
-                    string path = $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqladmin.exe";
-                    var proc = new Process
-                    {
-                        StartInfo = new ProcessStartInfo
-                        {
-                            FileName = path,
-                            Arguments = $"-u root flush-privileges password {txtPassword.Text}",
-                            UseShellExecute = false,
-                            RedirectStandardOutput = true,
-                            CreateNoWindow = true
-                        }
-                    };
-                    proc.Start();
-                    while (!proc.StandardOutput.EndOfStream)
-                    {
-                        string line = proc.StandardOutput.ReadLine();
-                        Console.WriteLine(line);
-                    }
-                    StatusLibrary.SetStatusBar("password changed");
-
                 }
+
+                string rootPath = $"{Application.StartupPath}\\cache\\reset-root.txt";
+                File.WriteAllText(rootPath, $"ALTER USER 'root'@'localhost' IDENTIFIED BY '{txtPassword.Text}'");
+
+                // Start SQL with no root password
+                string path = $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqld.exe";
+                var proc = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = path,
+                        Arguments = $"--init-file={rootPath.Replace("\\", "\\\\")} --skip-grant-tables",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true
+                    }
+                };
+                proc.Start();
+                while (!proc.StandardOutput.EndOfStream)
+                {
+                    string line = proc.StandardOutput.ReadLine();
+                    Console.WriteLine(line);
+                   /* if (line.Contains("connect to server at") && line.Contains("Access denied for user"))
+                    {
+                        SQL.Stop();
+                        SQL.Start();
+                        return;
+                    }*/
+                    
+                }
+                Console.WriteLine("ending");
+                SQL.Stop();
+                if (wasSQLRunning)
+                {
+                    SQL.Start();
+                }
+                StatusLibrary.SetStatusBar("password changed");
+
             }
 
             Config.Data["server"]["world"]["key"] = txtKey.Text;
@@ -564,6 +591,11 @@ namespace EQEmu_Launcher
         private void btnLuaFix_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void lblConfigLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("explorer.exe", $"\"{Application.StartupPath}\\server\\eqemu_config.json\"");
         }
     }
 }

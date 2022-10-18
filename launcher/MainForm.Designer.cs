@@ -119,6 +119,7 @@
             this.menuQueryServ = new System.Windows.Forms.ToolStripMenuItem();
             this.manageTimer = new System.Windows.Forms.Timer(this.components);
             this.tabRules = new System.Windows.Forms.TabPage();
+            this.lblConfigLink = new System.Windows.Forms.LinkLabel();
             this.statusStrip1.SuspendLayout();
             this.tabManage.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -709,6 +710,7 @@
             // 
             this.grpConfig.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpConfig.Controls.Add(this.lblConfigLink);
             this.grpConfig.Controls.Add(this.grpOptions);
             this.grpConfig.Controls.Add(this.grpInfo);
             this.grpConfig.Controls.Add(this.grpConfigDatabase);
@@ -722,7 +724,7 @@
             this.grpConfig.Size = new System.Drawing.Size(533, 413);
             this.grpConfig.TabIndex = 1;
             this.grpConfig.TabStop = false;
-            this.grpConfig.Text = "eqemu_config.json";
+            this.grpConfig.Text = "                                ";
             // 
             // grpOptions
             // 
@@ -1047,6 +1049,17 @@
             this.tabRules.Text = "Rules";
             this.tabRules.UseVisualStyleBackColor = true;
             // 
+            // lblConfigLink
+            // 
+            this.lblConfigLink.AutoSize = true;
+            this.lblConfigLink.Location = new System.Drawing.Point(10, 0);
+            this.lblConfigLink.Name = "lblConfigLink";
+            this.lblConfigLink.Size = new System.Drawing.Size(96, 13);
+            this.lblConfigLink.TabIndex = 15;
+            this.lblConfigLink.TabStop = true;
+            this.lblConfigLink.Text = "eqemu_config.json";
+            this.lblConfigLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblConfigLink_LinkClicked);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1186,6 +1199,7 @@
         private System.Windows.Forms.PictureBox picUCS;
         private System.Windows.Forms.PictureBox picWorld;
         private System.Windows.Forms.TabPage tabRules;
+        private System.Windows.Forms.LinkLabel lblConfigLink;
     }
 }
 
