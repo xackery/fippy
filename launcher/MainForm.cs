@@ -378,7 +378,7 @@ namespace EQEmu_Launcher
                 return;
             }
 
-            StatusLibrary.SetStatusBar("starting heidi");
+            StatusLibrary.SetStatusBar($"starting heidi via {path}");
             var proc = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -441,7 +441,7 @@ namespace EQEmu_Launcher
                 }
 
                 string rootPath = $"{Application.StartupPath}\\cache\\reset-root.txt";
-                File.WriteAllText(rootPath, $"ALTER USER 'root'@'localhost' IDENTIFIED BY '{txtPassword.Text}'");
+                File.WriteAllText(rootPath, $"UPDATE mysql.user SET Password=PASSWORD('{txtPassword.Text}') WHERE User='root';\nFLUSH PRIVILEGES;");
 
                 // Start SQL with no root password
                 string path = $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqld.exe";
@@ -450,31 +450,23 @@ namespace EQEmu_Launcher
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = path,
-                        Arguments = $"--init-file={rootPath.Replace("\\", "\\\\")} --skip-grant-tables",
+                        Arguments = $"--init-file=\"{rootPath}\"",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                         CreateNoWindow = true
                     }
                 };
                 proc.Start();
-                while (!proc.StandardOutput.EndOfStream)
-                {
-                    string line = proc.StandardOutput.ReadLine();
-                    Console.WriteLine(line);
-                   /* if (line.Contains("connect to server at") && line.Contains("Access denied for user"))
+                Task.Run(() => { 
+                    Thread.Sleep(3000);
+                    try
                     {
-                        SQL.Stop();
-                        SQL.Start();
-                        return;
-                    }*/
-                    
-                }
-                Console.WriteLine("ending");
-                SQL.Stop();
-                if (wasSQLRunning)
-                {
-                    SQL.Start();
-                }
+                        File.Delete(rootPath);
+                    } catch (Exception ex)
+                    {
+                        Console.WriteLine($"failing silently: {ex.Message}");
+                    }
+                });
                 StatusLibrary.SetStatusBar("password changed");
 
             }
