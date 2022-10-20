@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Xml.Linq;
 using YamlDotNet.Core.Tokens;
@@ -32,6 +33,18 @@ namespace EQEmu_Launcher
         readonly static Mutex mux = new Mutex();
 
         readonly static Dictionary<StatusType, Status> checks = new Dictionary<StatusType, Status>();
+
+        public delegate void ProgressHandler(int value);
+        static event ProgressHandler progressChange;
+
+        public delegate void DescriptionHandler(string value);
+        static event DescriptionHandler descriptionChange;
+
+
+        /// <summary>
+        /// When the UI is locked/unlocked, cancellation is fired. This is a thread safe operation to access
+        /// </summary>
+        static CancellationTokenSource cancelTokenSource;
 
         public static void Initialize()
         {
@@ -68,6 +81,46 @@ namespace EQEmu_Launcher
             checks[name] = value;
             mux.ReleaseMutex();
         }
+
+        /// <summary>
+        /// LockUI should be called before doing any Fix or Download operation
+        /// </summary>
+        public static void LockUI()
+        {
+            mux.WaitOne();
+            if (cancelTokenSource == null)
+            {
+                cancelTokenSource = new CancellationTokenSource();
+                mux.ReleaseMutex();
+                return;
+            }
+            mux.ReleaseMutex();
+        }
+
+        /// <summary>
+        /// UnlockUI cancels any currently running operations and restores UI
+        /// </summary>
+        public static void UnlockUI()
+        {
+            mux.WaitOne();
+            Console.WriteLine("UnlockUI called");
+            if (cancelTokenSource != null)
+            {
+                cancelTokenSource.Cancel();
+            }
+            cancelTokenSource = new CancellationTokenSource();
+            SetProgress(100);
+            mux.ReleaseMutex();
+        }
+
+        /// <summary>
+        /// Returns the current CancellationToken. No mutex lock occurs since it is thread safe
+        /// </summary>
+        public static CancellationToken CancelToken()
+        {
+            return cancelTokenSource.Token;
+        }
+
 
         public static bool IsFixNeeded(StatusType name)
         {
@@ -203,42 +256,31 @@ namespace EQEmu_Launcher
             mux.ReleaseMutex();
         }
 
-        public static int Stage(StatusType name)
+        public static void SetProgress(int value)
         {
             mux.WaitOne();
-            if (!checks.ContainsKey(name))
-            {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status get stage for {name} not found in dictionary");
-            }
-            int value = checks[name].Stage;
-            mux.ReleaseMutex();
-            return value;
-        }
-
-        public static void SetStage(StatusType name, int value)
-        {
-            mux.WaitOne();
-            if (!checks.ContainsKey(name))
-            {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status set stage for {name} not found in dictionary");
-            }
-
-            checks[name].Stage = value;
+            progressChange?.BeginInvoke(value, null, null);
             mux.ReleaseMutex();
         }
 
-        public static void SubscribeStage(StatusType name, EventHandler<int> f)
+        public static void SubscribeProgress(ProgressHandler f)
         {
             mux.WaitOne();
-            if (!checks.ContainsKey(name))
-            {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status subscribe stage for {name} not found in dictionary");
-            }
-            Status status = checks[name];
-            status.StageChange += f;
+            progressChange += f;
+            mux.ReleaseMutex();
+        }
+
+        public static void SetDescription(string value)
+        {
+            mux.WaitOne();
+            descriptionChange?.BeginInvoke(value, null, null);
+            mux.ReleaseMutex();
+        }
+
+        public static void SubscribeDescription(DescriptionHandler f)
+        {
+            mux.WaitOne();
+            descriptionChange += f;
             mux.ReleaseMutex();
         }
 
@@ -261,36 +303,10 @@ namespace EQEmu_Launcher
             if (!checks.ContainsKey(name))
             {
                 mux.ReleaseMutex();
-                throw new System.Exception($"status set descriptionfor {name} not found in dictionary");
+                throw new System.Exception($"status set description for {name} not found in dictionary");
             }
 
             checks[name].Description = value;
-            mux.ReleaseMutex();
-        }
-
-        public static string Link(StatusType name)
-        {
-            mux.WaitOne();
-            if (!checks.ContainsKey(name))
-            {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status get link for {name} not found in dictionary");
-            }
-            string value = checks[name].Link;
-            mux.ReleaseMutex();
-            return value;
-        }
-
-        public static void SetLink(StatusType name, string value)
-        {
-            mux.WaitOne();
-            if (!checks.ContainsKey(name))
-            {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status set link for {name} not found in dictionary");
-            }
-
-            checks[name].Link = value;
             mux.ReleaseMutex();
         }
 
@@ -307,18 +323,12 @@ namespace EQEmu_Launcher
             public string Text { get { return text; } set { text = value; TextChange?.BeginInvoke(this, value, null, null); } }
             public event EventHandler<string> TextChange;
 
-            public bool IsFixNeeded { get { return stage != 100; } set { stage = 100; IsFixNeededChange?.BeginInvoke(this, value, null, null); } }
+            bool isFixNeeded;
+            public bool IsFixNeeded { get { return isFixNeeded; } set { isFixNeeded = value; IsFixNeededChange?.BeginInvoke(this, value, null, null); } }
             public event EventHandler<bool> IsFixNeededChange;
-
-            int stage;
-            public int Stage { get { return stage; } set { stage = value; StageChange?.BeginInvoke(this, value, null, null); if (stage == 100) IsFixNeeded = false; } }
-            public event EventHandler<int> StageChange;
 
             string description;
             public string Description { get { return description; } set { description = value; } }
-
-            string link;
-            public string Link { get { return link; } set { link = value; } }
         }
     }
 }

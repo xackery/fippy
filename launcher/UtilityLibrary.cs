@@ -8,37 +8,144 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System.IO.Compression;
 
 namespace EQEmu_Launcher
 {
     /* General Utility Methods */
     class UtilityLibrary
     {
-        //Download a file to current directory
-        public static async Task<string> DownloadFile(CancellationToken ct, string url, string outFile)
+
+        public static async Task<int> Download(int startProgress, int endProgress, string source, string outDir, string fileName, int sizeMB)
         {
+            string result;
+            StatusLibrary.SetProgress(startProgress);
+            string path = $"{Application.StartupPath}\\{outDir}\\{fileName}";
+
+            if (File.Exists(path))
+            {
+                StatusLibrary.SetStatusBar($"Skipping \\{outDir}\\{fileName} download, already exists");
+                return endProgress;
+            }
+
+            StatusLibrary.SetStatusBar($"Downloading {fileName} ({sizeMB} MB) to {outDir}...");
             try
             {
-                using (var client = new WebClient())
-                {
-                    client.Encoding = Encoding.UTF8;
-                    ct.Register(client.CancelAsync);
-                    await client.DownloadFileTaskAsync(url, outFile);
-                }
-            } catch( IOException ie)
-            {                
-                return "IOException: "+ie.Message;
-            } catch (WebException we) {
-                if (we.Message == "The remote server returned an error: (404) Not Found.")
-                {
-                    return "404";
-                }
-                return "WebException: "+we.Message;  
-            } catch (Exception e)
-            {
-                return "Exception: " + e.Message;
+                WebClient client = new WebClient();
+                client.Encoding = Encoding.UTF8;
+                StatusLibrary.CancelToken().Register(client.CancelAsync);
+                client.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) => {
+                    StatusLibrary.SetProgress(startProgress + (int)((endProgress - startProgress) * (float)((float)e.ProgressPercentage / (float)100)));
+                };
+                Console.WriteLine($"download source: {source}, destination: {path}");
+                await client.DownloadFileTaskAsync(source, path);
             }
-            return "";
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("request was cancelled"))
+                {
+                    if (File.Exists($"{outDir}\\{fileName}")) {
+                        File.Delete($"{outDir}\\{fileName}");
+                    }
+                    StatusLibrary.SetStatusBar("Cancelled request");
+                    return -1;
+                }
+                result = $"Failed to download {fileName}: {ex.Message}";
+                StatusLibrary.SetStatusBar(result);
+                MessageBox.Show(result, "Download {fileName}", MessageBoxButtons.OK, MessageBoxIcon.Error);                    
+                return -1;
+            }
+            StatusLibrary.SetStatusBar($"Downloaded {fileName} successfully");
+            StatusLibrary.SetProgress(endProgress);
+            return endProgress;
+        }
+
+        public static async Task<int> Extract(int startProgress, int endProgress, string srcDir, string fileName, string outDir, string targetCheckPath, int sizeMB)
+        {
+            StatusLibrary.SetProgress(startProgress);
+            StatusLibrary.SetStatusBar($"Extracting {fileName} ({sizeMB} MB) to {outDir}...");
+            string srcPath = $"{Application.StartupPath}\\{srcDir}\\{fileName}";
+            
+            try
+            {
+                if (File.Exists(targetCheckPath))
+                {
+                    Console.WriteLine("File already exists, skipping extract");
+                    StatusLibrary.SetStatusBar($"Extracted {fileName} successfully (skipped)");
+                    StatusLibrary.SetProgress(endProgress);
+                    return endProgress;
+                }
+
+                if (!Directory.Exists($"{Application.StartupPath}\\{outDir}"))
+                {
+                    Console.WriteLine($"{Application.StartupPath}\\{outDir} doesn't exist, creating it");
+                    Directory.CreateDirectory($"{Application.StartupPath}\\{outDir}");
+                }
+
+
+                ZipArchive archive = ZipFile.OpenRead(srcPath);
+                int entryCount = archive.Entries.Count;
+                int entryReportStep = 1;
+                int entryReportCounter = 0;
+                if (entryCount > 100)
+                {
+                    entryReportStep = 10;
+                }
+
+                for (int i = 0; i < entryCount; i++)
+                {
+                    entryReportCounter++;
+                    bool isReportNeeded = false;
+                    if (entryReportCounter >= entryReportStep)
+                    {
+                        isReportNeeded = true;
+                        entryReportCounter = 0;
+                    }
+                    ZipArchiveEntry entry = archive.Entries[i];
+
+                    int value = startProgress + (int)((endProgress - startProgress) * (float)((float)i / (float)entryCount));
+                    if (isReportNeeded) {
+                        StatusLibrary.SetProgress(value);
+                    }
+
+                    string zipPath = entry.FullName.Replace("/", "\\");
+                    if (zipPath.StartsWith("c\\"))
+                    {
+                        zipPath = zipPath.Substring(2);
+                    }
+                    if (zipPath.Length == 0)
+                    {
+                        continue;
+                    }
+                    string outPath = $"{Application.StartupPath}\\{outDir}\\{zipPath}";
+                                        
+                    if (zipPath.EndsWith("\\"))
+                    {
+                        Console.WriteLine($"Creating directory to {outPath}");
+                        Directory.CreateDirectory(outPath);
+                        continue;
+                    }
+                    if (isReportNeeded)
+                    {
+                        StatusLibrary.SetStatusBar($"Extracting {outDir}\\{zipPath}...");
+                        Console.WriteLine($"Extracting to {outPath}");
+                    }
+                    Stream zipStream = entry.Open();
+                    FileStream fileStream = File.Create(outPath);
+                    await zipStream.CopyToAsync(fileStream);
+                }
+            }
+            catch (Exception ex)
+            {
+                string result = $"Failed to extract {srcPath}: {ex.Message}";
+                StatusLibrary.SetStatusBar(result);
+                MessageBox.Show(result, $"Extract {fileName}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return -1;
+            }
+            StatusLibrary.SetStatusBar($"Extracted {fileName} successfully");
+            StatusLibrary.SetProgress(endProgress);
+            return endProgress;
         }
 
         public static string GetMD5(string filename)

@@ -19,21 +19,22 @@ namespace EQEmu_Launcher
         /// <summary>
         /// Check the status of deployment
         /// </summary>
-        public static void Check()
+        public static int Check()
         {
             StatusLibrary.SetIsFixNeeded(status, true);
+            string path;
 
-            string path = Application.StartupPath + "\\quests";
-            if (!Directory.Exists(path))
+            path = Application.StartupPath + "\\server\\quests\\perl\\bin\\perl.exe";
+            if (!File.Exists(path))
             {
-                StatusLibrary.SetText(status, "quests subfolder not found");
-                StatusLibrary.SetDescription(status, "Emu Launcher could not find a quests folder where the executable was ran from.\nIf you have existing quests, you can copy them manually.\nIf you would like emu launcher to repair and download the latest peq quests, click Fix.");
-                return;
+                StatusLibrary.SetText(status, "perl not found");
+                return 0;
             }
 
             StatusLibrary.SetIsFixNeeded(status, false);
-            StatusLibrary.SetStage(status, 100);
+            StatusLibrary.SetProgress(100);
             StatusLibrary.SetText(status, "quests found");
+            return 100;
         }
 
         public static void FixCheck()
@@ -45,7 +46,7 @@ namespace EQEmu_Launcher
 
         public static async void Fix(CancellationToken ct, bool fixAll)
         {
-            int startStage = StatusLibrary.Stage(status);
+            int startStage = Check();
             int stage = FixPath(ct);
             if (stage == -1) { return; }
             if (!fixAll && stage > startStage) { return; }
@@ -60,7 +61,7 @@ namespace EQEmu_Launcher
         public static int FixPath(CancellationToken ct)
         {
             Console.WriteLine("fixing path quests...");
-            StatusLibrary.SetStage(status, 10);
+            StatusLibrary.SetProgress(10);
             string path = Application.StartupPath + "\\quests";
 
             try

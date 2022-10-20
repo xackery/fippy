@@ -26,7 +26,8 @@ namespace EQEmu_Launcher
     
     public partial class MainForm : Form
     {
-        StatusType lastDescription;
+        Regex descriptionLinkRegex = new Regex(@"(.*)\[(.*)\]\((.*)\)(.*)");
+        string lastDescription;
 
         public MainForm()
         {
@@ -48,121 +49,30 @@ namespace EQEmu_Launcher
             }
             StatusLibrary.Initialize();
 
-            var skips = new List<StatusType> 
-            { 
-                StatusType.StatusBar,
-                StatusType.Lua,
-                StatusType.SQL,
-                StatusType.Zone,
-                StatusType.World,
-                StatusType.UCS,
-                StatusType.QueryServ,
-            };
-            int i = 0;
-            foreach (StatusType status in Enum.GetValues(typeof(StatusType)))
-            {
-                if (skips.Contains(status))
-                {
-                    continue;
-                }
-                i++;
+            StatusType context;
 
-                var group = new GroupBox
-                {
-                    Width = grpLua.Width,
-                    Height = grpLua.Height,
-                    Left = grpLua.Left,
-                    Top = i * grpLua.Height + grpLua.Top,
-                    Text = status.ToString(),
-                    Anchor = grpLua.Anchor,
-                    Parent = tabCheckup,
-                    Tag = status,
-                };
-                group.MouseMove += new System.Windows.Forms.MouseEventHandler(MouseMoveDescription);
+            // Content
+            context = StatusType.Server;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblServer.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picServer.BackColor = value ? Color.Red : Color.Lime; }); }));
+            Server.Check();
 
-                var label = new System.Windows.Forms.Label
-                {
-                    Width = lblLua.Width,
-                    Height = lblLua.Height,
-                    Left = lblLua.Left,
-                    Top = lblLua.Top,
-                    Anchor = lblLua.Anchor,
-                    Parent = group,
-                    Tag = status,
-                };
-                label.MouseMove += new System.Windows.Forms.MouseEventHandler(MouseMoveDescription);
+            context = StatusType.Database;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblDatabase.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picDatabase.BackColor = value ? Color.Red : Color.Lime; }); }));
+            Database.Check();
 
-                var buttonFix = new Button
-                {
-                    Width = btnLuaFix.Width,
-                    Height = btnLuaFix.Height,
-                    Left = btnLuaFix.Left,
-                    Top = btnLuaFix.Top,
-                    Anchor = btnLuaFix.Anchor,
-                    Text = "Fix",
-                    Parent = group,
-                    Tag = status,
-                };
-                buttonFix.MouseMove += new System.Windows.Forms.MouseEventHandler(MouseMoveDescription);
-                buttonFix.Click += new EventHandler(FixClick);
+            context = StatusType.Quest;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblQuest.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picQuest.BackColor = value ? Color.Red : Color.Lime; }); }));
+            Quest.Check();
 
-                var buttonFixAll = new Button
-                {
-                    Width = btnLuaFixAll.Width,
-                    Height = btnLuaFixAll.Height,
-                    Left = btnLuaFixAll.Left,
-                    Top = btnLuaFixAll.Top,
-                    Anchor = btnLuaFixAll.Anchor,
-                    Text = "Fix All",
-                    Parent = group,
-                    Tag = status,
-                };
-                buttonFixAll.MouseMove += new System.Windows.Forms.MouseEventHandler(MouseMoveDescription);
-                buttonFixAll.Click += new EventHandler(FixAllClick);
+            context = StatusType.Map;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblMap.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picMap.BackColor = value ? Color.Red : Color.Lime; }); }));
+            Map.Check();
 
-
-                var progress = new ProgressBar
-                {
-                    Width = prgLua.Width,
-                    Height = prgLua.Height,
-                    Left = prgLua.Left,
-                    Top = prgLua.Top,
-                    Anchor = prgLua.Anchor,
-                    Parent = group,
-                    Visible = false,
-                    Tag = status,
-                };
-                progress.MouseMove += new System.Windows.Forms.MouseEventHandler(MouseMoveDescription);
-                
-                StatusLibrary.SubscribeText(status, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { label.Text = value; }); }));
-                StatusLibrary.SubscribeIsFixNeeded(status, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { buttonFix.Visible = value; buttonFixAll.Visible = value; label.ForeColor = (value == true ? Color.Red : Color.Black); }); }));
-                StatusLibrary.SubscribeStage(status, new EventHandler<int>((object src, int value) => { Invoke((MethodInvoker)delegate { progress.Visible = (value != 100); progress.Value = value; }); }));
-
-                Type t = Type.GetType($"EQEmu_Launcher.{status}");
-                if (t == null)
-                {
-                    MessageBox.Show($"failed to find check (class {status} does not exist)", "Check", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                var method = t.GetMethod("Check", BindingFlags.Static | BindingFlags.Public);
-                if (method == null)
-                {
-                    MessageBox.Show($"failed to find check (class {status} has no method Check)", "Check", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                method.Invoke(sender, null);
-            }
-            StatusType context = StatusType.Lua;
-            lblLua.Tag = context;
-            btnLuaFix.Tag = context;
-            prgLua.Tag = context;
-            btnLuaFix.Click += new EventHandler(FixClick);
-            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblLua.Text = value; }); }));
-            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { btnLuaFix.Visible = value; lblLua.ForeColor = (value == true ? Color.Red : Color.Black); }); }));
-            StatusLibrary.SubscribeStage(context, new EventHandler<int>((object src, int value) => { Invoke((MethodInvoker)delegate { prgLua.Visible = (value != 100); prgLua.Value = value; }); }));
-            Lua.Check();
-
+            // Manage
             context = StatusType.SQL;
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblSQL.Text = value; }); }));
             StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picSQL.BackColor = value ? Color.Red : Color.Lime; }); }));
@@ -183,6 +93,7 @@ namespace EQEmu_Launcher
             StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picUCS.BackColor = value ? Color.Red : Color.Lime; }); }));
             UCS.Check();
 
+
             context = StatusType.QueryServ;
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblQueryServ.Text = value; }); }));
             StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picQueryServ.BackColor = value ? Color.Red : Color.Lime; }); }));
@@ -191,8 +102,39 @@ namespace EQEmu_Launcher
             context = StatusType.StatusBar;
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblStatusBar.Text = value; Console.WriteLine("StatusBar: "+value); }); }));
 
+            StatusLibrary.SubscribeProgress(new StatusLibrary.ProgressHandler((int value) => { Invoke((MethodInvoker)delegate { 
+                prgStatus.Visible = (value != 100);
+                btnCancel.Visible = (value != 100);
+                lblDescription.Visible = (value == 100);
+                tabControlMain.Enabled = (value == 100);
+                prgStatus.Value = value; 
+            }); }));
+            StatusLibrary.SubscribeDescription(new StatusLibrary.DescriptionHandler((string value) => { Invoke((MethodInvoker)delegate {
+                if (lastDescription == value) {
+                    return;
+                }
+                lastDescription = value;
+                lblDescription.Tag = "";
+                var area = new LinkArea();
+                MatchCollection matches = descriptionLinkRegex.Matches(value);
+                if (matches.Count > 0)
+                {
+                    Console.WriteLine(matches[0]);
+                    lblDescription.Text = matches[0].Groups[1].Value;
+                    area.Start = lblDescription.Text.Length;
+                    area.Length = matches[0].Groups[2].Value.Length;
+                    lblDescription.Text += matches[0].Groups[2].Value;
+                    lblDescription.Tag = matches[0].Groups[3].Value;
+                    lblDescription.Text += matches[0].Groups[4].Value;
+                }
+                lblDescription.LinkArea = area;
+            }); }));
+
             ConfigLoad();
 
+            cmbQuest.SelectedIndex = 0;
+            cmbDatabase.SelectedIndex = 0;
+            cmbServer.SelectedIndex = 0;
             string dirName = new DirectoryInfo($"{Application.StartupPath}").Name;
             Text = $"Emu Launcher v{Assembly.GetEntryAssembly().GetName().Version} ({dirName} Folder)";
             if (Assembly.GetEntryAssembly().GetName().Version.ToString().Equals("1.0.0.0"))
@@ -200,38 +142,54 @@ namespace EQEmu_Launcher
                 Text = $"Emu Launcher Dev Build ({dirName} Folder)";
             }
             menuLauncher.Text = Text;
+
+            try
+            {
+                MakeSubfolders();
+            } catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to make subfolders: {ex.Message}", "Make Subfolders", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
+
+        }
+
+        private void MakeSubfolders()
+        {
+            string path = Application.StartupPath + "\\server";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            path = Application.StartupPath + "\\cache";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            path = Application.StartupPath + "\\db";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            path = Application.StartupPath + "\\server\\quests";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            path = Application.StartupPath + "\\server\\maps";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
 
         private void FixClick(object sender, EventArgs e)
         {
-            Control control = sender as Control;
-            if (control == null)
-            {
-                MessageBox.Show($"failed to fix click due to unknown control {sender} (expected Control)", "Fix Click", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
 
-            StatusType? status = control.Tag as StatusType?;
-            if (status == null)
-            {
-                MessageBox.Show($"failed to fix click (no tag)", "Fix Click", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            
-            Type t = Type.GetType($"EQEmu_Launcher.{status}");
-            if (t == null)
-            {
-                MessageBox.Show($"failed to fix click (class {status} does not exist)", "Fix Click", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            var method = t.GetMethod("FixCheck", BindingFlags.Static | BindingFlags.Public);
-            if (method == null)
-            {
-                MessageBox.Show($"failed to fix click (class {status} has no method FixCheck)", "Fix Click", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            method.Invoke(sender, null);
         }
 
         private void FixAllClick(object sender, EventArgs e)
@@ -266,34 +224,6 @@ namespace EQEmu_Launcher
             method.Invoke(sender, null);
         }
 
-        private void MouseMoveDescription(object sender, MouseEventArgs e)
-        {
-
-            Control control = sender as Control;
-            if (control == null)
-            {
-                return;
-            }
-
-            StatusType? status = control.Tag as StatusType?;
-            if (status == null)
-            {
-                return;
-            }
-
-            if (lastDescription == status)
-            {
-                return;
-            }
-
-            lastDescription = status ?? StatusType.Database;
-
-            lblDescription.Text = StatusLibrary.Description(status ?? StatusType.Database);
-            if (lblDescription.Text == "")
-            {
-                lblDescription.Text = "Rawr";
-            }
-        }
 
         private void btnSQLStart_Click(object sender, EventArgs e)
         {
@@ -588,6 +518,50 @@ namespace EQEmu_Launcher
         private void lblConfigLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("explorer.exe", $"\"{Application.StartupPath}\\server\\eqemu_config.json\"");
+        }
+
+        private void chkContentAdvanced_CheckedChanged(object sender, EventArgs e)
+        {
+            grpContentAdvanced.Enabled = chkContentAdvanced.Checked;
+        }
+
+        private void chkContentAdvanced_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblDescription.Text = "Advanced options allows you to customize where to get database, quest, and server content from";
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            StatusLibrary.UnlockUI();
+        }
+
+        private void btnContentDownloadAll_Click(object sender, EventArgs e)
+        {
+            Server.FixAll();
+        }
+
+        private void txtLongName_MouseMove(object sender, MouseEventArgs e)
+        {
+           StatusLibrary.SetDescription("This is how your server is displayed on [server select](https://google.com)");
+        }
+
+        private void lblContent_MouseMove(object sender, MouseEventArgs e)
+        {
+            StatusLibrary.SetDescription("Test");
+        }
+
+        private void btnContentDownloadAll_MouseMove(object sender, MouseEventArgs e)
+        {
+            StatusLibrary.SetDescription("Downloads all out of date content, and installs it to the portable copy emu launcher is handling");
+        }
+
+        private void lblDescription_Click(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (lblDescription.Tag.ToString() == "")
+            {
+                return;
+            }
+            Process.Start("explorer.exe", lblDescription.Tag.ToString());
         }
     }
 }

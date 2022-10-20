@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Costura.Fody.5.7.0\build\Costura.Fody.props" Condition="'$(Configuration)' == 'Release' and Exists('..\packages\Costura.Fody.5.7.0\build\Costura.Fody.props')" />
+  <Import Project="..\packages\Costura.Fody.5.7.0\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.5.7.0\build\Costura.Fody.props')" />
   <Import Project="..\packages\LibGit2Sharp.NativeBinaries.2.0.306\build\net46\LibGit2Sharp.NativeBinaries.props" Condition="Exists('..\packages\LibGit2Sharp.NativeBinaries.2.0.306\build\net46\LibGit2Sharp.NativeBinaries.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -240,12 +240,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Checkup\Lua.cs" />
-    <Compile Include="Checkup\Map.cs" />
-    <Compile Include="Checkup\Perl.cs" />
-    <Compile Include="Checkup\Quest.cs" />
-    <Compile Include="Checkup\Database.cs" />
-    <Compile Include="Checkup\Server.cs" />
+    <Compile Include="Content\Map.cs" />
+    <Compile Include="Content\Quest.cs" />
+    <Compile Include="Content\Database.cs" />
+    <Compile Include="Content\Server.cs" />
     <Compile Include="Config\Config.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -308,6 +306,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Checkup\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
