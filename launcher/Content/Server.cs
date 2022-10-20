@@ -225,11 +225,11 @@ namespace EQEmu_Launcher
             if (stage == -1) { return; }
             if (!fixAll && stage > startStage) { return; }
 
-            stage = await UtilityLibrary.Download(92, 95, "http://db.projecteq.net/api/v1/dump/latest", "cache", "db-latest.zip", 29);
+            /*stage = await UtilityLibrary.Download(92, 95, "http://db.projecteq.net/api/v1/dump/latest", "cache", "db-latest.zip", 29);
             if (stage == -1) { return; }
-            if (!fixAll && stage > startStage) { return; }
+            if (!fixAll && stage > startStage) { return; }*/
 
-            stage = await UtilityLibrary.SourceFromDatabase2(95, 98, "cache", "db-latest.zip");
+            stage = await UtilityLibrary.SourcePEQDB(92, 99);
             if (stage == -1) { return; }
             if (!fixAll && stage > startStage) { return; }
 

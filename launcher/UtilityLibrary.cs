@@ -167,7 +167,7 @@ namespace EQEmu_Launcher
             return endProgress;
         }
 
-        public static async Task<int> SourceFromDatabase2(int startProgress, int endProgress, string srcDir, string fileName)
+        public static async Task<int> SourcePEQDB(int startProgress, int endProgress)
         {
 
             try
@@ -195,7 +195,7 @@ namespace EQEmu_Launcher
                 while (!proc.StandardOutput.EndOfStream)
                 {
                     string line = proc.StandardOutput.ReadLine();
-                    Console.WriteLine($"fetch peq: {line}");
+                    Console.WriteLine($"peq: {line}");
                 }                
                 StatusLibrary.SetStatusBar($"Injected successfully");
                 StatusLibrary.SetProgress(endProgress);
@@ -205,12 +205,12 @@ namespace EQEmu_Launcher
             {
                 string result = $"Failed to inject: {ex.Message}";
                 StatusLibrary.SetStatusBar(result);
-                MessageBox.Show(result, $"Inject {fileName}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(result, $"Inject PEQ DB", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return -1;
             }
         }
 
-        public static async Task<int> SourceDatabase(int startProgress, int endProgress, string srcDir, string fileName)
+        public static async Task<int> SourceDatabaseNotUsed(int startProgress, int endProgress, string srcDir, string fileName)
         {
             StatusLibrary.SetProgress(startProgress);
             string srcPath = $"{Application.StartupPath}\\{srcDir}\\{fileName}";
