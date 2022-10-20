@@ -30,23 +30,35 @@ namespace EQEmu_Launcher.Manage
         {
             try
             {
-                StatusLibrary.SetStatusBar($"starting UCS");
+                StatusLibrary.SetStatusBar($"starting ucs");
                 var proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = $"{Application.StartupPath}\\server\\ucs.exe",
+                        WorkingDirectory = $"{Application.StartupPath}\\server",
                         Arguments = "",
                         UseShellExecute = false,
-                        RedirectStandardOutput = false,
+                        RedirectStandardOutput = true,
                         CreateNoWindow = true
                     }
                 };
+
+                proc.StartInfo.EnvironmentVariables["PATH"] = UtilityLibrary.EnvironmentPath();
                 proc.Start();
+
+                Task.Run(() => {
+                    while (!proc.StandardOutput.EndOfStream)
+                    {
+                        Console.WriteLine($"ucs: {proc.StandardOutput.ReadLine()}");
+                    }
+                    Console.WriteLine($"ucs: exited");
+                });
                 Check();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
-                string result = $"failed UCS start \"server\\ucs.exe\": {e.Message}";
+                string result = $"failed ucs start \"server\\ucs.exe\": {e.Message}";
                 StatusLibrary.SetStatusBar(result);
                 MessageBox.Show(result, "UCS Start", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

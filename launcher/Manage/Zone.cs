@@ -30,6 +30,7 @@ namespace EQEmu_Launcher.Manage
         {
             try
             {
+                
                 for (int i = 0; i < 3; i++)
                 {
                     StatusLibrary.SetStatusBar($"starting {i} zone");
@@ -38,13 +39,24 @@ namespace EQEmu_Launcher.Manage
                         StartInfo = new ProcessStartInfo
                         {
                             FileName = $"{Application.StartupPath}\\server\\zone.exe",
+                            WorkingDirectory = $"{Application.StartupPath}\\server",
                             Arguments = "",
                             UseShellExecute = false,
-                            RedirectStandardOutput = false,
+                            RedirectStandardOutput = true,
                             CreateNoWindow = true
                         }
                     };
+
+                    proc.StartInfo.EnvironmentVariables["PATH"] = UtilityLibrary.EnvironmentPath();
                     proc.Start();
+
+                    Task.Run(() => {
+                        while (!proc.StandardOutput.EndOfStream)
+                        {
+                            Console.WriteLine($"zone {i}: {proc.StandardOutput.ReadLine()}");
+                        }
+                        Console.WriteLine($"zone: exited");
+                    });
                     Check();
                 }
             } catch (Exception e)

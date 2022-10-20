@@ -59,5 +59,35 @@ namespace EQEmu_Launcher.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon fippy {
+            get {
+                object obj = ResourceManager.GetObject("fippy", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon fippy_green {
+            get {
+                object obj = ResourceManager.GetObject("fippy_green", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon fippy_red {
+            get {
+                object obj = ResourceManager.GetObject("fippy_red", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

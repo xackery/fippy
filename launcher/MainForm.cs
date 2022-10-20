@@ -1,8 +1,10 @@
 ﻿using EQEmu_Launcher.Manage;
 using Microsoft.Win32;
 using MS.WindowsAPICodePack.Internal;
+using MySqlConnector;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -19,6 +21,7 @@ using System.Windows;
 using System.Windows.Forms;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 //using System.Windows.Shell;
 
 namespace EQEmu_Launcher
@@ -136,10 +139,10 @@ namespace EQEmu_Launcher
             cmbDatabase.SelectedIndex = 0;
             cmbServer.SelectedIndex = 0;
             string dirName = new DirectoryInfo($"{Application.StartupPath}").Name;
-            Text = $"Emu Launcher v{Assembly.GetEntryAssembly().GetName().Version} ({dirName} Folder)";
+            Text = $"Fippy Darklauncher v{Assembly.GetEntryAssembly().GetName().Version} ({dirName} Folder)";
             if (Assembly.GetEntryAssembly().GetName().Version.ToString().Equals("1.0.0.0"))
             {
-                Text = $"Emu Launcher Dev Build ({dirName} Folder)";
+                Text = $"Fippy Darklauncher Dev Build ({dirName} Folder)";
             }
             menuLauncher.Text = Text;
 
@@ -151,39 +154,27 @@ namespace EQEmu_Launcher
                 MessageBox.Show($"Failed to make subfolders: {ex.Message}", "Make Subfolders", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
-
         }
 
         private void MakeSubfolders()
         {
-            string path = Application.StartupPath + "\\server";
-            if (!Directory.Exists(path))
+            string[] paths =
             {
-                Directory.CreateDirectory(path);
-            }
-
-            path = Application.StartupPath + "\\cache";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-            path = Application.StartupPath + "\\db";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-            path = Application.StartupPath + "\\server\\quests";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-            path = Application.StartupPath + "\\server\\maps";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
+                Application.StartupPath + "\\db",
+                Application.StartupPath + "\\bin",
+                Application.StartupPath + "\\cache",
+                Application.StartupPath + "\\server",
+                Application.StartupPath + "\\server\\logs",
+                Application.StartupPath + "\\server\\updates_staged",
+                Application.StartupPath + "\\server\\shared",
+                Application.StartupPath + "\\server\\quests",
+                Application.StartupPath + "\\server\\maps",
+            };
+            foreach (string path in paths) {
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
             }
         }
 
@@ -295,9 +286,9 @@ namespace EQEmu_Launcher
             if (processes.Length > 0)
             {
 
-                StatusLibrary.SetStatusBar("switching to Heidi");
-                WinLibrary.SetForegroundWindow(processes[0].Handle);
-                return;
+                //StatusLibrary.SetStatusBar("switching to Heidi");
+                //WinLibrary.SetForegroundWindow(processes[0].Handle);
+                //return;
             }
             string path = $"{Application.StartupPath}\\db\\heidi\\heidisql.exe";
             if (!File.Exists(path))
@@ -409,6 +400,11 @@ namespace EQEmu_Launcher
             Config.Data["server"]["database"]["port"] = txtPort.Text;
             Config.Data["server"]["database"]["host"] = txtHost.Text;
             Config.Data["server"]["database"]["db"] = txtDatabase.Text;
+            Config.Data["server"]["qsdatabase"]["username"] = txtUsername.Text;
+            Config.Data["server"]["qsdatabase"]["password"] = txtPassword.Text;
+            Config.Data["server"]["qsdatabase"]["port"] = txtPort.Text;
+            Config.Data["server"]["qsdatabase"]["host"] = txtHost.Text;
+            Config.Data["server"]["qsdatabase"]["db"] = txtDatabase.Text;
             Config.Save();
             StatusLibrary.SetStatusBar("eqemu_config.json saved");
         }
@@ -562,6 +558,22 @@ namespace EQEmu_Launcher
                 return;
             }
             Process.Start("explorer.exe", lblDescription.Tag.ToString());
+        }
+
+        private void chkConfigAdvanced_CheckedChanged(object sender, EventArgs e)
+        {
+            grpConfigAdvanced.Enabled = chkConfigAdvanced.Checked;
+        }
+
+        private void txtZoneCount_TextChanged(object sender, EventArgs e)
+        {
+            
+            Regex regex = new Regex(@"([^0-9])");
+            MatchCollection matches = regex.Matches(txtZoneCount.Text);
+            if (matches.Count > 0)
+            {
+                txtZoneCount.Text = matches[0].Groups[0].Value;
+            }
         }
     }
 }

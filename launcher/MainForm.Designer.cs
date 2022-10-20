@@ -52,7 +52,7 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.picZone = new System.Windows.Forms.PictureBox();
             this.button12 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtZoneCount = new System.Windows.Forms.TextBox();
             this.btnZoneStop = new System.Windows.Forms.Button();
             this.btnZoneRestart = new System.Windows.Forms.Button();
             this.btnZoneStart = new System.Windows.Forms.Button();
@@ -107,8 +107,8 @@
             this.lblServer = new System.Windows.Forms.Label();
             this.tabConfig = new System.Windows.Forms.TabPage();
             this.grpConfig = new System.Windows.Forms.GroupBox();
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.chkConfigAdvanced = new System.Windows.Forms.CheckBox();
+            this.grpConfigAdvanced = new System.Windows.Forms.GroupBox();
             this.grpConfigDatabase = new System.Windows.Forms.GroupBox();
             this.btnRandomizePassword = new System.Windows.Forms.Button();
             this.txtDatabase = new System.Windows.Forms.TextBox();
@@ -151,7 +151,6 @@
             this.prgStatus = new System.Windows.Forms.ProgressBar();
             this.btnCancel = new System.Windows.Forms.Button();
             this.lblDescription = new System.Windows.Forms.LinkLabel();
-            this.statusStrip1.SuspendLayout();
             this.tabManage.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picQueryServ)).BeginInit();
@@ -178,7 +177,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.picServer)).BeginInit();
             this.tabConfig.SuspendLayout();
             this.grpConfig.SuspendLayout();
-            this.groupBox9.SuspendLayout();
+            this.grpConfigAdvanced.SuspendLayout();
             this.grpConfigDatabase.SuspendLayout();
             this.grpOptions.SuspendLayout();
             this.grpInfo.SuspendLayout();
@@ -187,8 +186,6 @@
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lblStatusBar});
             this.statusStrip1.Location = new System.Drawing.Point(0, 550);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(577, 22);
@@ -395,7 +392,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.picZone);
             this.groupBox2.Controls.Add(this.button12);
-            this.groupBox2.Controls.Add(this.textBox2);
+            this.groupBox2.Controls.Add(this.txtZoneCount);
             this.groupBox2.Controls.Add(this.btnZoneStop);
             this.groupBox2.Controls.Add(this.btnZoneRestart);
             this.groupBox2.Controls.Add(this.btnZoneStart);
@@ -427,13 +424,14 @@
             this.button12.Text = "Logs";
             this.button12.UseVisualStyleBackColor = true;
             // 
-            // textBox2
+            // txtZoneCount
             // 
-            this.textBox2.Location = new System.Drawing.Point(56, 17);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(20, 20);
-            this.textBox2.TabIndex = 8;
-            this.textBox2.Text = "3";
+            this.txtZoneCount.Location = new System.Drawing.Point(56, 17);
+            this.txtZoneCount.Name = "txtZoneCount";
+            this.txtZoneCount.Size = new System.Drawing.Size(20, 20);
+            this.txtZoneCount.TabIndex = 8;
+            this.txtZoneCount.Text = "3";
+            this.txtZoneCount.TextChanged += new System.EventHandler(this.txtZoneCount_TextChanged);
             // 
             // btnZoneStop
             // 
@@ -1033,7 +1031,8 @@
             // 
             this.grpConfig.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpConfig.Controls.Add(this.groupBox9);
+            this.grpConfig.Controls.Add(this.chkConfigAdvanced);
+            this.grpConfig.Controls.Add(this.grpConfigAdvanced);
             this.grpConfig.Controls.Add(this.lblConfigLink);
             this.grpConfig.Controls.Add(this.grpInfo);
             this.grpConfig.Controls.Add(this.btnConfigLoad);
@@ -1045,27 +1044,28 @@
             this.grpConfig.TabStop = false;
             this.grpConfig.Text = "                                ";
             // 
-            // groupBox9
+            // chkConfigAdvanced
             // 
-            this.groupBox9.Controls.Add(this.checkBox3);
-            this.groupBox9.Controls.Add(this.grpConfigDatabase);
-            this.groupBox9.Controls.Add(this.grpOptions);
-            this.groupBox9.Location = new System.Drawing.Point(6, 78);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(520, 239);
-            this.groupBox9.TabIndex = 16;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "                                                  ";
+            this.chkConfigAdvanced.AutoSize = true;
+            this.chkConfigAdvanced.Location = new System.Drawing.Point(16, 78);
+            this.chkConfigAdvanced.Name = "chkConfigAdvanced";
+            this.chkConfigAdvanced.Size = new System.Drawing.Size(150, 17);
+            this.chkConfigAdvanced.TabIndex = 15;
+            this.chkConfigAdvanced.Text = "Enable Advanced Options";
+            this.chkConfigAdvanced.UseVisualStyleBackColor = true;
+            this.chkConfigAdvanced.CheckedChanged += new System.EventHandler(this.chkConfigAdvanced_CheckedChanged);
             // 
-            // checkBox3
+            // grpConfigAdvanced
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(10, 0);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(150, 17);
-            this.checkBox3.TabIndex = 15;
-            this.checkBox3.Text = "Enable Advanced Options";
-            this.checkBox3.UseVisualStyleBackColor = true;
+            this.grpConfigAdvanced.Controls.Add(this.grpConfigDatabase);
+            this.grpConfigAdvanced.Controls.Add(this.grpOptions);
+            this.grpConfigAdvanced.Enabled = false;
+            this.grpConfigAdvanced.Location = new System.Drawing.Point(7, 98);
+            this.grpConfigAdvanced.Name = "grpConfigAdvanced";
+            this.grpConfigAdvanced.Size = new System.Drawing.Size(520, 239);
+            this.grpConfigAdvanced.TabIndex = 16;
+            this.grpConfigAdvanced.TabStop = false;
+            this.grpConfigAdvanced.Text = "Config";
             // 
             // grpConfigDatabase
             // 
@@ -1080,7 +1080,6 @@
             this.grpConfigDatabase.Controls.Add(this.lblPassword);
             this.grpConfigDatabase.Controls.Add(this.txtUsername);
             this.grpConfigDatabase.Controls.Add(this.lblUsername);
-            this.grpConfigDatabase.Enabled = false;
             this.grpConfigDatabase.Location = new System.Drawing.Point(7, 16);
             this.grpConfigDatabase.Name = "grpConfigDatabase";
             this.grpConfigDatabase.Size = new System.Drawing.Size(508, 100);
@@ -1190,7 +1189,6 @@
             this.grpOptions.Controls.Add(this.txtKey);
             this.grpOptions.Controls.Add(this.btnRandomize);
             this.grpOptions.Controls.Add(this.lblKey);
-            this.grpOptions.Enabled = false;
             this.grpOptions.Location = new System.Drawing.Point(7, 122);
             this.grpOptions.Name = "grpOptions";
             this.grpOptions.Size = new System.Drawing.Size(507, 109);
@@ -1359,48 +1357,48 @@
             this.menuUCS,
             this.menuQueryServ});
             this.contextSystrayMenu.Name = "contextSystrayMenu";
-            this.contextSystrayMenu.Size = new System.Drawing.Size(203, 142);
+            this.contextSystrayMenu.Size = new System.Drawing.Size(210, 142);
             this.contextSystrayMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextSystrayMenu_Opening);
             // 
             // menuLauncher
             // 
             this.menuLauncher.Name = "menuLauncher";
-            this.menuLauncher.Size = new System.Drawing.Size(202, 22);
-            this.menuLauncher.Text = "EQEmu Launcher v1234";
+            this.menuLauncher.Size = new System.Drawing.Size(209, 22);
+            this.menuLauncher.Text = "Fippy Darklauncher v1234";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(199, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(206, 6);
             // 
             // menuSQL
             // 
             this.menuSQL.Name = "menuSQL";
-            this.menuSQL.Size = new System.Drawing.Size(202, 22);
+            this.menuSQL.Size = new System.Drawing.Size(209, 22);
             this.menuSQL.Text = "SQL is running";
             // 
             // menuWorld
             // 
             this.menuWorld.Name = "menuWorld";
-            this.menuWorld.Size = new System.Drawing.Size(202, 22);
+            this.menuWorld.Size = new System.Drawing.Size(209, 22);
             this.menuWorld.Text = "World is running";
             // 
             // menuZone
             // 
             this.menuZone.Name = "menuZone";
-            this.menuZone.Size = new System.Drawing.Size(202, 22);
+            this.menuZone.Size = new System.Drawing.Size(209, 22);
             this.menuZone.Text = "3 of 3 Zones are running";
             // 
             // menuUCS
             // 
             this.menuUCS.Name = "menuUCS";
-            this.menuUCS.Size = new System.Drawing.Size(202, 22);
+            this.menuUCS.Size = new System.Drawing.Size(209, 22);
             this.menuUCS.Text = "UCS is running";
             // 
             // menuQueryServ
             // 
             this.menuQueryServ.Name = "menuQueryServ";
-            this.menuQueryServ.Size = new System.Drawing.Size(202, 22);
+            this.menuQueryServ.Size = new System.Drawing.Size(209, 22);
             this.menuQueryServ.Text = "QueryServ is running";
             // 
             // manageTimer
@@ -1457,11 +1455,9 @@
             this.MinimumSize = new System.Drawing.Size(305, 371);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "EQEmu Launcher";
+            this.Text = "Fippy Darklauncher";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Resize += new System.EventHandler(this.MainForm_Resize);
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
             this.tabManage.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picQueryServ)).EndInit();
@@ -1491,8 +1487,7 @@
             this.tabConfig.ResumeLayout(false);
             this.grpConfig.ResumeLayout(false);
             this.grpConfig.PerformLayout();
-            this.groupBox9.ResumeLayout(false);
-            this.groupBox9.PerformLayout();
+            this.grpConfigAdvanced.ResumeLayout(false);
             this.grpConfigDatabase.ResumeLayout(false);
             this.grpConfigDatabase.PerformLayout();
             this.grpOptions.ResumeLayout(false);
@@ -1538,7 +1533,7 @@
         private System.Windows.Forms.Label lblUCS;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button button12;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox txtZoneCount;
         private System.Windows.Forms.Button btnZoneStop;
         private System.Windows.Forms.Button btnZoneRestart;
         private System.Windows.Forms.Button btnZoneStart;
@@ -1606,8 +1601,8 @@
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Label lblServer;
         private System.Windows.Forms.CheckBox chkContentAdvanced;
-        private System.Windows.Forms.GroupBox groupBox9;
-        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.GroupBox grpConfigAdvanced;
+        private System.Windows.Forms.CheckBox chkConfigAdvanced;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.GroupBox grpContent;
         private System.Windows.Forms.Button btnContentDownloadAll;

@@ -22,6 +22,7 @@ namespace EQEmu_Launcher
         World, // manage section used for world status text
         UCS, // manage section used for ucs status text
         QueryServ, // manage section used for queryServ status text
+        SharedMemory, // manage section used for sharedMemory status text
         Database, // checkup section for database prep work
     }
 

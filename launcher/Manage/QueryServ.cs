@@ -30,23 +30,35 @@ namespace EQEmu_Launcher.Manage
         {
             try
             {
-                StatusLibrary.SetStatusBar($"starting QueryServ");
+                StatusLibrary.SetStatusBar($"Starting QueryServ");
                 var proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = $"{Application.StartupPath}\\server\\queryserv.exe",
+                        WorkingDirectory = $"{Application.StartupPath}\\server",
                         Arguments = "",
                         UseShellExecute = false,
-                        RedirectStandardOutput = false,
+                        RedirectStandardOutput = true,
                         CreateNoWindow = true
                     }
                 };
+
+                proc.StartInfo.EnvironmentVariables["PATH"] = UtilityLibrary.EnvironmentPath();
                 proc.Start();
+
+                Task.Run(() => {
+                    while (!proc.StandardOutput.EndOfStream)
+                    {
+                        Console.WriteLine($"queryServ: {proc.StandardOutput.ReadLine()}");
+                    }
+                    Console.WriteLine($"queryServ: exited");
+                });
                 Check();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
-                string result = $"failed QueryServ start \"server\\queryserv.exe\": {e.Message}";
+                string result = $"Failed to start QueryServ\n{e.Message}";
                 StatusLibrary.SetStatusBar(result);
                 MessageBox.Show(result, "QueryServ Start", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

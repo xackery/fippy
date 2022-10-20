@@ -44,11 +44,21 @@ namespace EQEmu_Launcher
                     FileName = $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqld.exe",
                     Arguments = "--console",
                     UseShellExecute = false,
-                    RedirectStandardOutput = false,
+                    RedirectStandardOutput = true,
                     CreateNoWindow = true
                 }
             };
+
             proc.Start();
+            Task.Run(() =>
+            {
+                while (!proc.StandardOutput.EndOfStream)
+                {
+                    string line = proc.StandardOutput.ReadLine();
+                    Console.WriteLine($"sql: {line}");
+                }
+            });
+           
             Check();
         }
 

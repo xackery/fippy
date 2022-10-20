@@ -10,12 +10,19 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.IO.Compression;
+using MySqlConnector;
+using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace EQEmu_Launcher
 {
     /* General Utility Methods */
     class UtilityLibrary
     {
+        public static string EnvironmentPath()
+        {
+            return $"{Environment.GetEnvironmentVariable("PATH")};{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin";
+        }
 
         public static async Task<int> Download(int startProgress, int endProgress, string source, string outDir, string fileName, int sizeMB)
         {
@@ -23,9 +30,16 @@ namespace EQEmu_Launcher
             StatusLibrary.SetProgress(startProgress);
             string path = $"{Application.StartupPath}\\{outDir}\\{fileName}";
 
+            string outFullDir = path.Substring(0, path.LastIndexOf("\\"));
+            if (!Directory.Exists(outFullDir))
+            {
+                Console.WriteLine($"Creating directory {outFullDir}");
+                Directory.CreateDirectory(outFullDir);
+            }
+
             if (File.Exists(path))
             {
-                StatusLibrary.SetStatusBar($"Skipping \\{outDir}\\{fileName} download, already exists");
+                StatusLibrary.SetStatusBar($"Skipping {outDir}\\{fileName} download, already exists");
                 return endProgress;
             }
 
@@ -53,7 +67,7 @@ namespace EQEmu_Launcher
                 }
                 result = $"Failed to download {fileName}: {ex.Message}";
                 StatusLibrary.SetStatusBar(result);
-                MessageBox.Show(result, "Download {fileName}", MessageBoxButtons.OK, MessageBoxIcon.Error);                    
+                MessageBox.Show(result, "Download {fileName}", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return -1;
             }
             StatusLibrary.SetStatusBar($"Downloaded {fileName} successfully");
@@ -64,19 +78,18 @@ namespace EQEmu_Launcher
         public static async Task<int> Extract(int startProgress, int endProgress, string srcDir, string fileName, string outDir, string targetCheckPath, int sizeMB)
         {
             StatusLibrary.SetProgress(startProgress);
-            StatusLibrary.SetStatusBar($"Extracting {fileName} ({sizeMB} MB) to {outDir}...");
             string srcPath = $"{Application.StartupPath}\\{srcDir}\\{fileName}";
-            
+
             try
             {
                 if (File.Exists(targetCheckPath))
                 {
-                    Console.WriteLine("File already exists, skipping extract");
-                    StatusLibrary.SetStatusBar($"Extracted {fileName} successfully (skipped)");
+                    StatusLibrary.SetStatusBar($"Skipping {srcDir}\\{fileName} extract, already exists");
                     StatusLibrary.SetProgress(endProgress);
                     return endProgress;
                 }
 
+                StatusLibrary.SetStatusBar($"Extracting {fileName} ({sizeMB} MB) to {outDir}...");
                 if (!Directory.Exists($"{Application.StartupPath}\\{outDir}"))
                 {
                     Console.WriteLine($"{Application.StartupPath}\\{outDir} doesn't exist, creating it");
@@ -109,7 +122,7 @@ namespace EQEmu_Launcher
                         StatusLibrary.SetProgress(value);
                     }
 
-                    string zipPath = entry.FullName.Replace("/", "\\");
+                    string zipPath = entry.FullName.Replace("/", "\\").Replace("EQEmuMaps-master\\", "").Replace("projecteqquests-master\\", "");
                     if (zipPath.StartsWith("c\\"))
                     {
                         zipPath = zipPath.Substring(2);
@@ -119,11 +132,16 @@ namespace EQEmu_Launcher
                         continue;
                     }
                     string outPath = $"{Application.StartupPath}\\{outDir}\\{zipPath}";
-                                        
-                    if (zipPath.EndsWith("\\"))
+
+                    string zipDir = outPath.Substring(0, outPath.LastIndexOf("\\"));
+                    if (!Directory.Exists(zipDir))
                     {
-                        Console.WriteLine($"Creating directory to {outPath}");
-                        Directory.CreateDirectory(outPath);
+                        Console.WriteLine($"Creating directory {zipDir}");
+                        Directory.CreateDirectory(zipDir);
+                    }
+
+                    if (outPath.EndsWith("\\"))
+                    {
                         continue;
                     }
                     if (isReportNeeded)
@@ -131,6 +149,7 @@ namespace EQEmu_Launcher
                         StatusLibrary.SetStatusBar($"Extracting {outDir}\\{zipPath}...");
                         Console.WriteLine($"Extracting to {outPath}");
                     }
+
                     Stream zipStream = entry.Open();
                     FileStream fileStream = File.Create(outPath);
                     await zipStream.CopyToAsync(fileStream);
@@ -144,6 +163,254 @@ namespace EQEmu_Launcher
                 return -1;
             }
             StatusLibrary.SetStatusBar($"Extracted {fileName} successfully");
+            StatusLibrary.SetProgress(endProgress);
+            return endProgress;
+        }
+
+        public static async Task<int> SourceFromDatabase2(int startProgress, int endProgress, string srcDir, string fileName)
+        {
+
+            try
+            {
+                StatusLibrary.SetProgress(startProgress);
+
+                string path = $"{Application.StartupPath}\\server\\perl\\perl\\bin\\perl.exe";
+                var proc = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        WorkingDirectory = $"{Application.StartupPath}\\server",
+                        FileName = path,
+                        Arguments = $"eqemu_server.pl source_peq_db",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true,
+                    }
+                };
+
+                proc.StartInfo.EnvironmentVariables["PATH"] = EnvironmentPath();
+
+                Console.WriteLine($"Running command {path} {proc.StartInfo.Arguments}");
+                proc.Start();
+                while (!proc.StandardOutput.EndOfStream)
+                {
+                    string line = proc.StandardOutput.ReadLine();
+                    Console.WriteLine($"fetch peq: {line}");
+                }                
+                StatusLibrary.SetStatusBar($"Injected successfully");
+                StatusLibrary.SetProgress(endProgress);
+                return endProgress;
+            }
+            catch (Exception ex)
+            {
+                string result = $"Failed to inject: {ex.Message}";
+                StatusLibrary.SetStatusBar(result);
+                MessageBox.Show(result, $"Inject {fileName}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return -1;
+            }
+        }
+
+        public static async Task<int> SourceDatabase(int startProgress, int endProgress, string srcDir, string fileName)
+        {
+            StatusLibrary.SetProgress(startProgress);
+            string srcPath = $"{Application.StartupPath}\\{srcDir}\\{fileName}";
+
+            try
+            {
+                bool isDBCreated = false;
+                string dbName = Config.Data?["server"]?["database"]?["db"];
+                string user = "root";
+                string password = Config.Data?["server"]?["database"]?["password"];
+                Console.WriteLine($"checking if {dbName} exists");
+                MySqlConnection connection = new MySqlConnection($"Server=localhost;User ID={user};Password={password}"); //;Database={Config.Data?["server"]?["database"]?["db"]}
+                await connection.OpenAsync(StatusLibrary.CancelToken());
+                
+                MySqlCommand command = new MySqlCommand("SHOW databases;", connection);
+
+                var reader = await command.ExecuteReaderAsync(StatusLibrary.CancelToken());                
+                while (await reader.ReadAsync(StatusLibrary.CancelToken()))
+                {
+                    string line = reader.GetString(0);
+                    if (line.Equals(dbName))
+                    {
+                        isDBCreated = true;
+                        break;
+                    }
+                }
+                reader.Close();
+
+                if (isDBCreated)
+                {
+                    connection.Close();
+                    StatusLibrary.SetStatusBar($"Skipping source database {fileName}, already exists");
+                    StatusLibrary.SetProgress(endProgress);
+                    return endProgress;
+                }
+
+                command = new MySqlCommand($"CREATE DATABASE {dbName};", connection);
+                reader = await command.ExecuteReaderAsync(StatusLibrary.CancelToken());
+                while (await reader.ReadAsync())
+                {
+                    string line = reader.GetString(0);
+                    Console.WriteLine(line);
+                }
+                reader.Close();
+                connection.Close();
+
+                ZipArchive archive = ZipFile.OpenRead(srcPath);
+                int entryCount = archive.Entries.Count;
+                int entryReportStep = 1;
+                int entryReportCounter = 0;
+                if (entryCount > 100)
+                {
+                    entryReportStep = 10;
+                }
+
+
+                List<ZipArchiveEntry> entries = new List<ZipArchiveEntry>();
+                
+                for (int i = 0; i < entryCount; i++)
+                {
+                    ZipArchiveEntry entry = archive.Entries[i];
+                    string zipPath = entry.FullName.Replace("/", "\\").Replace("peq-dump\\", "");
+
+                    if (zipPath.Contains("create_all_tables.sql")) {
+                        entries.Insert(0, entry);
+                    }
+
+                    if (zipPath.Contains("create_tables_content") ||
+                       zipPath.Contains("create_tables_login") ||
+                       zipPath.Contains("create_tables_player") ||
+                       zipPath.Contains("create_tables_queryserv") ||
+                       zipPath.Contains("create_tables_state") ||
+                       zipPath.Contains("create_tables_system")
+                       )
+                    {
+                        continue;
+                    }
+                    entries.Add(entry);
+                }
+
+                for (int i = 0; i < entries.Count; i++)
+                {
+                    entryReportCounter++;
+                    bool isReportNeeded = false;
+                    if (entryReportCounter >= entryReportStep)
+                    {
+                        isReportNeeded = true;
+                        entryReportCounter = 0;
+                    }
+                    
+                    ZipArchiveEntry entry = entries[i];
+
+                    int value = startProgress + (int)((endProgress - startProgress) * (float)((float)i / (float)entryCount));
+                    if (isReportNeeded)
+                    {
+                        StatusLibrary.SetProgress(value);
+                    }
+
+                    string zipPath = entry.FullName.Replace("/", "\\").Replace("peq-dump\\", "");
+                    if (zipPath.StartsWith("c\\"))
+                    {
+                        zipPath = zipPath.Substring(2);
+                    }
+                    if (zipPath.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    string outPath = $"{Application.StartupPath}\\{srcDir}\\{zipPath}";
+
+                    string zipDir = outPath.Substring(0, outPath.LastIndexOf("\\"));
+                    if (!Directory.Exists(zipDir))
+                    {
+                        Console.WriteLine($"Creating directory {zipDir}");
+                        Directory.CreateDirectory(zipDir);
+                    }
+
+                    if (outPath.EndsWith("\\"))
+                    {
+                        continue;
+                    }
+                    if (isReportNeeded)
+                    {
+                        StatusLibrary.SetStatusBar($"Injecting to SQL {zipPath}...");
+                        Console.WriteLine($"Injecting to SQL {zipPath}");
+                    }
+
+                    entry.ExtractToFile(outPath);
+                    string path = $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqld.exe";
+                    var proc = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = path,
+                            Arguments = $"-u {user} -p{password} {dbName} < {outPath}",
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            CreateNoWindow = true
+                        }
+                    };
+                    proc.Start();
+                    while (!proc.StandardOutput.EndOfStream)
+                    {
+                        string line = proc.StandardOutput.ReadLine();
+                        Console.WriteLine($"sql: {line}");
+                    }
+
+                    /*
+                    StreamReader streamReader = new StreamReader(zipStream, Encoding.ASCII, true);
+                    string data = await streamReader.ReadToEndAsync();
+
+
+                    connection = new MySqlConnection($"Server=localhost;User ID=root;Password={Config.Data?["server"]?["database"]?["password"]};Database={dbName}");
+                    await connection.OpenAsync(StatusLibrary.CancelToken());
+                    
+                    command = new MySqlCommand(data, connection);
+                    await command.ExecuteNonQueryAsync(StatusLibrary.CancelToken());
+                    connection.Close();/*
+
+                    /*
+                    StringReader lineReader = new StringReader(data);
+                    while (true)
+                    {
+                        string line = await lineReader.ReadLineAsync();
+                        if (line == null)
+                        {
+                            break;
+                        }
+
+                        if (line == "")
+                        {
+                            continue;
+                        }
+                        line = line.Trim();
+
+                        if (line.StartsWith("--") || line.StartsWith("/*"))
+                        {
+                            continue;
+                        }
+
+                        command = new MySqlCommand(line, connection);
+                        reader = await command.ExecuteReaderAsync();
+                        while (await reader.ReadAsync())
+                        {
+                            Console.WriteLine(reader.GetString(0));
+                        }
+                        reader.Close();
+                    }
+                    zipStream.Close();
+                    */
+                }
+            }
+            catch (Exception ex)
+            {
+                string result = $"Failed to inject {srcPath}: {ex.Message}";
+                StatusLibrary.SetStatusBar(result);
+                MessageBox.Show(result, $"Inject {fileName}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return -1;
+            }
+            StatusLibrary.SetStatusBar($"Injected {fileName} successfully");
             StatusLibrary.SetProgress(endProgress);
             return endProgress;
         }

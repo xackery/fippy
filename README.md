@@ -1,5 +1,5 @@
-# emulauncher
-Portable EQEmu Server Launcher/Manager
+# Fippy Darklauncher
+Fippy Darklauncher - a Portable EQEmu Server Launcher/Manager
 
 https://dotnet.microsoft.com/en-us/download/dotnet-framework/thank-you/net45-web-installer
 

@@ -30,19 +30,32 @@ namespace EQEmu_Launcher.Manage
         {
             try
             {
+                SharedMemory.Start();
+
                 StatusLibrary.SetStatusBar($"starting world");
                 var proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = $"{Application.StartupPath}\\server\\world.exe",
+                        WorkingDirectory = $"{Application.StartupPath}\\server",
                         Arguments = "",
                         UseShellExecute = false,
-                        RedirectStandardOutput = false,
+                        RedirectStandardOutput = true,
                         CreateNoWindow = true
                     }
                 };
+
+                proc.StartInfo.EnvironmentVariables["PATH"] = UtilityLibrary.EnvironmentPath();
                 proc.Start();
+
+                Task.Run(() => {
+                    while (!proc.StandardOutput.EndOfStream)
+                    {
+                        Console.WriteLine($"world: {proc.StandardOutput.ReadLine()}");
+                    }
+                    Console.WriteLine($"world: exited");
+                });
                 Check();
             } catch (Exception e)
             {

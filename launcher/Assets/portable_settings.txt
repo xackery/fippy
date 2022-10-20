@@ -88,7 +88,7 @@ SQL Attr Variable Background<|||>3<|||>536870911
 SQL Attr Variable Style<|||>3<|||>0
 SQLColMatchingBraceForeground<|||>1<|||>$0028EFFF
 SQLColMatchingBraceBackground<|||>1<|||>$004D513B
-Theme<|||>1<|||>Windows10 SlateGray
+Theme<|||>1<|||>Windows10 Dark
 FieldColor_Numeric<|||>3<|||>16750469
 FieldColor_Real<|||>3<|||>13663613
 FieldColor_Text<|||>3<|||>7591283
@@ -97,3 +97,4 @@ FieldColor_Datetime<|||>3<|||>7566281
 FieldColor_Spatial<|||>3<|||>13553267
 FieldColor_Other<|||>3<|||>7586241
 FieldEditor_Set<|||>3<|||>1
+MainWinMaximized<|||>3<|||>1

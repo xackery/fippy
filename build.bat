@@ -1,5 +1,5 @@
 @echo off
 echo building....
-"C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\msbuild.exe" /property:Configuration=Release;Version=1.0.7.0
-copy launcher\bin\Release\emulauncher.exe bin
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\msbuild.exe" /property:Configuration=Release;Version=1.0.8.0
+copy launcher\bin\Release\emulauncher.exe bin\fippy.exe
 
