@@ -13,6 +13,8 @@ using System.IO.Compression;
 using MySqlConnector;
 using System.Diagnostics;
 using System.Xml.Linq;
+using System.Net.Sockets;
+using YamlDotNet.Core.Tokens;
 
 namespace EQEmu_Launcher
 {
@@ -33,7 +35,7 @@ namespace EQEmu_Launcher
             string outFullDir = path.Substring(0, path.LastIndexOf("\\"));
             if (!Directory.Exists(outFullDir))
             {
-                Console.WriteLine($"Creating directory {outFullDir}");
+                StatusLibrary.Log($"Creating directory {outFullDir}");
                 Directory.CreateDirectory(outFullDir);
             }
 
@@ -52,7 +54,7 @@ namespace EQEmu_Launcher
                 client.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) => {
                     StatusLibrary.SetProgress(startProgress + (int)((endProgress - startProgress) * (float)((float)e.ProgressPercentage / (float)100)));
                 };
-                Console.WriteLine($"download source: {source}, destination: {path}");
+                StatusLibrary.Log($"download source: {source}, destination: {path}");
                 await client.DownloadFileTaskAsync(source, path);
             }
             catch (Exception ex)
@@ -92,7 +94,7 @@ namespace EQEmu_Launcher
                 StatusLibrary.SetStatusBar($"Extracting {fileName} ({sizeMB} MB) to {outDir}...");
                 if (!Directory.Exists($"{Application.StartupPath}\\{outDir}"))
                 {
-                    Console.WriteLine($"{Application.StartupPath}\\{outDir} doesn't exist, creating it");
+                    StatusLibrary.Log($"{Application.StartupPath}\\{outDir} doesn't exist, creating it");
                     Directory.CreateDirectory($"{Application.StartupPath}\\{outDir}");
                 }
 
@@ -136,7 +138,7 @@ namespace EQEmu_Launcher
                     string zipDir = outPath.Substring(0, outPath.LastIndexOf("\\"));
                     if (!Directory.Exists(zipDir))
                     {
-                        Console.WriteLine($"Creating directory {zipDir}");
+                        StatusLibrary.Log($"Creating directory {zipDir}");
                         Directory.CreateDirectory(zipDir);
                     }
 
@@ -147,7 +149,7 @@ namespace EQEmu_Launcher
                     if (isReportNeeded)
                     {
                         StatusLibrary.SetStatusBar($"Extracting {outDir}\\{zipPath}...");
-                        Console.WriteLine($"Extracting to {outPath}");
+                        StatusLibrary.Log($"Extracting to {outPath}");
                     }
 
                     Stream zipStream = entry.Open();
@@ -190,13 +192,67 @@ namespace EQEmu_Launcher
 
                 proc.StartInfo.EnvironmentVariables["PATH"] = EnvironmentPath();
 
-                Console.WriteLine($"Running command {path} {proc.StartInfo.Arguments}");
+                StatusLibrary.Log($"Running command {path} {proc.StartInfo.Arguments}");
                 proc.Start();
+                StatusLibrary.SetStatusBar("Downloading latest PEQ Database...");
                 while (!proc.StandardOutput.EndOfStream)
                 {
+                    if (StatusLibrary.CancelToken().IsCancellationRequested)
+                    {
+                        StatusLibrary.Log("Killing peq downloader perl script, cancellation token invoked");
+                        var process = Process.GetProcessById(proc.Id);
+                        process.Kill();
+                        return -1;
+                    }
                     string line = proc.StandardOutput.ReadLine();
-                    Console.WriteLine($"peq: {line}");
-                }                
+                    StatusLibrary.Log($"peq: {line}");
+                    
+                    if (line.Contains("create_tables_content"))
+                    {
+                        StatusLibrary.SetStatusBar("Database sourcing [create_tables_content.sql]...");
+                        StatusLibrary.SetProgress(startProgress + (int)((endProgress - startProgress) * 0.2));
+                    }
+                    if (line.Contains("create_tables_login.sql"))
+                    {
+                        StatusLibrary.SetStatusBar("Database sourcing [create_tables_login.sql]...");
+                        StatusLibrary.SetProgress(startProgress + (int)((endProgress - startProgress) * 0.5));
+                    }
+                    if (line.Contains("create_tables_player.sql"))
+                    {
+                        StatusLibrary.SetStatusBar("Database sourcing [create_tables_player.sql]...");
+                        StatusLibrary.SetProgress(startProgress + (int)((endProgress - startProgress) * 0.6));
+                    }
+                    if (line.Contains("create_tables_queryserv.sql"))
+                    {
+                        StatusLibrary.SetStatusBar("Database sourcing [create_tables_queryserv.sql]...");
+                        StatusLibrary.SetProgress(startProgress + (int)((endProgress - startProgress) * 0.8));
+                    }
+                    if (line.Contains("create_tables_state.sql"))
+                    {
+                        StatusLibrary.SetStatusBar("Database sourcing [create_tables_state.sql]...");
+                        StatusLibrary.SetProgress(startProgress + (int)((endProgress - startProgress) * 0.9));
+                    }
+                    if (line.Contains("create_tables_system.sql"))
+                    {
+                        StatusLibrary.SetStatusBar("Database sourcing [create_tables_system.sql]...");
+                        StatusLibrary.SetProgress(startProgress + (int)((endProgress-startProgress) * 0.95));
+                    }
+                    //ERROR 1067 (42000) at line 54: Invalid default value for 'report_datetime'
+                    if (line.Contains("ERROR"))
+                    {
+
+                    }
+                }
+                if (StatusLibrary.CancelToken().IsCancellationRequested)
+                {
+                    StatusLibrary.Log("Killing peq downloader perl script, cancellation token invoked");
+                    var process = Process.GetProcessById(proc.Id);
+                    if (process != null)
+                    {
+                        process.Kill();
+                        return -1;
+                    }
+                }
                 StatusLibrary.SetStatusBar($"Injected successfully");
                 StatusLibrary.SetProgress(endProgress);
                 return endProgress;
@@ -221,7 +277,7 @@ namespace EQEmu_Launcher
                 string dbName = Config.Data?["server"]?["database"]?["db"];
                 string user = "root";
                 string password = Config.Data?["server"]?["database"]?["password"];
-                Console.WriteLine($"checking if {dbName} exists");
+                StatusLibrary.Log($"checking if {dbName} exists");
                 MySqlConnection connection = new MySqlConnection($"Server=localhost;User ID={user};Password={password}"); //;Database={Config.Data?["server"]?["database"]?["db"]}
                 await connection.OpenAsync(StatusLibrary.CancelToken());
                 
@@ -252,7 +308,7 @@ namespace EQEmu_Launcher
                 while (await reader.ReadAsync())
                 {
                     string line = reader.GetString(0);
-                    Console.WriteLine(line);
+                    StatusLibrary.Log(line);
                 }
                 reader.Close();
                 connection.Close();
@@ -324,7 +380,7 @@ namespace EQEmu_Launcher
                     string zipDir = outPath.Substring(0, outPath.LastIndexOf("\\"));
                     if (!Directory.Exists(zipDir))
                     {
-                        Console.WriteLine($"Creating directory {zipDir}");
+                        StatusLibrary.Log($"Creating directory {zipDir}");
                         Directory.CreateDirectory(zipDir);
                     }
 
@@ -335,7 +391,7 @@ namespace EQEmu_Launcher
                     if (isReportNeeded)
                     {
                         StatusLibrary.SetStatusBar($"Injecting to SQL {zipPath}...");
-                        Console.WriteLine($"Injecting to SQL {zipPath}");
+                        StatusLibrary.Log($"Injecting to SQL {zipPath}");
                     }
 
                     entry.ExtractToFile(outPath);
@@ -355,52 +411,8 @@ namespace EQEmu_Launcher
                     while (!proc.StandardOutput.EndOfStream)
                     {
                         string line = proc.StandardOutput.ReadLine();
-                        Console.WriteLine($"sql: {line}");
+                        StatusLibrary.Log($"sql: {line}");
                     }
-
-                    /*
-                    StreamReader streamReader = new StreamReader(zipStream, Encoding.ASCII, true);
-                    string data = await streamReader.ReadToEndAsync();
-
-
-                    connection = new MySqlConnection($"Server=localhost;User ID=root;Password={Config.Data?["server"]?["database"]?["password"]};Database={dbName}");
-                    await connection.OpenAsync(StatusLibrary.CancelToken());
-                    
-                    command = new MySqlCommand(data, connection);
-                    await command.ExecuteNonQueryAsync(StatusLibrary.CancelToken());
-                    connection.Close();/*
-
-                    /*
-                    StringReader lineReader = new StringReader(data);
-                    while (true)
-                    {
-                        string line = await lineReader.ReadLineAsync();
-                        if (line == null)
-                        {
-                            break;
-                        }
-
-                        if (line == "")
-                        {
-                            continue;
-                        }
-                        line = line.Trim();
-
-                        if (line.StartsWith("--") || line.StartsWith("/*"))
-                        {
-                            continue;
-                        }
-
-                        command = new MySqlCommand(line, connection);
-                        reader = await command.ExecuteReaderAsync();
-                        while (await reader.ReadAsync())
-                        {
-                            Console.WriteLine(reader.GetString(0));
-                        }
-                        reader.Close();
-                    }
-                    zipStream.Close();
-                    */
                 }
             }
             catch (Exception ex)
@@ -490,6 +502,59 @@ namespace EQEmu_Launcher
             return UtilityLibrary.GetMD5(files[0].FullName);
         }
 
-        
+        public static void TelnetSend(string message)
+        {
+            StatusLibrary.Log("Connecting to telnet...");
+            using (TcpClient client = new TcpClient("127.0.0.1", 9000))
+            {
+                using (NetworkStream stream = client.GetStream())
+                {
+                    stream.ReadTimeout = 6000;
+                    stream.WriteTimeout = 6000;
+
+                    byte[] buf = new byte[1024];
+                    int bufLen = stream.Read(buf, 0, buf.Length);
+                    
+                    string data = Encoding.ASCII.GetString(buf, 0, bufLen);
+                    if (!data.Contains("Establishing connection"))
+                    {
+                        StatusLibrary.Log($"Unexpected telnet (wanted establishing connection): {data}");
+                    }
+                    
+                    bufLen = stream.Read(buf, 0, buf.Length);
+                    data = Encoding.ASCII.GetString(buf, 0, bufLen);
+                    if (!data.Contains("Connection established from localhost, assuming admin"))
+                    {
+                        StatusLibrary.Log($"Unexpected telnet (wanted admin note): {data}");
+                    }
+
+                    bufLen = stream.Read(buf, 0, buf.Length);
+                    data = Encoding.ASCII.GetString(buf, 0, bufLen);
+                    if (!data.Contains("Connection established from localhost, assuming admin"))
+                    {
+                        StatusLibrary.Log($"Unexpected telnet (wanted admin note): {data}");
+                    }
+                    
+                    stream.Write(Encoding.ASCII.GetBytes("echo off\n"), 0, 8);
+                    bufLen = stream.Read(buf, 0, buf.Length);
+                    data = Encoding.ASCII.GetString(buf, 0, bufLen);
+                    if (!data.Contains(">"))
+                    {
+                        StatusLibrary.Log($"Unexpected telnet (wanted >): {data}");
+                    }
+                    stream.Write(Encoding.ASCII.GetBytes(message+"\n"), 0, message.Length+1);
+                    bufLen = stream.Read(buf, 0, buf.Length);
+                    data = Encoding.ASCII.GetString(buf, 0, bufLen);
+                    if (!data.Contains(">"))
+                    {
+                        StatusLibrary.Log($"Unexpected telnet (wanted >): {data}");
+                    }
+                    Thread.Sleep(1000);
+                    bufLen = stream.Read(buf, 0, buf.Length);
+                    data = Encoding.ASCII.GetString(buf, 0, bufLen);
+                    StatusLibrary.Log($"Telnet response: {data}");
+                }
+            }
+        }
     }
 }

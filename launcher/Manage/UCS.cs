@@ -50,9 +50,9 @@ namespace EQEmu_Launcher.Manage
                 Task.Run(() => {
                     while (!proc.StandardOutput.EndOfStream)
                     {
-                        Console.WriteLine($"ucs: {proc.StandardOutput.ReadLine()}");
+                        StatusLibrary.Log($"UCS: {proc.StandardOutput.ReadLine()}");
                     }
-                    Console.WriteLine($"ucs: exited");
+                    StatusLibrary.Log($"ucs: exited");
                 });
                 Check();
             }
@@ -71,10 +71,10 @@ namespace EQEmu_Launcher.Manage
             {
 
                 Process[] workers = Process.GetProcessesByName("UCS");
-                Console.WriteLine($"found {workers.Length} UCS instances");
+                StatusLibrary.Log($"Found {workers.Length} UCS instances");
                 foreach (Process worker in workers)
                 {
-                    Console.WriteLine($"stopping UCS pid {worker.Id}");
+                    StatusLibrary.Log($"Stopping UCS pid {worker.Id}");
                     worker.Kill();
                     worker.WaitForExit();
                     worker.Dispose();

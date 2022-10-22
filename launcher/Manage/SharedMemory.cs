@@ -49,9 +49,9 @@ namespace EQEmu_Launcher.Manage
 
                 while (!proc.StandardOutput.EndOfStream)
                 {
-                    Console.WriteLine($"sharedMemory: {proc.StandardOutput.ReadLine()}");
+                    StatusLibrary.Log($"SharedMemory: {proc.StandardOutput.ReadLine()}");
                 }
-                Console.WriteLine($"sharedMemory: exited");
+                StatusLibrary.Log($"sharedMemory: exited");
                 Check();
             } catch (Exception e)
             {
@@ -68,22 +68,22 @@ namespace EQEmu_Launcher.Manage
             {
 
                 Process[] workers = Process.GetProcessesByName("sharedMemory");
-                Console.WriteLine($"found {workers.Length} sharedMemory instances");
+                StatusLibrary.Log($"Found {workers.Length} sharedMemory instances");
                 foreach (Process worker in workers)
                 {
-                    Console.WriteLine($"stopping sharedMemory pid {worker.Id}");
+                    StatusLibrary.Log($"Stopping sharedMemory pid {worker.Id}");
                     worker.Kill();
                     worker.WaitForExit();
                     worker.Dispose();
                     sharedMemoryCount++;
                 }
-                if (sharedMemoryCount == 0) StatusLibrary.SetStatusBar("sharedMemory not found to stop");
-                else StatusLibrary.SetStatusBar($"stopped {sharedMemoryCount} sharedMemory instances");
+                if (sharedMemoryCount == 0) StatusLibrary.SetStatusBar("SharedMemory not found to stop");
+                else StatusLibrary.SetStatusBar($"Stopped {sharedMemoryCount} sharedMemory instances");
             }
             catch (Exception e)
             {
                 string result = $"failed to stop sharedMemory: {e.Message}";
-                StatusLibrary.SetStatusBar("sharedMemory stop failed");
+                StatusLibrary.SetStatusBar("SharedMemory stop failed");
                 MessageBox.Show(result, "SharedMemory Stop", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

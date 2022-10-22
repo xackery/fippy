@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
+using System.IO;
 using System.Net.NetworkInformation;
+using System.Reflection;
+using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using YamlDotNet.Core.Tokens;
 
@@ -10,11 +14,7 @@ namespace EQEmu_Launcher
 {
 
     enum StatusType
-    {        
-        Lua, // checkup section for lua prep work
-        Quest, // checkup section for quest prep work
-        Perl, // checkup section for perl prep work
-        Map, // checkup section for maps prep work
+    {
         Server, // checkup section for server binaries prep work
         StatusBar, // controls the bottom status bar text
         SQL, // manage section used for sql status text
@@ -41,11 +41,38 @@ namespace EQEmu_Launcher
         public delegate void DescriptionHandler(string value);
         static event DescriptionHandler descriptionChange;
 
+        static FileStream logw;
 
         /// <summary>
         /// When the UI is locked/unlocked, cancellation is fired. This is a thread safe operation to access
         /// </summary>
         static CancellationTokenSource cancelTokenSource;
+
+        public static void InitLog() 
+        {
+            mux.WaitOne();
+            using (var logw = File.Create("fippy.log"))
+            {
+                string dirName = new DirectoryInfo($"{Application.StartupPath}").Name;
+                string rawMessage = $"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ff")} INFO Fippy Darklauncher v{Assembly.GetEntryAssembly().GetName().Version} ({dirName} Folder)\n";
+                logw.Write(Encoding.ASCII.GetBytes(rawMessage), 0, rawMessage.Length);
+                logw.Flush();                               
+            }
+            mux.ReleaseMutex();
+        }
+
+        public static void Log(string message)
+        {   
+            mux.WaitOne();
+            using (var logw = File.Open("fippy.log", FileMode.Append))
+            {
+                string rawMessage = $"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ff")} INFO {message}\n";
+                logw.Write(Encoding.ASCII.GetBytes(rawMessage), 0, rawMessage.Length);
+                logw.Flush();
+            }
+            Console.WriteLine(message);
+            mux.ReleaseMutex();
+        }
 
         public static void Initialize()
         {
@@ -104,7 +131,7 @@ namespace EQEmu_Launcher
         public static void UnlockUI()
         {
             mux.WaitOne();
-            Console.WriteLine("UnlockUI called");
+            StatusLibrary.Log("UnlockUI called");
             if (cancelTokenSource != null)
             {
                 cancelTokenSource.Cancel();
@@ -119,6 +146,12 @@ namespace EQEmu_Launcher
         /// </summary>
         public static CancellationToken CancelToken()
         {
+            if (cancelTokenSource == null)
+            {
+                mux.WaitOne();
+                cancelTokenSource = new CancellationTokenSource();
+                mux.ReleaseMutex();
+            }
             return cancelTokenSource.Token;
         }
 

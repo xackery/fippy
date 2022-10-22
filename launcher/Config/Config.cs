@@ -23,7 +23,7 @@ namespace EQEmu_Launcher
                 Data = JObject.Parse(content);
             } catch (Exception ex)
             {
-                Console.WriteLine($"config load failed: {ex.Message}");
+                StatusLibrary.Log($"Config load failed: {ex.Message}");
             }
         }
 
@@ -35,7 +35,7 @@ namespace EQEmu_Launcher
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"config save failed: {ex.Message}");
+                StatusLibrary.Log($"Config save failed: {ex.Message}");
             }
         }
 

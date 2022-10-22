@@ -53,9 +53,9 @@ namespace EQEmu_Launcher.Manage
                     Task.Run(() => {
                         while (!proc.StandardOutput.EndOfStream)
                         {
-                            Console.WriteLine($"zone {i}: {proc.StandardOutput.ReadLine()}");
+                            StatusLibrary.Log($"Zone {i}: {proc.StandardOutput.ReadLine()}");
                         }
-                        Console.WriteLine($"zone: exited");
+                        StatusLibrary.Log($"Zone: exited");
                     });
                     Check();
                 }
@@ -74,10 +74,10 @@ namespace EQEmu_Launcher.Manage
             {
 
                 Process[] workers = Process.GetProcessesByName("zone");
-                Console.WriteLine($"found {workers.Length} zone instances");
+                StatusLibrary.Log($"Found {workers.Length} zone instances");
                 foreach (Process worker in workers)
                 {
-                    Console.WriteLine($"stopping zone pid {worker.Id}");
+                    StatusLibrary.Log($"Stopping zone pid {worker.Id}");
                     worker.Kill();
                     worker.WaitForExit();
                     worker.Dispose();
@@ -88,7 +88,7 @@ namespace EQEmu_Launcher.Manage
             }
             catch (Exception e)
             {
-                string result = $"failed to stop zone: {e.Message}";
+                string result = $"Failed to stop zone: {e.Message}";
                 StatusLibrary.SetStatusBar("zone stop failed");
                 MessageBox.Show(result, "Zone Stop", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

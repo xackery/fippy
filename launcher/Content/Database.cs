@@ -45,8 +45,14 @@ namespace EQEmu_Launcher
 
         public static void FixCheck()
         {
-            Console.WriteLine("running fix check");
-            FixTask = Task.Run(() => { StatusLibrary.LockUI(); Fix(false); Check(); StatusLibrary.UnlockUI(); });
+            StatusLibrary.Log("Running fix check");
+            FixTask = Task.Run(() => 
+            { 
+                StatusLibrary.LockUI(); 
+                Fix(false); 
+                Check(); 
+                StatusLibrary.UnlockUI(); 
+            });
         }
 
         public static async void Fix(bool fixAll)
@@ -77,7 +83,7 @@ namespace EQEmu_Launcher
 
         public static void FixAll()
         {
-            Console.WriteLine("fixing all database issues");
+            StatusLibrary.Log("Fixing all database issues");
             FixTask = Task.Run(() => { StatusLibrary.LockUI(); Fix(true); Check(); StatusLibrary.UnlockUI(); });
         }
 

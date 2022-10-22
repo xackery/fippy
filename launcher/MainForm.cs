@@ -1,36 +1,27 @@
 ﻿using EQEmu_Launcher.Manage;
 using Microsoft.Win32;
-using MS.WindowsAPICodePack.Internal;
 using MySqlConnector;
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Forms;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 //using System.Windows.Shell;
 
 namespace EQEmu_Launcher
 {
-    
+
     public partial class MainForm : Form
     {
         Regex descriptionLinkRegex = new Regex(@"(.*)\[(.*)\]\((.*)\)(.*)");
         string lastDescription;
+        bool isRulesPopulated;
 
         public MainForm()
         {
@@ -39,7 +30,7 @@ namespace EQEmu_Launcher
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            
+            StatusLibrary.InitLog();
             int darkThemeValue = (int)Registry.GetValue("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "AppsUseLightTheme", -1);
             bool isDarkTheme = darkThemeValue == 0;
             if (isDarkTheme)
@@ -64,16 +55,6 @@ namespace EQEmu_Launcher
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblDatabase.Text = value; }); }));
             StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picDatabase.BackColor = value ? Color.Red : Color.Lime; }); }));
             Database.Check();
-
-            context = StatusType.Quest;
-            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblQuest.Text = value; }); }));
-            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picQuest.BackColor = value ? Color.Red : Color.Lime; }); }));
-            Quest.Check();
-
-            context = StatusType.Map;
-            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblMap.Text = value; }); }));
-            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picMap.BackColor = value ? Color.Red : Color.Lime; }); }));
-            Map.Check();
 
             // Manage
             context = StatusType.SQL;
@@ -103,7 +84,11 @@ namespace EQEmu_Launcher
             QueryServ.Check();
 
             context = StatusType.StatusBar;
-            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblStatusBar.Text = value; Console.WriteLine("StatusBar: "+value); }); }));
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate 
+            { 
+                lblStatusBar.Text = value;
+                StatusLibrary.Log($"StatusBar: {value}");
+            }); }));
 
             StatusLibrary.SubscribeProgress(new StatusLibrary.ProgressHandler((int value) => { Invoke((MethodInvoker)delegate { 
                 prgStatus.Visible = (value != 100);
@@ -120,16 +105,19 @@ namespace EQEmu_Launcher
                 lblDescription.Tag = "";
                 var area = new LinkArea();
                 MatchCollection matches = descriptionLinkRegex.Matches(value);
-                if (matches.Count > 0)
+                if (matches.Count == 0)
                 {
-                    Console.WriteLine(matches[0]);
-                    lblDescription.Text = matches[0].Groups[1].Value;
-                    area.Start = lblDescription.Text.Length;
-                    area.Length = matches[0].Groups[2].Value.Length;
-                    lblDescription.Text += matches[0].Groups[2].Value;
-                    lblDescription.Tag = matches[0].Groups[3].Value;
-                    lblDescription.Text += matches[0].Groups[4].Value;
+                    lblDescription.LinkArea = area;
+                    lblDescription.Text = value;
+                    return;
                 }
+
+                lblDescription.Text = matches[0].Groups[1].Value;
+                area.Start = lblDescription.Text.Length;
+                area.Length = matches[0].Groups[2].Value.Length;
+                lblDescription.Text += matches[0].Groups[2].Value;
+                lblDescription.Tag = matches[0].Groups[3].Value;
+                lblDescription.Text += matches[0].Groups[4].Value;
                 lblDescription.LinkArea = area;
             }); }));
 
@@ -154,6 +142,9 @@ namespace EQEmu_Launcher
                 MessageBox.Show($"Failed to make subfolders: {ex.Message}", "Make Subfolders", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
+
+            StatusLibrary.SetStatusBar("Ready");
+
         }
 
         private void MakeSubfolders()
@@ -325,6 +316,7 @@ namespace EQEmu_Launcher
             txtPort.Text = Config.Data?["server"]?["database"]?["port"];
             txtHost.Text = Config.Data?["server"]?["database"]?["host"];
             txtDatabase.Text = Config.Data?["server"]?["database"]?["db"];
+            chkTelnet.Checked = (Config.Data?["server"]?["world"]?["telnet"]?["enabled"] == "true");
         }
 
         private void btnConfigLoad_Click(object sender, EventArgs e)
@@ -385,7 +377,7 @@ namespace EQEmu_Launcher
                         File.Delete(rootPath);
                     } catch (Exception ex)
                     {
-                        Console.WriteLine($"failing silently: {ex.Message}");
+                        StatusLibrary.Log($"failing silently: {ex.Message}");
                     }
                 });
                 StatusLibrary.SetStatusBar("password changed");
@@ -405,13 +397,14 @@ namespace EQEmu_Launcher
             Config.Data["server"]["qsdatabase"]["port"] = txtPort.Text;
             Config.Data["server"]["qsdatabase"]["host"] = txtHost.Text;
             Config.Data["server"]["qsdatabase"]["db"] = txtDatabase.Text;
+            Config.Data["server"]["world"]["telnet"]["enabled"] = (chkTelnet.Checked ? "true" : "false");
             Config.Save();
             StatusLibrary.SetStatusBar("eqemu_config.json saved");
         }
 
         private void txtShortName_MouseMove(object sender, MouseEventArgs e)
         {
-            lblDescription.Text = "Short Name is used for a prefix on profiles of players when they create characters on your server.";
+            StatusLibrary.SetDescription("Short Name is used for a prefix on profiles of players when they create characters on your server.");
         }
 
         private void lblDatabase_Click(object sender, EventArgs e)
@@ -523,7 +516,7 @@ namespace EQEmu_Launcher
 
         private void chkContentAdvanced_MouseMove(object sender, MouseEventArgs e)
         {
-            lblDescription.Text = "Advanced options allows you to customize where to get database, quest, and server content from";
+            StatusLibrary.SetDescription("Advanced allows you to customize where to get database, quest, and server content from.");
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -541,10 +534,6 @@ namespace EQEmu_Launcher
            StatusLibrary.SetDescription("This is how your server is displayed on [server select](https://google.com)");
         }
 
-        private void lblContent_MouseMove(object sender, MouseEventArgs e)
-        {
-            StatusLibrary.SetDescription("Test");
-        }
 
         private void btnContentDownloadAll_MouseMove(object sender, MouseEventArgs e)
         {
@@ -553,6 +542,10 @@ namespace EQEmu_Launcher
 
         private void lblDescription_Click(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            if (lblDescription.Tag == null)
+            {
+                return;
+            }
             if (lblDescription.Tag.ToString() == "")
             {
                 return;
@@ -574,6 +567,154 @@ namespace EQEmu_Launcher
             {
                 txtZoneCount.Text = matches[0].Groups[0].Value;
             }
+        }
+
+        private void btnZoneLogs_Click(object sender, EventArgs e)
+        {
+            // I won't bother with figuring out a specific zone file, and let a player find it (or maybe a selection window later to grab a specific instance?)
+            Process.Start("explorer.exe", $"{Application.StartupPath}\\server\\logs\\zone");
+        }
+
+        private void btnWorldLogs_Click(object sender, EventArgs e)
+        {
+            string path = $"{Application.StartupPath}\\server\\logs";
+            Process[] processes = Process.GetProcessesByName("world");
+            foreach (Process process in processes)
+            {
+                if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\server\\world.exe"))
+                {
+                    continue;
+                }
+                string logPath = $"{path}\\world_{process.Id}.log";
+                StatusLibrary.Log($"checking for {process.MainModule.FileName}");
+                if (File.Exists(logPath))
+                {
+                    Process.Start("explorer.exe", logPath);
+                    return;
+                }
+            }
+
+            Process.Start("explorer.exe", path);
+        }
+
+        private void btnUCSLogs_Click(object sender, EventArgs e)
+        {
+            string path = $"{Application.StartupPath}\\server\\logs";
+            Process[] processes = Process.GetProcessesByName("ucs");
+            foreach (Process process in processes)
+            {
+                if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\server\\ucs.exe")) {
+                    continue;
+                }
+                string logPath = $"{path}\\ucs_{process.Id}.log";
+                StatusLibrary.Log($"checking for {process.MainModule.FileName}");
+                if (File.Exists(logPath))
+                {
+                    Process.Start("explorer.exe", logPath);
+                    return;
+                }
+            }            
+
+            Process.Start("explorer.exe", path);
+        }
+
+        private void btnQueryServLogs_Click(object sender, EventArgs e)
+        {
+            string path = $"{Application.StartupPath}\\server\\logs";
+            Process[] processes = Process.GetProcessesByName("queryserv");
+            foreach (Process process in processes)
+            {
+                if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\server\\queryserv.exe"))
+                {
+                    continue;
+                }
+                string logPath = $"{path}\\queryserv_{process.Id}.log";
+                StatusLibrary.Log($"Checking for {process.MainModule.FileName}");
+                if (File.Exists(logPath))
+                {
+                    Process.Start("explorer.exe", logPath);
+                    return;
+                }
+            }
+
+            Process.Start("explorer.exe", path);
+        }
+
+        private void tabControlMain_Selected(object sender, TabControlEventArgs e)
+        {
+
+            StatusLibrary.Log($"Tab changed to {e.TabPage.Text}");
+            if (e.TabPage.Text.Equals("Rules"))
+            {
+                PopulateRules();
+            }
+        }
+
+        private void PopulateRules()
+        {
+            if (isRulesPopulated)
+            {
+                return;
+            }
+
+            StatusLibrary.Log("Populating rules...");
+            isRulesPopulated = true;
+            var table = new DataTable();
+            var col = table.Columns.Add("Category", typeof(string));
+            col.ReadOnly = true;
+            col = table.Columns.Add("Name", typeof(string));
+            col.ReadOnly = true;
+            table.Columns.Add("Value", typeof(string));
+            col = table.Columns.Add("Notes", typeof(string));
+            col.ReadOnly = true;
+            Task.Run(async () =>
+            {
+                try
+                {
+                    string user = "root";
+                    string password = Config.Data?["server"]?["database"]?["password"];
+                    string dbName = Config.Data?["server"]?["database"]?["db"];
+                    using (MySqlConnection connection = new MySqlConnection($"Server=localhost;User ID={user};Password={password};Database={dbName}"))
+                    {
+                        await connection.OpenAsync(StatusLibrary.CancelToken());
+
+                        MySqlCommand command = new MySqlCommand("SELECT rule_name, rule_value, notes FROM rule_values WHERE ruleset_id = 1;", connection);
+
+                        using (var reader = await command.ExecuteReaderAsync(StatusLibrary.CancelToken()))
+                        {
+                            while (await reader.ReadAsync(StatusLibrary.CancelToken()))
+                            {
+                                var names = reader.GetString(0).Split(':');
+                                table.Rows.Add(names[0], names[1], reader.GetString(1), reader.GetString(2));
+                            }
+                        }
+                    }
+                    Invoke((MethodInvoker)delegate
+                    {
+                        gridRules.DataSource = table;
+                    });
+                } catch (Exception ex)
+                {
+                    StatusLibrary.Log($"Failed to populate rules grid: {ex.Message}");
+                }
+            });
+        }
+
+        private void gridRules_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            string ruleName = $"{gridRules.Rows[e.RowIndex].Cells[0].Value}:{gridRules.Rows[e.RowIndex].Cells[1].Value}";
+            
+            gridRules.Rows[e.RowIndex].ErrorText = $"Testing {ruleName}";
+        }
+
+        private void lblConfigLink_MouseMove(object sender, MouseEventArgs e)
+        {
+            StatusLibrary.SetDescription("Open eqemu_config.json in a text editor.\nNOTE: Press Reload File if you do this, and don't edit any fields listed above");
+        }
+
+        private void chkConfigAdvanced_MouseMove(object sender, MouseEventArgs e)
+        {
+            StatusLibrary.SetDescription("Advanced allows you to customize additional config options.\nSome of these fields are dangerous and can break Fippy, use at your own risk!");
         }
     }
 }

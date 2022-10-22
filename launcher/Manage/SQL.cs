@@ -55,7 +55,7 @@ namespace EQEmu_Launcher
                 while (!proc.StandardOutput.EndOfStream)
                 {
                     string line = proc.StandardOutput.ReadLine();
-                    Console.WriteLine($"sql: {line}");
+                    StatusLibrary.Log($"SQL: {line}");
                 }
             });
            
@@ -73,21 +73,42 @@ namespace EQEmu_Launcher
                     CancelToken.Cancel();
                 }
 
-                Process[] workers = Process.GetProcessesByName("mysqld");
-                Console.WriteLine($"found {workers.Length} mysqld instances");
-                foreach (Process worker in workers)
+                Process[] processes = Process.GetProcessesByName("mysqld");
+                StatusLibrary.Log($"Found {processes.Length} mysqld instances");
+                bool isMySQLForeign = false;
+                foreach (Process process in processes)
                 {
-                    Console.WriteLine($"stopping sql pid {worker.Id}");
-                    worker.Kill();
-                    worker.WaitForExit();
-                    worker.Dispose();
+                    if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqld.exe"))
+                    {
+                        isMySQLForeign = true;
+                    }
+                }
+
+                if (isMySQLForeign)
+                {
+                    var response = MessageBox.Show("MySQL is currently running and it isn't the one Fippy manages.\nDo you want Fippy to try to stop it?", "MySQL Already Running", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                    if (response == DialogResult.No)
+                    {
+                        StatusLibrary.SetStatusBar("Cancelled MySQL action");
+                        return false;
+                    }
+                }
+
+                foreach (Process process in processes)
+                {
+                    StatusLibrary.Log($"Stopping sql pid {process.Id}");
+                    process.Kill();
+                    process.WaitForExit();
+                    process.Dispose();
                     sqlCount++;
                 }
-                if (sqlCount == 0) StatusLibrary.SetStatusBar("sql not found to stop");
-                else StatusLibrary.SetStatusBar($"stopped {sqlCount} sql instances");
+
+                if (sqlCount == 0) StatusLibrary.SetStatusBar("SQL not found to stop");
+                else StatusLibrary.SetStatusBar($"Stopped {sqlCount} sql instances");
             } catch(Exception e)
             {
-                string result = $"failed to stop SQL: {e.Message}";
+                string result = $"Failed to stop SQL: {e.Message}";
                 StatusLibrary.SetStatusBar("sql stop failed");
                 MessageBox.Show(result, "SQL Stop", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 isStopped = false;

@@ -50,9 +50,9 @@ namespace EQEmu_Launcher.Manage
                 Task.Run(() => {
                     while (!proc.StandardOutput.EndOfStream)
                     {
-                        Console.WriteLine($"queryServ: {proc.StandardOutput.ReadLine()}");
+                        StatusLibrary.Log($"QueryServ: {proc.StandardOutput.ReadLine()}");
                     }
-                    Console.WriteLine($"queryServ: exited");
+                    StatusLibrary.Log($"queryServ: exited");
                 });
                 Check();
             }
@@ -71,10 +71,10 @@ namespace EQEmu_Launcher.Manage
             {
 
                 Process[] workers = Process.GetProcessesByName("QueryServ");
-                Console.WriteLine($"found {workers.Length} QueryServ instances");
+                StatusLibrary.Log($"Found {workers.Length} QueryServ instances");
                 foreach (Process worker in workers)
                 {
-                    Console.WriteLine($"stopping QueryServ pid {worker.Id}");
+                    StatusLibrary.Log($"stopping QueryServ pid {worker.Id}");
                     worker.Kill();
                     worker.WaitForExit();
                     worker.Dispose();

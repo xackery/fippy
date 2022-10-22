@@ -31,27 +31,26 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.lblStatusBar = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabGM = new System.Windows.Forms.TabPage();
             this.tabMonitor = new System.Windows.Forms.TabPage();
             this.tabManage = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.picQueryServ = new System.Windows.Forms.PictureBox();
-            this.button18 = new System.Windows.Forms.Button();
+            this.btnQueryServLogs = new System.Windows.Forms.Button();
             this.btnQueryServStop = new System.Windows.Forms.Button();
             this.btnQueryServRestart = new System.Windows.Forms.Button();
             this.btnQueryServStart = new System.Windows.Forms.Button();
             this.lblQueryServ = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.picUCS = new System.Windows.Forms.PictureBox();
-            this.button14 = new System.Windows.Forms.Button();
+            this.btnUCSLogs = new System.Windows.Forms.Button();
             this.btnUCSStop = new System.Windows.Forms.Button();
             this.btnUCSRestart = new System.Windows.Forms.Button();
             this.btnUCSStart = new System.Windows.Forms.Button();
             this.lblUCS = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.picZone = new System.Windows.Forms.PictureBox();
-            this.button12 = new System.Windows.Forms.Button();
+            this.btnZoneLogs = new System.Windows.Forms.Button();
             this.txtZoneCount = new System.Windows.Forms.TextBox();
             this.btnZoneStop = new System.Windows.Forms.Button();
             this.btnZoneRestart = new System.Windows.Forms.Button();
@@ -59,7 +58,7 @@
             this.lblZone = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.picWorld = new System.Windows.Forms.PictureBox();
-            this.button13 = new System.Windows.Forms.Button();
+            this.btnWorldLogs = new System.Windows.Forms.Button();
             this.btnWorldStop = new System.Windows.Forms.Button();
             this.btnWorldRestart = new System.Windows.Forms.Button();
             this.btnWorldStart = new System.Windows.Forms.Button();
@@ -106,8 +105,12 @@
             this.button9 = new System.Windows.Forms.Button();
             this.lblServer = new System.Windows.Forms.Label();
             this.tabConfig = new System.Windows.Forms.TabPage();
-            this.grpConfig = new System.Windows.Forms.GroupBox();
             this.chkConfigAdvanced = new System.Windows.Forms.CheckBox();
+            this.grpInfo = new System.Windows.Forms.GroupBox();
+            this.txtShortName = new System.Windows.Forms.TextBox();
+            this.lblShortName = new System.Windows.Forms.Label();
+            this.txtLongName = new System.Windows.Forms.TextBox();
+            this.lblLongName = new System.Windows.Forms.Label();
             this.grpConfigAdvanced = new System.Windows.Forms.GroupBox();
             this.grpConfigDatabase = new System.Windows.Forms.GroupBox();
             this.btnRandomizePassword = new System.Windows.Forms.Button();
@@ -123,20 +126,16 @@
             this.lblUsername = new System.Windows.Forms.Label();
             this.grpOptions = new System.Windows.Forms.GroupBox();
             this.chkAPI = new System.Windows.Forms.CheckBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.chkTelnet = new System.Windows.Forms.CheckBox();
+            this.lblConfigLink = new System.Windows.Forms.LinkLabel();
+            this.btnConfigLoad = new System.Windows.Forms.Button();
             this.txtKey = new System.Windows.Forms.TextBox();
             this.btnRandomize = new System.Windows.Forms.Button();
             this.lblKey = new System.Windows.Forms.Label();
-            this.lblConfigLink = new System.Windows.Forms.LinkLabel();
-            this.grpInfo = new System.Windows.Forms.GroupBox();
-            this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.txtShortName = new System.Windows.Forms.TextBox();
-            this.lblShortName = new System.Windows.Forms.Label();
-            this.txtLongName = new System.Windows.Forms.TextBox();
-            this.lblLongName = new System.Windows.Forms.Label();
-            this.btnConfigLoad = new System.Windows.Forms.Button();
             this.btnConfigSave = new System.Windows.Forms.Button();
             this.tabRules = new System.Windows.Forms.TabPage();
+            this.grpRules = new System.Windows.Forms.GroupBox();
+            this.gridRules = new System.Windows.Forms.DataGridView();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextSystrayMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuLauncher = new System.Windows.Forms.ToolStripMenuItem();
@@ -151,6 +150,13 @@
             this.prgStatus = new System.Windows.Forms.ProgressBar();
             this.btnCancel = new System.Windows.Forms.Button();
             this.lblDescription = new System.Windows.Forms.LinkLabel();
+            this.mySqlDataAdapter1 = new MySqlConnector.MySqlDataAdapter();
+            this.lblStatusBar = new System.Windows.Forms.ToolStripStatusLabel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.statusStrip1.SuspendLayout();
+            this.tabGM.SuspendLayout();
+            this.tabMonitor.SuspendLayout();
             this.tabManage.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picQueryServ)).BeginInit();
@@ -176,42 +182,42 @@
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picServer)).BeginInit();
             this.tabConfig.SuspendLayout();
-            this.grpConfig.SuspendLayout();
+            this.grpInfo.SuspendLayout();
             this.grpConfigAdvanced.SuspendLayout();
             this.grpConfigDatabase.SuspendLayout();
             this.grpOptions.SuspendLayout();
-            this.grpInfo.SuspendLayout();
+            this.tabRules.SuspendLayout();
+            this.grpRules.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridRules)).BeginInit();
             this.contextSystrayMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 550);
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lblStatusBar});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 539);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(577, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(584, 22);
             this.statusStrip1.TabIndex = 10;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // lblStatusBar
-            // 
-            this.lblStatusBar.Name = "lblStatusBar";
-            this.lblStatusBar.Size = new System.Drawing.Size(83, 17);
-            this.lblStatusBar.Text = "Emu Launcher";
-            // 
             // tabGM
             // 
+            this.tabGM.Controls.Add(this.label3);
             this.tabGM.Location = new System.Drawing.Point(4, 22);
             this.tabGM.Name = "tabGM";
-            this.tabGM.Size = new System.Drawing.Size(545, 419);
+            this.tabGM.Size = new System.Drawing.Size(552, 408);
             this.tabGM.TabIndex = 4;
             this.tabGM.Text = "GM";
             this.tabGM.UseVisualStyleBackColor = true;
             // 
             // tabMonitor
             // 
+            this.tabMonitor.Controls.Add(this.label2);
             this.tabMonitor.Location = new System.Drawing.Point(4, 22);
             this.tabMonitor.Name = "tabMonitor";
-            this.tabMonitor.Size = new System.Drawing.Size(545, 419);
+            this.tabMonitor.Size = new System.Drawing.Size(552, 408);
             this.tabMonitor.TabIndex = 3;
             this.tabMonitor.Text = "Monitor";
             this.tabMonitor.UseVisualStyleBackColor = true;
@@ -225,7 +231,7 @@
             this.tabManage.Controls.Add(this.grpSQL);
             this.tabManage.Location = new System.Drawing.Point(4, 22);
             this.tabManage.Name = "tabManage";
-            this.tabManage.Size = new System.Drawing.Size(545, 419);
+            this.tabManage.Size = new System.Drawing.Size(552, 408);
             this.tabManage.TabIndex = 2;
             this.tabManage.Text = "Manage";
             this.tabManage.UseVisualStyleBackColor = true;
@@ -235,14 +241,14 @@
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.picQueryServ);
-            this.groupBox4.Controls.Add(this.button18);
+            this.groupBox4.Controls.Add(this.btnQueryServLogs);
             this.groupBox4.Controls.Add(this.btnQueryServStop);
             this.groupBox4.Controls.Add(this.btnQueryServRestart);
             this.groupBox4.Controls.Add(this.btnQueryServStart);
             this.groupBox4.Controls.Add(this.lblQueryServ);
             this.groupBox4.Location = new System.Drawing.Point(3, 219);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(539, 48);
+            this.groupBox4.Size = new System.Drawing.Size(546, 48);
             this.groupBox4.TabIndex = 12;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "QueryServ";
@@ -257,20 +263,21 @@
             this.picQueryServ.TabIndex = 14;
             this.picQueryServ.TabStop = false;
             // 
-            // button18
+            // btnQueryServLogs
             // 
-            this.button18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button18.Location = new System.Drawing.Point(463, 15);
-            this.button18.Name = "button18";
-            this.button18.Size = new System.Drawing.Size(53, 23);
-            this.button18.TabIndex = 10;
-            this.button18.Text = "Logs";
-            this.button18.UseVisualStyleBackColor = true;
+            this.btnQueryServLogs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnQueryServLogs.Location = new System.Drawing.Point(470, 15);
+            this.btnQueryServLogs.Name = "btnQueryServLogs";
+            this.btnQueryServLogs.Size = new System.Drawing.Size(53, 23);
+            this.btnQueryServLogs.TabIndex = 10;
+            this.btnQueryServLogs.Text = "Logs";
+            this.btnQueryServLogs.UseVisualStyleBackColor = true;
+            this.btnQueryServLogs.Click += new System.EventHandler(this.btnQueryServLogs_Click);
             // 
             // btnQueryServStop
             // 
             this.btnQueryServStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnQueryServStop.Location = new System.Drawing.Point(244, 15);
+            this.btnQueryServStop.Location = new System.Drawing.Point(251, 15);
             this.btnQueryServStop.Name = "btnQueryServStop";
             this.btnQueryServStop.Size = new System.Drawing.Size(42, 23);
             this.btnQueryServStop.TabIndex = 5;
@@ -281,7 +288,7 @@
             // btnQueryServRestart
             // 
             this.btnQueryServRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnQueryServRestart.Location = new System.Drawing.Point(292, 15);
+            this.btnQueryServRestart.Location = new System.Drawing.Point(299, 15);
             this.btnQueryServRestart.Name = "btnQueryServRestart";
             this.btnQueryServRestart.Size = new System.Drawing.Size(53, 23);
             this.btnQueryServRestart.TabIndex = 4;
@@ -292,7 +299,7 @@
             // btnQueryServStart
             // 
             this.btnQueryServStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnQueryServStart.Location = new System.Drawing.Point(196, 15);
+            this.btnQueryServStart.Location = new System.Drawing.Point(203, 15);
             this.btnQueryServStart.Name = "btnQueryServStart";
             this.btnQueryServStart.Size = new System.Drawing.Size(42, 23);
             this.btnQueryServStart.TabIndex = 1;
@@ -306,21 +313,21 @@
             this.lblQueryServ.Name = "lblQueryServ";
             this.lblQueryServ.Size = new System.Drawing.Size(183, 13);
             this.lblQueryServ.TabIndex = 0;
-            this.lblQueryServ.Text = "queryserv is running";
+            this.lblQueryServ.Text = "QueryServ is running";
             // 
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.picUCS);
-            this.groupBox3.Controls.Add(this.button14);
+            this.groupBox3.Controls.Add(this.btnUCSLogs);
             this.groupBox3.Controls.Add(this.btnUCSStop);
             this.groupBox3.Controls.Add(this.btnUCSRestart);
             this.groupBox3.Controls.Add(this.btnUCSStart);
             this.groupBox3.Controls.Add(this.lblUCS);
             this.groupBox3.Location = new System.Drawing.Point(3, 165);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(539, 48);
+            this.groupBox3.Size = new System.Drawing.Size(546, 48);
             this.groupBox3.TabIndex = 11;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "UCS";
@@ -335,20 +342,21 @@
             this.picUCS.TabIndex = 13;
             this.picUCS.TabStop = false;
             // 
-            // button14
+            // btnUCSLogs
             // 
-            this.button14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button14.Location = new System.Drawing.Point(463, 15);
-            this.button14.Name = "button14";
-            this.button14.Size = new System.Drawing.Size(53, 23);
-            this.button14.TabIndex = 10;
-            this.button14.Text = "Logs";
-            this.button14.UseVisualStyleBackColor = true;
+            this.btnUCSLogs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnUCSLogs.Location = new System.Drawing.Point(470, 15);
+            this.btnUCSLogs.Name = "btnUCSLogs";
+            this.btnUCSLogs.Size = new System.Drawing.Size(53, 23);
+            this.btnUCSLogs.TabIndex = 10;
+            this.btnUCSLogs.Text = "Logs";
+            this.btnUCSLogs.UseVisualStyleBackColor = true;
+            this.btnUCSLogs.Click += new System.EventHandler(this.btnUCSLogs_Click);
             // 
             // btnUCSStop
             // 
             this.btnUCSStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUCSStop.Location = new System.Drawing.Point(244, 15);
+            this.btnUCSStop.Location = new System.Drawing.Point(251, 15);
             this.btnUCSStop.Name = "btnUCSStop";
             this.btnUCSStop.Size = new System.Drawing.Size(42, 23);
             this.btnUCSStop.TabIndex = 5;
@@ -359,7 +367,7 @@
             // btnUCSRestart
             // 
             this.btnUCSRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUCSRestart.Location = new System.Drawing.Point(292, 15);
+            this.btnUCSRestart.Location = new System.Drawing.Point(299, 15);
             this.btnUCSRestart.Name = "btnUCSRestart";
             this.btnUCSRestart.Size = new System.Drawing.Size(53, 23);
             this.btnUCSRestart.TabIndex = 4;
@@ -370,7 +378,7 @@
             // btnUCSStart
             // 
             this.btnUCSStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUCSStart.Location = new System.Drawing.Point(196, 15);
+            this.btnUCSStart.Location = new System.Drawing.Point(203, 15);
             this.btnUCSStart.Name = "btnUCSStart";
             this.btnUCSStart.Size = new System.Drawing.Size(42, 23);
             this.btnUCSStart.TabIndex = 1;
@@ -384,14 +392,14 @@
             this.lblUCS.Name = "lblUCS";
             this.lblUCS.Size = new System.Drawing.Size(183, 13);
             this.lblUCS.TabIndex = 0;
-            this.lblUCS.Text = "ucs is running";
+            this.lblUCS.Text = "UCS is running";
             // 
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.picZone);
-            this.groupBox2.Controls.Add(this.button12);
+            this.groupBox2.Controls.Add(this.btnZoneLogs);
             this.groupBox2.Controls.Add(this.txtZoneCount);
             this.groupBox2.Controls.Add(this.btnZoneStop);
             this.groupBox2.Controls.Add(this.btnZoneRestart);
@@ -399,7 +407,7 @@
             this.groupBox2.Controls.Add(this.lblZone);
             this.groupBox2.Location = new System.Drawing.Point(3, 57);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(539, 48);
+            this.groupBox2.Size = new System.Drawing.Size(546, 48);
             this.groupBox2.TabIndex = 10;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Zone";
@@ -414,15 +422,16 @@
             this.picZone.TabIndex = 11;
             this.picZone.TabStop = false;
             // 
-            // button12
+            // btnZoneLogs
             // 
-            this.button12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button12.Location = new System.Drawing.Point(463, 15);
-            this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(53, 23);
-            this.button12.TabIndex = 10;
-            this.button12.Text = "Logs";
-            this.button12.UseVisualStyleBackColor = true;
+            this.btnZoneLogs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnZoneLogs.Location = new System.Drawing.Point(470, 15);
+            this.btnZoneLogs.Name = "btnZoneLogs";
+            this.btnZoneLogs.Size = new System.Drawing.Size(53, 23);
+            this.btnZoneLogs.TabIndex = 10;
+            this.btnZoneLogs.Text = "Logs";
+            this.btnZoneLogs.UseVisualStyleBackColor = true;
+            this.btnZoneLogs.Click += new System.EventHandler(this.btnZoneLogs_Click);
             // 
             // txtZoneCount
             // 
@@ -436,7 +445,7 @@
             // btnZoneStop
             // 
             this.btnZoneStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnZoneStop.Location = new System.Drawing.Point(244, 15);
+            this.btnZoneStop.Location = new System.Drawing.Point(251, 15);
             this.btnZoneStop.Name = "btnZoneStop";
             this.btnZoneStop.Size = new System.Drawing.Size(42, 23);
             this.btnZoneStop.TabIndex = 5;
@@ -447,7 +456,7 @@
             // btnZoneRestart
             // 
             this.btnZoneRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnZoneRestart.Location = new System.Drawing.Point(292, 15);
+            this.btnZoneRestart.Location = new System.Drawing.Point(299, 15);
             this.btnZoneRestart.Name = "btnZoneRestart";
             this.btnZoneRestart.Size = new System.Drawing.Size(53, 23);
             this.btnZoneRestart.TabIndex = 4;
@@ -458,7 +467,7 @@
             // btnZoneStart
             // 
             this.btnZoneStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnZoneStart.Location = new System.Drawing.Point(196, 15);
+            this.btnZoneStart.Location = new System.Drawing.Point(203, 15);
             this.btnZoneStart.Name = "btnZoneStart";
             this.btnZoneStart.Size = new System.Drawing.Size(42, 23);
             this.btnZoneStart.TabIndex = 1;
@@ -479,14 +488,14 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.picWorld);
-            this.groupBox1.Controls.Add(this.button13);
+            this.groupBox1.Controls.Add(this.btnWorldLogs);
             this.groupBox1.Controls.Add(this.btnWorldStop);
             this.groupBox1.Controls.Add(this.btnWorldRestart);
             this.groupBox1.Controls.Add(this.btnWorldStart);
             this.groupBox1.Controls.Add(this.lblWorld);
             this.groupBox1.Location = new System.Drawing.Point(3, 111);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(539, 48);
+            this.groupBox1.Size = new System.Drawing.Size(546, 48);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "World";
@@ -501,20 +510,21 @@
             this.picWorld.TabIndex = 12;
             this.picWorld.TabStop = false;
             // 
-            // button13
+            // btnWorldLogs
             // 
-            this.button13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button13.Location = new System.Drawing.Point(463, 15);
-            this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(53, 23);
-            this.button13.TabIndex = 10;
-            this.button13.Text = "Logs";
-            this.button13.UseVisualStyleBackColor = true;
+            this.btnWorldLogs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnWorldLogs.Location = new System.Drawing.Point(470, 15);
+            this.btnWorldLogs.Name = "btnWorldLogs";
+            this.btnWorldLogs.Size = new System.Drawing.Size(53, 23);
+            this.btnWorldLogs.TabIndex = 10;
+            this.btnWorldLogs.Text = "Logs";
+            this.btnWorldLogs.UseVisualStyleBackColor = true;
+            this.btnWorldLogs.Click += new System.EventHandler(this.btnWorldLogs_Click);
             // 
             // btnWorldStop
             // 
             this.btnWorldStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnWorldStop.Location = new System.Drawing.Point(244, 15);
+            this.btnWorldStop.Location = new System.Drawing.Point(251, 15);
             this.btnWorldStop.Name = "btnWorldStop";
             this.btnWorldStop.Size = new System.Drawing.Size(42, 23);
             this.btnWorldStop.TabIndex = 5;
@@ -525,7 +535,7 @@
             // btnWorldRestart
             // 
             this.btnWorldRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnWorldRestart.Location = new System.Drawing.Point(292, 15);
+            this.btnWorldRestart.Location = new System.Drawing.Point(299, 15);
             this.btnWorldRestart.Name = "btnWorldRestart";
             this.btnWorldRestart.Size = new System.Drawing.Size(53, 23);
             this.btnWorldRestart.TabIndex = 4;
@@ -536,7 +546,7 @@
             // btnWorldStart
             // 
             this.btnWorldStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnWorldStart.Location = new System.Drawing.Point(196, 15);
+            this.btnWorldStart.Location = new System.Drawing.Point(203, 15);
             this.btnWorldStart.Name = "btnWorldStart";
             this.btnWorldStart.Size = new System.Drawing.Size(42, 23);
             this.btnWorldStart.TabIndex = 1;
@@ -550,7 +560,7 @@
             this.lblWorld.Name = "lblWorld";
             this.lblWorld.Size = new System.Drawing.Size(183, 13);
             this.lblWorld.TabIndex = 0;
-            this.lblWorld.Text = "world is running";
+            this.lblWorld.Text = "World is running";
             // 
             // grpSQL
             // 
@@ -566,7 +576,7 @@
             this.grpSQL.Controls.Add(this.lblSQL);
             this.grpSQL.Location = new System.Drawing.Point(3, 3);
             this.grpSQL.Name = "grpSQL";
-            this.grpSQL.Size = new System.Drawing.Size(539, 48);
+            this.grpSQL.Size = new System.Drawing.Size(546, 48);
             this.grpSQL.TabIndex = 1;
             this.grpSQL.TabStop = false;
             this.grpSQL.Text = "SQL";
@@ -585,7 +595,7 @@
             // btnHeidi
             // 
             this.btnHeidi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnHeidi.Location = new System.Drawing.Point(351, 15);
+            this.btnHeidi.Location = new System.Drawing.Point(358, 15);
             this.btnHeidi.Name = "btnHeidi";
             this.btnHeidi.Size = new System.Drawing.Size(42, 23);
             this.btnHeidi.TabIndex = 8;
@@ -596,7 +606,7 @@
             // button5
             // 
             this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button5.Location = new System.Drawing.Point(404, 15);
+            this.button5.Location = new System.Drawing.Point(411, 15);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(53, 23);
             this.button5.TabIndex = 7;
@@ -606,7 +616,7 @@
             // button4
             // 
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button4.Location = new System.Drawing.Point(463, 15);
+            this.button4.Location = new System.Drawing.Point(470, 15);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(53, 23);
             this.button4.TabIndex = 6;
@@ -616,7 +626,7 @@
             // btnSQLStop
             // 
             this.btnSQLStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSQLStop.Location = new System.Drawing.Point(244, 15);
+            this.btnSQLStop.Location = new System.Drawing.Point(251, 15);
             this.btnSQLStop.Name = "btnSQLStop";
             this.btnSQLStop.Size = new System.Drawing.Size(42, 23);
             this.btnSQLStop.TabIndex = 5;
@@ -627,7 +637,7 @@
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(292, 15);
+            this.button1.Location = new System.Drawing.Point(299, 15);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(53, 23);
             this.button1.TabIndex = 4;
@@ -637,7 +647,7 @@
             // btnSQLStart
             // 
             this.btnSQLStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSQLStart.Location = new System.Drawing.Point(196, 15);
+            this.btnSQLStart.Location = new System.Drawing.Point(203, 15);
             this.btnSQLStart.Name = "btnSQLStart";
             this.btnSQLStart.Size = new System.Drawing.Size(42, 23);
             this.btnSQLStart.TabIndex = 1;
@@ -668,8 +678,9 @@
             this.tabControlMain.Location = new System.Drawing.Point(12, 12);
             this.tabControlMain.Name = "tabControlMain";
             this.tabControlMain.SelectedIndex = 0;
-            this.tabControlMain.Size = new System.Drawing.Size(553, 445);
+            this.tabControlMain.Size = new System.Drawing.Size(560, 434);
             this.tabControlMain.TabIndex = 9;
+            this.tabControlMain.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControlMain_Selected);
             // 
             // tabContent
             // 
@@ -678,7 +689,7 @@
             this.tabContent.Controls.Add(this.grpContentAdvanced);
             this.tabContent.Location = new System.Drawing.Point(4, 22);
             this.tabContent.Name = "tabContent";
-            this.tabContent.Size = new System.Drawing.Size(545, 419);
+            this.tabContent.Size = new System.Drawing.Size(552, 408);
             this.tabContent.TabIndex = 7;
             this.tabContent.Text = "Content";
             this.tabContent.UseVisualStyleBackColor = true;
@@ -690,9 +701,9 @@
             this.grpContent.Controls.Add(this.picContent);
             this.grpContent.Controls.Add(this.btnContentDownloadAll);
             this.grpContent.Controls.Add(this.lblContent);
-            this.grpContent.Location = new System.Drawing.Point(10, 3);
+            this.grpContent.Location = new System.Drawing.Point(3, 0);
             this.grpContent.Name = "grpContent";
-            this.grpContent.Size = new System.Drawing.Size(530, 50);
+            this.grpContent.Size = new System.Drawing.Size(544, 53);
             this.grpContent.TabIndex = 11;
             this.grpContent.TabStop = false;
             // 
@@ -709,7 +720,7 @@
             // btnContentDownloadAll
             // 
             this.btnContentDownloadAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnContentDownloadAll.Location = new System.Drawing.Point(397, 15);
+            this.btnContentDownloadAll.Location = new System.Drawing.Point(411, 15);
             this.btnContentDownloadAll.Name = "btnContentDownloadAll";
             this.btnContentDownloadAll.Size = new System.Drawing.Size(126, 23);
             this.btnContentDownloadAll.TabIndex = 8;
@@ -725,33 +736,35 @@
             this.lblContent.Size = new System.Drawing.Size(244, 13);
             this.lblContent.TabIndex = 0;
             this.lblContent.Text = "Download ProjectEQ and EQEmu Latest Content";
-            this.lblContent.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lblContent_MouseMove);
+            this.lblContent.MouseMove += new System.Windows.Forms.MouseEventHandler(this.btnContentDownloadAll_MouseMove);
             // 
             // chkContentAdvanced
             // 
             this.chkContentAdvanced.AutoSize = true;
-            this.chkContentAdvanced.Location = new System.Drawing.Point(10, 67);
+            this.chkContentAdvanced.Location = new System.Drawing.Point(3, 59);
             this.chkContentAdvanced.Name = "chkContentAdvanced";
-            this.chkContentAdvanced.Size = new System.Drawing.Size(150, 17);
+            this.chkContentAdvanced.Size = new System.Drawing.Size(75, 17);
             this.chkContentAdvanced.TabIndex = 8;
-            this.chkContentAdvanced.Text = "Enable Advanced Options";
+            this.chkContentAdvanced.Text = "Advanced";
             this.chkContentAdvanced.UseVisualStyleBackColor = true;
             this.chkContentAdvanced.CheckedChanged += new System.EventHandler(this.chkContentAdvanced_CheckedChanged);
             this.chkContentAdvanced.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chkContentAdvanced_MouseMove);
             // 
             // grpContentAdvanced
             // 
+            this.grpContentAdvanced.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpContentAdvanced.Controls.Add(this.grpMap);
             this.grpContentAdvanced.Controls.Add(this.groupBox6);
             this.grpContentAdvanced.Controls.Add(this.groupBox5);
             this.grpContentAdvanced.Controls.Add(this.groupBox7);
             this.grpContentAdvanced.Enabled = false;
-            this.grpContentAdvanced.Location = new System.Drawing.Point(10, 90);
+            this.grpContentAdvanced.Location = new System.Drawing.Point(3, 82);
             this.grpContentAdvanced.Name = "grpContentAdvanced";
-            this.grpContentAdvanced.Size = new System.Drawing.Size(539, 278);
+            this.grpContentAdvanced.Size = new System.Drawing.Size(544, 248);
             this.grpContentAdvanced.TabIndex = 9;
             this.grpContentAdvanced.TabStop = false;
-            this.grpContentAdvanced.Text = "Advanced Options";
+            this.grpContentAdvanced.Text = "Advanced Content Sources";
             // 
             // grpMap
             // 
@@ -764,7 +777,7 @@
             this.grpMap.Controls.Add(this.lblMap);
             this.grpMap.Location = new System.Drawing.Point(6, 181);
             this.grpMap.Name = "grpMap";
-            this.grpMap.Size = new System.Drawing.Size(524, 48);
+            this.grpMap.Size = new System.Drawing.Size(529, 48);
             this.grpMap.TabIndex = 12;
             this.grpMap.TabStop = false;
             this.grpMap.Text = "Map";
@@ -782,7 +795,7 @@
             // button10
             // 
             this.button10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button10.Location = new System.Drawing.Point(391, 15);
+            this.button10.Location = new System.Drawing.Point(396, 15);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(55, 23);
             this.button10.TabIndex = 6;
@@ -804,7 +817,7 @@
             // button11
             // 
             this.button11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button11.Location = new System.Drawing.Point(462, 15);
+            this.button11.Location = new System.Drawing.Point(467, 15);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(55, 23);
             this.button11.TabIndex = 4;
@@ -830,7 +843,7 @@
             this.groupBox6.Controls.Add(this.lblQuest);
             this.groupBox6.Location = new System.Drawing.Point(6, 73);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(524, 48);
+            this.groupBox6.Size = new System.Drawing.Size(529, 48);
             this.groupBox6.TabIndex = 6;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Quest";
@@ -848,7 +861,7 @@
             // button6
             // 
             this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button6.Location = new System.Drawing.Point(391, 15);
+            this.button6.Location = new System.Drawing.Point(396, 15);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(55, 23);
             this.button6.TabIndex = 6;
@@ -870,7 +883,7 @@
             // button3
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(462, 15);
+            this.button3.Location = new System.Drawing.Point(467, 15);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(55, 23);
             this.button3.TabIndex = 4;
@@ -896,7 +909,7 @@
             this.groupBox5.Controls.Add(this.lblDatabase);
             this.groupBox5.Location = new System.Drawing.Point(6, 127);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(524, 48);
+            this.groupBox5.Size = new System.Drawing.Size(529, 48);
             this.groupBox5.TabIndex = 1;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Database";
@@ -914,7 +927,7 @@
             // button7
             // 
             this.button7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button7.Location = new System.Drawing.Point(391, 15);
+            this.button7.Location = new System.Drawing.Point(396, 15);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(55, 23);
             this.button7.TabIndex = 7;
@@ -936,7 +949,7 @@
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(462, 15);
+            this.button2.Location = new System.Drawing.Point(467, 15);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(55, 23);
             this.button2.TabIndex = 4;
@@ -962,7 +975,7 @@
             this.groupBox7.Controls.Add(this.lblServer);
             this.groupBox7.Location = new System.Drawing.Point(6, 19);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(524, 48);
+            this.groupBox7.Size = new System.Drawing.Size(529, 48);
             this.groupBox7.TabIndex = 7;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Server";
@@ -980,7 +993,7 @@
             // button8
             // 
             this.button8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button8.Location = new System.Drawing.Point(391, 15);
+            this.button8.Location = new System.Drawing.Point(396, 15);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(55, 23);
             this.button8.TabIndex = 6;
@@ -1002,7 +1015,7 @@
             // button9
             // 
             this.button9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button9.Location = new System.Drawing.Point(462, 15);
+            this.button9.Location = new System.Drawing.Point(467, 15);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(55, 23);
             this.button9.TabIndex = 4;
@@ -1019,56 +1032,99 @@
             // 
             // tabConfig
             // 
-            this.tabConfig.Controls.Add(this.grpConfig);
+            this.tabConfig.Controls.Add(this.chkConfigAdvanced);
+            this.tabConfig.Controls.Add(this.grpInfo);
+            this.tabConfig.Controls.Add(this.grpConfigAdvanced);
+            this.tabConfig.Controls.Add(this.btnConfigSave);
             this.tabConfig.Location = new System.Drawing.Point(4, 22);
             this.tabConfig.Name = "tabConfig";
-            this.tabConfig.Size = new System.Drawing.Size(545, 419);
+            this.tabConfig.Size = new System.Drawing.Size(552, 408);
             this.tabConfig.TabIndex = 5;
             this.tabConfig.Text = "Config";
             this.tabConfig.UseVisualStyleBackColor = true;
             // 
-            // grpConfig
-            // 
-            this.grpConfig.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpConfig.Controls.Add(this.chkConfigAdvanced);
-            this.grpConfig.Controls.Add(this.grpConfigAdvanced);
-            this.grpConfig.Controls.Add(this.lblConfigLink);
-            this.grpConfig.Controls.Add(this.grpInfo);
-            this.grpConfig.Controls.Add(this.btnConfigLoad);
-            this.grpConfig.Controls.Add(this.btnConfigSave);
-            this.grpConfig.Location = new System.Drawing.Point(3, 3);
-            this.grpConfig.Name = "grpConfig";
-            this.grpConfig.Size = new System.Drawing.Size(533, 413);
-            this.grpConfig.TabIndex = 1;
-            this.grpConfig.TabStop = false;
-            this.grpConfig.Text = "                                ";
-            // 
             // chkConfigAdvanced
             // 
             this.chkConfigAdvanced.AutoSize = true;
-            this.chkConfigAdvanced.Location = new System.Drawing.Point(16, 78);
+            this.chkConfigAdvanced.Location = new System.Drawing.Point(4, 59);
             this.chkConfigAdvanced.Name = "chkConfigAdvanced";
-            this.chkConfigAdvanced.Size = new System.Drawing.Size(150, 17);
+            this.chkConfigAdvanced.Size = new System.Drawing.Size(75, 17);
             this.chkConfigAdvanced.TabIndex = 15;
-            this.chkConfigAdvanced.Text = "Enable Advanced Options";
+            this.chkConfigAdvanced.Text = "Advanced";
             this.chkConfigAdvanced.UseVisualStyleBackColor = true;
             this.chkConfigAdvanced.CheckedChanged += new System.EventHandler(this.chkConfigAdvanced_CheckedChanged);
+            this.chkConfigAdvanced.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chkConfigAdvanced_MouseMove);
+            // 
+            // grpInfo
+            // 
+            this.grpInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpInfo.Controls.Add(this.txtShortName);
+            this.grpInfo.Controls.Add(this.lblShortName);
+            this.grpInfo.Controls.Add(this.txtLongName);
+            this.grpInfo.Controls.Add(this.lblLongName);
+            this.grpInfo.Location = new System.Drawing.Point(4, 0);
+            this.grpInfo.Name = "grpInfo";
+            this.grpInfo.Size = new System.Drawing.Size(545, 53);
+            this.grpInfo.TabIndex = 13;
+            this.grpInfo.TabStop = false;
+            // 
+            // txtShortName
+            // 
+            this.txtShortName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtShortName.Location = new System.Drawing.Point(385, 18);
+            this.txtShortName.Name = "txtShortName";
+            this.txtShortName.Size = new System.Drawing.Size(154, 20);
+            this.txtShortName.TabIndex = 12;
+            this.txtShortName.MouseMove += new System.Windows.Forms.MouseEventHandler(this.txtShortName_MouseMove);
+            // 
+            // lblShortName
+            // 
+            this.lblShortName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblShortName.AutoSize = true;
+            this.lblShortName.Location = new System.Drawing.Point(313, 21);
+            this.lblShortName.Name = "lblShortName";
+            this.lblShortName.Size = new System.Drawing.Size(66, 13);
+            this.lblShortName.TabIndex = 11;
+            this.lblShortName.Text = "Short Name:";
+            this.lblShortName.MouseMove += new System.Windows.Forms.MouseEventHandler(this.txtShortName_MouseMove);
+            // 
+            // txtLongName
+            // 
+            this.txtLongName.Location = new System.Drawing.Point(78, 18);
+            this.txtLongName.Name = "txtLongName";
+            this.txtLongName.Size = new System.Drawing.Size(154, 20);
+            this.txtLongName.TabIndex = 10;
+            this.txtLongName.MouseMove += new System.Windows.Forms.MouseEventHandler(this.txtLongName_MouseMove);
+            // 
+            // lblLongName
+            // 
+            this.lblLongName.AutoSize = true;
+            this.lblLongName.Location = new System.Drawing.Point(7, 21);
+            this.lblLongName.Name = "lblLongName";
+            this.lblLongName.Size = new System.Drawing.Size(65, 13);
+            this.lblLongName.TabIndex = 9;
+            this.lblLongName.Text = "Long Name:";
+            this.lblLongName.MouseMove += new System.Windows.Forms.MouseEventHandler(this.txtLongName_MouseMove);
             // 
             // grpConfigAdvanced
             // 
+            this.grpConfigAdvanced.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpConfigAdvanced.Controls.Add(this.grpConfigDatabase);
             this.grpConfigAdvanced.Controls.Add(this.grpOptions);
             this.grpConfigAdvanced.Enabled = false;
-            this.grpConfigAdvanced.Location = new System.Drawing.Point(7, 98);
+            this.grpConfigAdvanced.Location = new System.Drawing.Point(4, 82);
             this.grpConfigAdvanced.Name = "grpConfigAdvanced";
-            this.grpConfigAdvanced.Size = new System.Drawing.Size(520, 239);
+            this.grpConfigAdvanced.Size = new System.Drawing.Size(545, 239);
             this.grpConfigAdvanced.TabIndex = 16;
             this.grpConfigAdvanced.TabStop = false;
-            this.grpConfigAdvanced.Text = "Config";
+            this.grpConfigAdvanced.Text = "Advanced Config Options";
             // 
             // grpConfigDatabase
             // 
+            this.grpConfigDatabase.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpConfigDatabase.Controls.Add(this.btnRandomizePassword);
             this.grpConfigDatabase.Controls.Add(this.txtDatabase);
             this.grpConfigDatabase.Controls.Add(this.lblDatabaseName);
@@ -1080,16 +1136,17 @@
             this.grpConfigDatabase.Controls.Add(this.lblPassword);
             this.grpConfigDatabase.Controls.Add(this.txtUsername);
             this.grpConfigDatabase.Controls.Add(this.lblUsername);
-            this.grpConfigDatabase.Location = new System.Drawing.Point(7, 16);
+            this.grpConfigDatabase.Location = new System.Drawing.Point(6, 19);
             this.grpConfigDatabase.Name = "grpConfigDatabase";
-            this.grpConfigDatabase.Size = new System.Drawing.Size(508, 100);
+            this.grpConfigDatabase.Size = new System.Drawing.Size(533, 100);
             this.grpConfigDatabase.TabIndex = 11;
             this.grpConfigDatabase.TabStop = false;
             this.grpConfigDatabase.Text = "Database";
             // 
             // btnRandomizePassword
             // 
-            this.btnRandomizePassword.Location = new System.Drawing.Point(289, 66);
+            this.btnRandomizePassword.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRandomizePassword.Location = new System.Drawing.Point(314, 66);
             this.btnRandomizePassword.Name = "btnRandomizePassword";
             this.btnRandomizePassword.Size = new System.Drawing.Size(214, 23);
             this.btnRandomizePassword.TabIndex = 20;
@@ -1117,15 +1174,17 @@
             // 
             // txtPort
             // 
-            this.txtPort.Location = new System.Drawing.Point(348, 13);
+            this.txtPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtPort.Location = new System.Drawing.Point(373, 13);
             this.txtPort.Name = "txtPort";
             this.txtPort.Size = new System.Drawing.Size(155, 20);
             this.txtPort.TabIndex = 17;
             // 
             // lblPort
             // 
+            this.lblPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblPort.AutoSize = true;
-            this.lblPort.Location = new System.Drawing.Point(313, 16);
+            this.lblPort.Location = new System.Drawing.Point(338, 16);
             this.lblPort.Name = "lblPort";
             this.lblPort.Size = new System.Drawing.Size(29, 13);
             this.lblPort.TabIndex = 16;
@@ -1150,7 +1209,8 @@
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(348, 40);
+            this.txtPassword.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtPassword.Location = new System.Drawing.Point(373, 40);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(155, 20);
@@ -1158,8 +1218,9 @@
             // 
             // lblPassword
             // 
+            this.lblPassword.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblPassword.AutoSize = true;
-            this.lblPassword.Location = new System.Drawing.Point(286, 43);
+            this.lblPassword.Location = new System.Drawing.Point(311, 43);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(56, 13);
             this.lblPassword.TabIndex = 12;
@@ -1184,14 +1245,18 @@
             // 
             // grpOptions
             // 
+            this.grpOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpOptions.Controls.Add(this.chkAPI);
-            this.grpOptions.Controls.Add(this.checkBox1);
+            this.grpOptions.Controls.Add(this.chkTelnet);
+            this.grpOptions.Controls.Add(this.lblConfigLink);
+            this.grpOptions.Controls.Add(this.btnConfigLoad);
             this.grpOptions.Controls.Add(this.txtKey);
             this.grpOptions.Controls.Add(this.btnRandomize);
             this.grpOptions.Controls.Add(this.lblKey);
             this.grpOptions.Location = new System.Drawing.Point(7, 122);
             this.grpOptions.Name = "grpOptions";
-            this.grpOptions.Size = new System.Drawing.Size(507, 109);
+            this.grpOptions.Size = new System.Drawing.Size(532, 109);
             this.grpOptions.TabIndex = 14;
             this.grpOptions.TabStop = false;
             this.grpOptions.Text = "Options";
@@ -1206,15 +1271,37 @@
             this.chkAPI.Text = "Allow API";
             this.chkAPI.UseVisualStyleBackColor = true;
             // 
-            // checkBox1
+            // chkTelnet
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(10, 19);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(84, 17);
-            this.checkBox1.TabIndex = 12;
-            this.checkBox1.Text = "Allow Telnet";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.chkTelnet.AutoSize = true;
+            this.chkTelnet.Location = new System.Drawing.Point(10, 19);
+            this.chkTelnet.Name = "chkTelnet";
+            this.chkTelnet.Size = new System.Drawing.Size(84, 17);
+            this.chkTelnet.TabIndex = 12;
+            this.chkTelnet.Text = "Allow Telnet";
+            this.chkTelnet.UseVisualStyleBackColor = true;
+            // 
+            // lblConfigLink
+            // 
+            this.lblConfigLink.AutoSize = true;
+            this.lblConfigLink.Location = new System.Drawing.Point(343, 16);
+            this.lblConfigLink.Name = "lblConfigLink";
+            this.lblConfigLink.Size = new System.Drawing.Size(125, 13);
+            this.lblConfigLink.TabIndex = 15;
+            this.lblConfigLink.TabStop = true;
+            this.lblConfigLink.Text = "Open eqemu_config.json";
+            this.lblConfigLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblConfigLink_LinkClicked);
+            this.lblConfigLink.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lblConfigLink_MouseMove);
+            // 
+            // btnConfigLoad
+            // 
+            this.btnConfigLoad.Location = new System.Drawing.Point(346, 35);
+            this.btnConfigLoad.Name = "btnConfigLoad";
+            this.btnConfigLoad.Size = new System.Drawing.Size(129, 29);
+            this.btnConfigLoad.TabIndex = 3;
+            this.btnConfigLoad.Text = "Reload File";
+            this.btnConfigLoad.UseVisualStyleBackColor = true;
+            this.btnConfigLoad.Click += new System.EventHandler(this.btnConfigLoad_Click);
             // 
             // txtKey
             // 
@@ -1226,7 +1313,8 @@
             // 
             // btnRandomize
             // 
-            this.btnRandomize.Location = new System.Drawing.Point(426, 80);
+            this.btnRandomize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRandomize.Location = new System.Drawing.Point(451, 80);
             this.btnRandomize.Name = "btnRandomize";
             this.btnRandomize.Size = new System.Drawing.Size(75, 23);
             this.btnRandomize.TabIndex = 4;
@@ -1242,89 +1330,12 @@
             this.lblKey.TabIndex = 0;
             this.lblKey.Text = "Key:";
             // 
-            // lblConfigLink
-            // 
-            this.lblConfigLink.AutoSize = true;
-            this.lblConfigLink.Location = new System.Drawing.Point(10, 0);
-            this.lblConfigLink.Name = "lblConfigLink";
-            this.lblConfigLink.Size = new System.Drawing.Size(96, 13);
-            this.lblConfigLink.TabIndex = 15;
-            this.lblConfigLink.TabStop = true;
-            this.lblConfigLink.Text = "eqemu_config.json";
-            this.lblConfigLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblConfigLink_LinkClicked);
-            // 
-            // grpInfo
-            // 
-            this.grpInfo.Controls.Add(this.groupBox8);
-            this.grpInfo.Controls.Add(this.txtShortName);
-            this.grpInfo.Controls.Add(this.lblShortName);
-            this.grpInfo.Controls.Add(this.txtLongName);
-            this.grpInfo.Controls.Add(this.lblLongName);
-            this.grpInfo.Location = new System.Drawing.Point(6, 19);
-            this.grpInfo.Name = "grpInfo";
-            this.grpInfo.Size = new System.Drawing.Size(521, 53);
-            this.grpInfo.TabIndex = 13;
-            this.grpInfo.TabStop = false;
-            this.grpInfo.Text = "Info";
-            // 
-            // groupBox8
-            // 
-            this.groupBox8.Location = new System.Drawing.Point(83, 53);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(200, 100);
-            this.groupBox8.TabIndex = 14;
-            this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "groupBox8";
-            // 
-            // txtShortName
-            // 
-            this.txtShortName.Location = new System.Drawing.Point(361, 18);
-            this.txtShortName.Name = "txtShortName";
-            this.txtShortName.Size = new System.Drawing.Size(154, 20);
-            this.txtShortName.TabIndex = 12;
-            // 
-            // lblShortName
-            // 
-            this.lblShortName.AutoSize = true;
-            this.lblShortName.Location = new System.Drawing.Point(289, 21);
-            this.lblShortName.Name = "lblShortName";
-            this.lblShortName.Size = new System.Drawing.Size(66, 13);
-            this.lblShortName.TabIndex = 11;
-            this.lblShortName.Text = "Short Name:";
-            // 
-            // txtLongName
-            // 
-            this.txtLongName.Location = new System.Drawing.Point(78, 18);
-            this.txtLongName.Name = "txtLongName";
-            this.txtLongName.Size = new System.Drawing.Size(154, 20);
-            this.txtLongName.TabIndex = 10;
-            this.txtLongName.MouseMove += new System.Windows.Forms.MouseEventHandler(this.txtLongName_MouseMove);
-            // 
-            // lblLongName
-            // 
-            this.lblLongName.AutoSize = true;
-            this.lblLongName.Location = new System.Drawing.Point(7, 21);
-            this.lblLongName.Name = "lblLongName";
-            this.lblLongName.Size = new System.Drawing.Size(65, 13);
-            this.lblLongName.TabIndex = 9;
-            this.lblLongName.Text = "Long Name:";
-            this.lblLongName.MouseMove += new System.Windows.Forms.MouseEventHandler(this.txtLongName_MouseMove);
-            // 
-            // btnConfigLoad
-            // 
-            this.btnConfigLoad.Location = new System.Drawing.Point(6, 378);
-            this.btnConfigLoad.Name = "btnConfigLoad";
-            this.btnConfigLoad.Size = new System.Drawing.Size(90, 29);
-            this.btnConfigLoad.TabIndex = 3;
-            this.btnConfigLoad.Text = "Reload File";
-            this.btnConfigLoad.UseVisualStyleBackColor = true;
-            this.btnConfigLoad.Click += new System.EventHandler(this.btnConfigLoad_Click);
-            // 
             // btnConfigSave
             // 
-            this.btnConfigSave.Location = new System.Drawing.Point(265, 343);
+            this.btnConfigSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnConfigSave.Location = new System.Drawing.Point(4, 327);
             this.btnConfigSave.Name = "btnConfigSave";
-            this.btnConfigSave.Size = new System.Drawing.Size(262, 64);
+            this.btnConfigSave.Size = new System.Drawing.Size(546, 56);
             this.btnConfigSave.TabIndex = 1;
             this.btnConfigSave.Text = "Save";
             this.btnConfigSave.UseVisualStyleBackColor = true;
@@ -1332,12 +1343,38 @@
             // 
             // tabRules
             // 
+            this.tabRules.Controls.Add(this.grpRules);
             this.tabRules.Location = new System.Drawing.Point(4, 22);
             this.tabRules.Name = "tabRules";
-            this.tabRules.Size = new System.Drawing.Size(545, 419);
+            this.tabRules.Size = new System.Drawing.Size(552, 408);
             this.tabRules.TabIndex = 6;
             this.tabRules.Text = "Rules";
             this.tabRules.UseVisualStyleBackColor = true;
+            // 
+            // grpRules
+            // 
+            this.grpRules.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpRules.Controls.Add(this.gridRules);
+            this.grpRules.Location = new System.Drawing.Point(4, 4);
+            this.grpRules.Name = "grpRules";
+            this.grpRules.Size = new System.Drawing.Size(545, 401);
+            this.grpRules.TabIndex = 0;
+            this.grpRules.TabStop = false;
+            this.grpRules.Text = "Rules";
+            // 
+            // gridRules
+            // 
+            this.gridRules.AllowUserToAddRows = false;
+            this.gridRules.AllowUserToDeleteRows = false;
+            this.gridRules.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridRules.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridRules.Location = new System.Drawing.Point(3, 16);
+            this.gridRules.Name = "gridRules";
+            this.gridRules.Size = new System.Drawing.Size(539, 382);
+            this.gridRules.TabIndex = 1;
+            this.gridRules.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridRules_CellEndEdit);
             // 
             // notifyIcon
             // 
@@ -1411,18 +1448,18 @@
             // 
             this.prgStatus.BackColor = System.Drawing.SystemColors.Control;
             this.prgStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.prgStatus.Location = new System.Drawing.Point(0, 527);
+            this.prgStatus.Location = new System.Drawing.Point(0, 516);
             this.prgStatus.Name = "prgStatus";
-            this.prgStatus.Size = new System.Drawing.Size(577, 23);
+            this.prgStatus.Size = new System.Drawing.Size(584, 23);
             this.prgStatus.TabIndex = 12;
             this.prgStatus.Visible = false;
             // 
             // btnCancel
             // 
             this.btnCancel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.btnCancel.Location = new System.Drawing.Point(0, 463);
+            this.btnCancel.Location = new System.Drawing.Point(0, 452);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(577, 64);
+            this.btnCancel.Size = new System.Drawing.Size(584, 64);
             this.btnCancel.TabIndex = 13;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -1433,17 +1470,50 @@
             // 
             this.lblDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDescription.Location = new System.Drawing.Point(12, 463);
+            this.lblDescription.Location = new System.Drawing.Point(12, 452);
             this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(553, 61);
+            this.lblDescription.Size = new System.Drawing.Size(560, 61);
             this.lblDescription.TabIndex = 14;
             this.lblDescription.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblDescription_Click);
+            // 
+            // mySqlDataAdapter1
+            // 
+            this.mySqlDataAdapter1.DeleteCommand = null;
+            this.mySqlDataAdapter1.InsertCommand = null;
+            this.mySqlDataAdapter1.SelectCommand = null;
+            this.mySqlDataAdapter1.UpdateBatchSize = 0;
+            this.mySqlDataAdapter1.UpdateCommand = null;
+            // 
+            // lblStatusBar
+            // 
+            this.lblStatusBar.Name = "lblStatusBar";
+            this.lblStatusBar.Size = new System.Drawing.Size(69, 17);
+            this.lblStatusBar.Text = "lblStatusBar";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(15, 18);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(517, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Monitor is not yet coded. This will list accounts and other statistics like how m" +
+    "any are online and such for you";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(15, 12);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(317, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "GM is not yet coded. This will let you do GM commands, escalate ";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(577, 572);
+            this.ClientSize = new System.Drawing.Size(584, 561);
             this.Controls.Add(this.lblDescription);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.prgStatus);
@@ -1451,13 +1521,18 @@
             this.Controls.Add(this.tabControlMain);
             this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(305, 371);
+            this.MinimumSize = new System.Drawing.Size(600, 600);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Fippy Darklauncher";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Resize += new System.EventHandler(this.MainForm_Resize);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+            this.tabGM.ResumeLayout(false);
+            this.tabGM.PerformLayout();
+            this.tabMonitor.ResumeLayout(false);
+            this.tabMonitor.PerformLayout();
             this.tabManage.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picQueryServ)).EndInit();
@@ -1485,15 +1560,17 @@
             this.groupBox7.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picServer)).EndInit();
             this.tabConfig.ResumeLayout(false);
-            this.grpConfig.ResumeLayout(false);
-            this.grpConfig.PerformLayout();
+            this.tabConfig.PerformLayout();
+            this.grpInfo.ResumeLayout(false);
+            this.grpInfo.PerformLayout();
             this.grpConfigAdvanced.ResumeLayout(false);
             this.grpConfigDatabase.ResumeLayout(false);
             this.grpConfigDatabase.PerformLayout();
             this.grpOptions.ResumeLayout(false);
             this.grpOptions.PerformLayout();
-            this.grpInfo.ResumeLayout(false);
-            this.grpInfo.PerformLayout();
+            this.tabRules.ResumeLayout(false);
+            this.grpRules.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gridRules)).EndInit();
             this.contextSystrayMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1502,7 +1579,6 @@
 
         #endregion
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel lblStatusBar;
         private System.Windows.Forms.TabPage tabGM;
         private System.Windows.Forms.TabPage tabMonitor;
         private System.Windows.Forms.TabPage tabManage;
@@ -1520,25 +1596,25 @@
         private System.Windows.Forms.Button btnWorldStart;
         private System.Windows.Forms.Label lblWorld;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.Button button18;
+        private System.Windows.Forms.Button btnQueryServLogs;
         private System.Windows.Forms.Button btnQueryServStop;
         private System.Windows.Forms.Button btnQueryServRestart;
         private System.Windows.Forms.Button btnQueryServStart;
         private System.Windows.Forms.Label lblQueryServ;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Button button14;
+        private System.Windows.Forms.Button btnUCSLogs;
         private System.Windows.Forms.Button btnUCSStop;
         private System.Windows.Forms.Button btnUCSRestart;
         private System.Windows.Forms.Button btnUCSStart;
         private System.Windows.Forms.Label lblUCS;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.Button btnZoneLogs;
         private System.Windows.Forms.TextBox txtZoneCount;
         private System.Windows.Forms.Button btnZoneStop;
         private System.Windows.Forms.Button btnZoneRestart;
         private System.Windows.Forms.Button btnZoneStart;
         private System.Windows.Forms.Label lblZone;
-        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Button btnWorldLogs;
         private System.Windows.Forms.Button btnHeidi;
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenuStrip contextSystrayMenu;
@@ -1551,7 +1627,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.Timer manageTimer;
         private System.Windows.Forms.TabPage tabConfig;
-        private System.Windows.Forms.GroupBox grpConfig;
         private System.Windows.Forms.Label lblKey;
         private System.Windows.Forms.Button btnConfigLoad;
         private System.Windows.Forms.TextBox txtKey;
@@ -1568,7 +1643,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtDatabase;
         private System.Windows.Forms.Label lblDatabaseName;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox chkTelnet;
         private System.Windows.Forms.GroupBox grpOptions;
         private System.Windows.Forms.CheckBox chkAPI;
         private System.Windows.Forms.GroupBox grpInfo;
@@ -1603,7 +1678,6 @@
         private System.Windows.Forms.CheckBox chkContentAdvanced;
         private System.Windows.Forms.GroupBox grpConfigAdvanced;
         private System.Windows.Forms.CheckBox chkConfigAdvanced;
-        private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.GroupBox grpContent;
         private System.Windows.Forms.Button btnContentDownloadAll;
         private System.Windows.Forms.Label lblContent;
@@ -1622,6 +1696,12 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Button button11;
         private System.Windows.Forms.Label lblMap;
+        private System.Windows.Forms.GroupBox grpRules;
+        private System.Windows.Forms.DataGridView gridRules;
+        private MySqlConnector.MySqlDataAdapter mySqlDataAdapter1;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatusBar;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
     }
 }
 

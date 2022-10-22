@@ -247,8 +247,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Content\Map.cs" />
-    <Compile Include="Content\Quest.cs" />
     <Compile Include="Content\Database.cs" />
     <Compile Include="Content\Server.cs" />
     <Compile Include="Config\Config.cs" />

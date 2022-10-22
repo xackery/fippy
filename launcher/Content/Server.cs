@@ -107,6 +107,8 @@ namespace EQEmu_Launcher
                 try
                 {
                     string password = WinLibrary.RandomString(32);
+                    Config.Data["server"]["world"]["longname"] = $"Fippy Darklauncher {WinLibrary.RandomAlphaNumericString(8)}";
+                    Config.Data["server"]["world"]["shortname"] = $"fip";
                     Config.Data["server"]["database"]["host"] = "127.0.0.1";
                     Config.Data["server"]["database"]["port"] = "3306";
                     Config.Data["server"]["database"]["username"] = "root";
@@ -117,6 +119,11 @@ namespace EQEmu_Launcher
                     Config.Data["server"]["qsdatabase"]["username"] = "root";
                     Config.Data["server"]["qsdatabase"]["password"] = password;
                     Config.Data["server"]["qsdatabase"]["db"] = "peq";
+                    Config.Data["server"]["world"]["telnet"]["ip"] = "127.0.0.1";
+                    Config.Data["server"]["directories"]["lua_modules"] = "quests/lua_modules/";
+                    Config.Data["server"]["directories"]["quests"] = "quests/";
+                    Config.Data["server"]["directories"]["plugins"] = "quests/plugins/";
+                    Config.Data["server"]["directories"]["maps"] = "maps/";
                     Config.Save();
                     
                     File.WriteAllText(rootPath, $"UPDATE mysql.user SET Password=PASSWORD('{password}') WHERE User='root';\nFLUSH PRIVILEGES;");
@@ -140,7 +147,7 @@ namespace EQEmu_Launcher
                         while (!proc.StandardOutput.EndOfStream)
                         {
                             string line = proc.StandardOutput.ReadLine();
-                            Console.WriteLine($"sql: {line}");
+                            StatusLibrary.Log($"SQL: {line}");
                         }
                     });
                     Thread.Sleep(1000);
@@ -244,7 +251,7 @@ namespace EQEmu_Launcher
 
         public static void FixAll()
         {
-            Console.WriteLine("fixing all server issues");
+            StatusLibrary.Log("Fixing all server issues");
             Task.Run(async () => 
             { 
                 StatusLibrary.LockUI();

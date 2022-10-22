@@ -18,11 +18,11 @@ namespace EQEmu_Launcher.Manage
             Process[] pname = Process.GetProcessesByName("world");
             if (pname.Length > 0)
             {
-                StatusLibrary.SetText(status, $"world is running");
+                StatusLibrary.SetText(status, $"World is running");
                 StatusLibrary.SetIsFixNeeded(status, false);
                 return;
             }
-            StatusLibrary.SetText(status, "world is not running");
+            StatusLibrary.SetText(status, "World is not running");
             StatusLibrary.SetIsFixNeeded(status, true);
         }
 
@@ -32,7 +32,8 @@ namespace EQEmu_Launcher.Manage
             {
                 SharedMemory.Start();
 
-                StatusLibrary.SetStatusBar($"starting world");
+                StatusLibrary.SetStatusBar($"Starting world...");
+                StatusLibrary.SetIsFixNeeded(StatusType.World, true);
                 var proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
@@ -52,11 +53,16 @@ namespace EQEmu_Launcher.Manage
                 Task.Run(() => {
                     while (!proc.StandardOutput.EndOfStream)
                     {
-                        Console.WriteLine($"world: {proc.StandardOutput.ReadLine()}");
+                        string line = proc.StandardOutput.ReadLine();
+                        StatusLibrary.Log($"World: {line}");
+                        if (line.Contains("Server(TCP) listener started on port"))
+                        {
+                            StatusLibrary.SetStatusBar($"World is started");
+                            StatusLibrary.SetIsFixNeeded(StatusType.World, false);
+                        }
                     }
-                    Console.WriteLine($"world: exited");
+                    StatusLibrary.Log($"World: exited");
                 });
-                Check();
             } catch (Exception e)
             {
                 string result = $"failed world start \"server\\world.exe\": {e.Message}";
@@ -72,10 +78,10 @@ namespace EQEmu_Launcher.Manage
             {
 
                 Process[] workers = Process.GetProcessesByName("world");
-                Console.WriteLine($"found {workers.Length} world instances");
+                StatusLibrary.Log($"Found {workers.Length} world instances");
                 foreach (Process worker in workers)
                 {
-                    Console.WriteLine($"stopping world pid {worker.Id}");
+                    StatusLibrary.Log($"Stopping world pid {worker.Id}");
                     worker.Kill();
                     worker.WaitForExit();
                     worker.Dispose();
