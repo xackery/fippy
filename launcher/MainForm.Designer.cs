@@ -153,7 +153,10 @@
             this.mySqlDataAdapter1 = new MySqlConnector.MySqlDataAdapter();
             this.lblStatusBar = new System.Windows.Forms.ToolStripStatusLabel();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.btnMakeGM = new System.Windows.Forms.Button();
+            this.lblMakeGM = new System.Windows.Forms.Label();
+            this.btnMakeGMRefresh = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.tabGM.SuspendLayout();
             this.tabMonitor.SuspendLayout();
@@ -190,6 +193,7 @@
             this.grpRules.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridRules)).BeginInit();
             this.contextSystrayMenu.SuspendLayout();
+            this.groupBox8.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -204,7 +208,7 @@
             // 
             // tabGM
             // 
-            this.tabGM.Controls.Add(this.label3);
+            this.tabGM.Controls.Add(this.groupBox8);
             this.tabGM.Location = new System.Drawing.Point(4, 22);
             this.tabGM.Name = "tabGM";
             this.tabGM.Size = new System.Drawing.Size(552, 408);
@@ -1500,14 +1504,49 @@
             this.label2.Text = "Monitor is not yet coded. This will list accounts and other statistics like how m" +
     "any are online and such for you";
             // 
-            // label3
+            // groupBox8
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 12);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(317, 13);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "GM is not yet coded. This will let you do GM commands, escalate ";
+            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox8.Controls.Add(this.btnMakeGMRefresh);
+            this.groupBox8.Controls.Add(this.btnMakeGM);
+            this.groupBox8.Controls.Add(this.lblMakeGM);
+            this.groupBox8.Location = new System.Drawing.Point(3, 3);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(544, 53);
+            this.groupBox8.TabIndex = 12;
+            this.groupBox8.TabStop = false;
+            // 
+            // btnMakeGM
+            // 
+            this.btnMakeGM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMakeGM.Enabled = false;
+            this.btnMakeGM.Location = new System.Drawing.Point(411, 15);
+            this.btnMakeGM.Name = "btnMakeGM";
+            this.btnMakeGM.Size = new System.Drawing.Size(126, 23);
+            this.btnMakeGM.TabIndex = 8;
+            this.btnMakeGM.Text = "Make GM";
+            this.btnMakeGM.UseVisualStyleBackColor = true;
+            this.btnMakeGM.Click += new System.EventHandler(this.btnMakeGM_Click);
+            // 
+            // lblMakeGM
+            // 
+            this.lblMakeGM.Location = new System.Drawing.Point(6, 20);
+            this.lblMakeGM.Name = "lblMakeGM";
+            this.lblMakeGM.Size = new System.Drawing.Size(330, 13);
+            this.lblMakeGM.TabIndex = 0;
+            this.lblMakeGM.Text = "No account has been made yet";
+            // 
+            // btnMakeGMRefresh
+            // 
+            this.btnMakeGMRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMakeGMRefresh.Location = new System.Drawing.Point(342, 15);
+            this.btnMakeGMRefresh.Name = "btnMakeGMRefresh";
+            this.btnMakeGMRefresh.Size = new System.Drawing.Size(63, 23);
+            this.btnMakeGMRefresh.TabIndex = 9;
+            this.btnMakeGMRefresh.Text = "Refresh";
+            this.btnMakeGMRefresh.UseVisualStyleBackColor = true;
+            this.btnMakeGMRefresh.Click += new System.EventHandler(this.btnMakeGMRefresh_Click);
             // 
             // MainForm
             // 
@@ -1530,7 +1569,6 @@
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.tabGM.ResumeLayout(false);
-            this.tabGM.PerformLayout();
             this.tabMonitor.ResumeLayout(false);
             this.tabMonitor.PerformLayout();
             this.tabManage.ResumeLayout(false);
@@ -1572,6 +1610,7 @@
             this.grpRules.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridRules)).EndInit();
             this.contextSystrayMenu.ResumeLayout(false);
+            this.groupBox8.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1700,8 +1739,11 @@
         private System.Windows.Forms.DataGridView gridRules;
         private MySqlConnector.MySqlDataAdapter mySqlDataAdapter1;
         private System.Windows.Forms.ToolStripStatusLabel lblStatusBar;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.Button btnMakeGM;
+        private System.Windows.Forms.Label lblMakeGM;
+        private System.Windows.Forms.Button btnMakeGMRefresh;
     }
 }
 

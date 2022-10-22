@@ -22,6 +22,7 @@ namespace EQEmu_Launcher
         Regex descriptionLinkRegex = new Regex(@"(.*)\[(.*)\]\((.*)\)(.*)");
         string lastDescription;
         bool isRulesPopulated;
+        bool isLastGMAccountRefreshing;
 
         public MainForm()
         {
@@ -628,7 +629,7 @@ namespace EQEmu_Launcher
                 {
                     continue;
                 }
-                string logPath = $"{path}\\queryserv_{process.Id}.log";
+                string logPath = $"{path}\\query_server_{process.Id}.log";
                 StatusLibrary.Log($"Checking for {process.MainModule.FileName}");
                 if (File.Exists(logPath))
                 {
@@ -647,6 +648,11 @@ namespace EQEmu_Launcher
             if (e.TabPage.Text.Equals("Rules"))
             {
                 PopulateRules();
+            }
+
+            if (e.TabPage.Text.Equals("GM"))
+            {
+                RefreshGM();
             }
         }
 
@@ -715,6 +721,84 @@ namespace EQEmu_Launcher
         private void chkConfigAdvanced_MouseMove(object sender, MouseEventArgs e)
         {
             StatusLibrary.SetDescription("Advanced allows you to customize additional config options.\nSome of these fields are dangerous and can break Fippy, use at your own risk!");
+        }
+
+        private void RefreshGM() 
+        {
+            if (Config.Data == null)
+            {
+                return;
+            } 
+            if (isLastGMAccountRefreshing)
+            {
+                return;
+            }
+            isLastGMAccountRefreshing = true;
+            Task.Run(async () =>
+            {
+                using (MySqlConnection connection = new MySqlConnection($"Server=localhost;User ID={Config.Data?["server"]?["database"]?["username"]};Password={Config.Data?["server"]?["database"]?["password"]};Database={Config.Data?["server"]?["database"]?["db"]}"))
+                {
+                    await connection.OpenAsync(StatusLibrary.CancelToken());
+                    StatusLibrary.Log("Looking for new GM accounts");
+                    MySqlCommand command = new MySqlCommand("SELECT id, name FROM account WHERE status = 0 ORDER BY id DESC LIMIT 1;", connection);
+
+                    using (var reader = await command.ExecuteReaderAsync(StatusLibrary.CancelToken()))
+                    {
+                        while (await reader.ReadAsync(StatusLibrary.CancelToken()))
+                        {
+                            Invoke((MethodInvoker)delegate
+                            {
+                                lblMakeGM.Text = $"Most recent created non-GM account is named {reader.GetString(1)}.";
+                                btnMakeGM.Tag = reader.GetInt32(0);
+                                btnMakeGM.Enabled = true;
+                                isLastGMAccountRefreshing = false;
+                            });
+                            return;
+                        }
+                        Invoke((MethodInvoker)delegate
+                        {
+                            lblMakeGM.Text = $"No accounts have been created yet that are non-GM.";
+                            btnMakeGM.Tag = 0;
+                            btnMakeGM.Enabled = false;
+                            isLastGMAccountRefreshing = false;
+                        });
+                    }
+                }
+            });
+        }
+
+        private void btnMakeGMRefresh_Click(object sender, EventArgs e)
+        {
+            if (Config.Data == null)
+            {
+                return;
+            }
+            RefreshGM();
+        }
+
+        private void btnMakeGM_Click(object sender, EventArgs e)
+        {
+            if (Config.Data == null)
+            {
+                return;
+            }
+            if (btnMakeGM.Tag == null || (int)btnMakeGM.Tag < 1)
+            {
+                return;
+            }
+            Task.Run(async () =>
+            {
+                using (MySqlConnection connection = new MySqlConnection($"Server=localhost;User ID={Config.Data?["server"]?["database"]?["user"]};Password={Config.Data?["server"]?["database"]?["password"]};Database={Config.Data?["server"]?["database"]?["db"]}"))
+                {
+                    await connection.OpenAsync(StatusLibrary.CancelToken());
+
+                    MySqlCommand command = new MySqlCommand("UPDATE account SET status = 255 WHERE id = @id", connection);
+                    command.Parameters.AddWithValue("@id", (int)btnMakeGM.Tag);
+                    command.ExecuteNonQuery();
+
+                    RefreshGM();
+                }
+            });
         }
     }
 }
