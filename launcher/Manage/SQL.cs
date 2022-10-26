@@ -18,59 +18,86 @@ namespace EQEmu_Launcher
 
         public static bool IsRunning()
         {
-            Process[] processes = Process.GetProcessesByName("mysqld");
-            if (processes.Length == 0)
+            try
             {
-                return false;
-            }
-            foreach (Process process in processes)
-            {
-                if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin\\mysqld.exe"))
+                Process[] processes = Process.GetProcessesByName("mysqld");
+                if (processes.Length == 0)
                 {
                     return false;
                 }
+                foreach (Process process in processes)
+                {
+                    if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin\\mysqld.exe"))
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Access is denied"))
+                {
+                    return true;
+                }
+                return true;
             }
             return true;
         }
 
         public static void Check()
         {
-            Process[] processes = Process.GetProcessesByName("mysqld");
-            if (processes.Length == 0)
+            try
             {
-                StatusLibrary.SetText(status, "SQL is not running");
-                StatusLibrary.SetIsFixNeeded(status, true);
-                StatusLibrary.SetIsEnabled(StatusType.SharedMemory, false);
-                return;
-            }
+                Process[] processes = Process.GetProcessesByName("mysqld");
+                if (processes.Length == 0)
+                {
+                    StatusLibrary.SetText(status, "SQL is not running");
+                    StatusLibrary.SetIsFixNeeded(status, true);
+                    StatusLibrary.SetIsEnabled(StatusType.SharedMemory, false);
+                    return;
+                }
 
-            bool isExited = true;
-            foreach (Process process in processes)
-            {
-                if (process.HasExited)
-                {                    
-                    continue;
-                }
-                try
+                bool isExited = true;
+                foreach (Process process in processes)
                 {
-                    if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin\\mysqld.exe"))
+                    if (process.HasExited)
                     {
-                        StatusLibrary.SetText(status, "Another SQL instance running");
-                        StatusLibrary.SetIsFixNeeded(status, true);
-                        StatusLibrary.SetIsEnabled(StatusType.SharedMemory, false);
-                        return;
+                        continue;
                     }
-                }  catch (Exception ex)
-                {
-                    StatusLibrary.Log($"Failed to get SQL process list: {ex.Message}");
+                    try
+                    {
+                        if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin\\mysqld.exe"))
+                        {
+                            StatusLibrary.SetText(status, "Another SQL instance running");
+                            StatusLibrary.SetDescription(status, "SQL was detected being ran elsewhere. You can try to hit Stop to terminate the process via Fippy, but if it is installed via the Akka Installer, Fippy will likely fail due to not enough permissions. You can start Task Manager, and go to Services tab, to stop MySQL, or find it via whatever SQL manager you use outside Fippy in this case.");
+                            StatusLibrary.SetIsFixNeeded(status, true);
+                            StatusLibrary.SetIsEnabled(StatusType.SharedMemory, false);
+                            return;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        StatusLibrary.Log($"Failed to get SQL process list: {ex.Message}");
+                    }
+                    isExited = false;
                 }
-                isExited = false;
-            }
-            if (isExited)
+                if (isExited)
+                {
+                    StatusLibrary.SetText(status, "SQL is not running");
+                    StatusLibrary.SetIsFixNeeded(status, true);
+                    StatusLibrary.SetIsEnabled(StatusType.SharedMemory, false);
+                    return;
+                }
+            } catch (Exception ex)
             {
-                StatusLibrary.SetText(status, "SQL is not running");
-                StatusLibrary.SetIsFixNeeded(status, true);
-                StatusLibrary.SetIsEnabled(StatusType.SharedMemory, false);
+                if (ex.Message.Contains("Access denied"))
+                {
+                    StatusLibrary.Log("Access was denied during SQL check, noting another sql instance");
+                    StatusLibrary.SetText(status, "Another SQL instance running");
+                    StatusLibrary.SetDescription(status, "SQL was detected being ran elsewhere. You can try to hit Stop to terminate the process via Fippy, but if it is installed via the Akka Installer, Fippy will likely fail due to not enough permissions. You can start Task Manager, and go to Services tab, to stop MySQL, or find it via whatever SQL manager you use outside Fippy in this case.");
+                    StatusLibrary.SetIsFixNeeded(status, true);
+                    StatusLibrary.SetIsEnabled(StatusType.SharedMemory, false);
+                }
                 return;
             }
 

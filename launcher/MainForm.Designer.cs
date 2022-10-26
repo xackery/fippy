@@ -781,6 +781,7 @@
             this.lblSQL.TabIndex = 0;
             this.lblSQL.Text = "SQL is running";
             this.lblSQL.Click += new System.EventHandler(this.lblSQL_Click);
+            this.lblSQL.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lblSQL_MouseMove);
             // 
             // tabControlMain
             // 

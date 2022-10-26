@@ -944,6 +944,11 @@ namespace EQEmu_Launcher
             }
             StatusLibrary.SetProgress(value);
         }
+
+        private void lblSQL_MouseMove(object sender, MouseEventArgs e)
+        {
+            StatusLibrary.SetDescription(StatusLibrary.Description(StatusType.SQL));
+        }
     }
 }
 

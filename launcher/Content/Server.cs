@@ -340,18 +340,31 @@ namespace EQEmu_Launcher
                 Thread.Sleep(500);
                 StatusLibrary.SetStatusBar("Cleaning up cache");
                 path = $"{Application.StartupPath}\\cache\\peq-db-latest";
-                if (Directory.Exists(path))
+                try
                 {
-                    Directory.Delete(path, true);
+                    if (Directory.Exists(path))
+                    {
+                        Directory.Delete(path, true);
+                    }
+                } catch (Exception ex)
+                {
+                    StatusLibrary.Log($"Failed to delete extracted cache peq-db-latest, this is fine ignored: {ex.Message}");
                 }
 
-                // Clean up root password file, if it exists
-                if (File.Exists(rootPath))
+                try 
                 {
-                    File.Delete(rootPath);
+                    // Clean up root password file, if it exists
+                    if (File.Exists(rootPath))
+                    {
+                        File.Delete(rootPath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StatusLibrary.Log($"Failed to delete root password reset file in cache, this is fine if ignored: {ex.Message}");
                 }
 
-                Config.Load();
+            Config.Load();
                 SQL.Check();
                 QueryServ.Check();
                 UCS.Check();
