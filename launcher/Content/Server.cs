@@ -26,10 +26,43 @@ namespace EQEmu_Launcher
         {
             StatusLibrary.SetIsFixNeeded(status, true);
             string path;
-            path = $"{Application.StartupPath}\\server\\updates_staged\\peq-latest.zip";
+
+
+            StatusType context = StatusType.Quest;
+            StatusLibrary.SetIsFixNeeded(context, true);
+            StatusLibrary.SetText(context, "Quests not found");
+            path = $"{Application.StartupPath}\\server\\quests";
+            if (Directory.Exists(path))
+            {
+                StatusLibrary.SetText(status, "Quests found");
+                StatusLibrary.SetIsFixNeeded(context, false);
+            }
+
+            context = StatusType.Database;
+            StatusLibrary.SetIsFixNeeded(context, true);
+            StatusLibrary.SetText(context, "Database not found");
+            path = $"{Application.StartupPath}\\cache\\peq-db-latest.zip";
+            if (File.Exists(path))
+            {
+                StatusLibrary.SetText(status, "Database found");
+                StatusLibrary.SetIsFixNeeded(context, false);
+            }
+
+            context = StatusType.Map;
+            StatusLibrary.SetIsFixNeeded(context, true);
+            StatusLibrary.SetText(context, "Map not found");
+            path = $"{Application.StartupPath}\\server\\maps";
+            if (Directory.Exists(path))
+            {
+                StatusLibrary.SetText(status, "Maps found");
+                StatusLibrary.SetIsFixNeeded(context, false);
+            }
+
+
+            path = $"{Application.StartupPath}\\cache\\peq-db-latest.zip";
             if (!File.Exists(path))
             {
-                StatusLibrary.SetText(status, "Cannot find peq-latest.zip");
+                StatusLibrary.SetText(status, "Cannot find peq-db-latest.zip");
                 return 70;
             }
 
@@ -127,7 +160,9 @@ namespace EQEmu_Launcher
                 if (isNewConfig)
                 {
                     // Ensure all instances are properly closed
-                    SQL.Stop();
+                    if (SQL.Stop()) {
+                        Thread.Sleep(2000);
+                    }
                     StatusLibrary.SetProgress(22);
                     StatusLibrary.SetStatusBar("Setting new root password");
                     try
@@ -188,9 +223,9 @@ namespace EQEmu_Launcher
                             }
                             StatusLibrary.Log($"sql error: {line}");
                         });
+                        proc.Start();
                         proc.BeginErrorReadLine();
                         proc.BeginOutputReadLine();
-                        proc.Start();
                         Thread.Sleep(1000);
                     }
                     catch (Exception ex)
@@ -294,6 +329,8 @@ namespace EQEmu_Launcher
                     if (stage == -1) { return; }
                     if (!fixAll && stage > startStage) { return; }
 
+                    Thread.Sleep(1500);
+
                     stage = await UtilityLibrary.SourcePEQDB(80, 90);
                     if (stage == -1) { return; }
                     if (!fixAll && stage > startStage) { return; }
@@ -316,12 +353,16 @@ namespace EQEmu_Launcher
 
                 Config.Load();
                 SQL.Check();
-                SharedMemory.Check();
-                World.Check();
-                Zones.Check();
-                UCS.Check();
                 QueryServ.Check();
+                UCS.Check();
+                Zones.Check();
+                World.Check();
+                SharedMemory.Check();
 
+                if (isNewDB)
+                {
+                    SQL.Stop();
+                }
                 StatusLibrary.SetStatusBar("Server successfully updated");
             } catch (Exception ex)
             {

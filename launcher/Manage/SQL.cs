@@ -83,7 +83,7 @@ namespace EQEmu_Launcher
 
         public static void Start() {            
             Stop();
-            StatusLibrary.SetStatusBar($"starting sql");
+            StatusLibrary.SetStatusBar($"Starting sql");
             string path = $"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\data";
             if (!Directory.Exists(path))
             {
@@ -125,11 +125,11 @@ namespace EQEmu_Launcher
             proc.BeginOutputReadLine();
            
             Check();
-            SharedMemory.Check();
-            World.Check();
             Zones.Check();
             UCS.Check();
             QueryServ.Check();
+            World.Check();
+            SharedMemory.Check();
         }
 
         public static bool Stop()

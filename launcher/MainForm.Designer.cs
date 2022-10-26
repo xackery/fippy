@@ -93,7 +93,7 @@
             this.grpMap = new System.Windows.Forms.GroupBox();
             this.picMap = new System.Windows.Forms.PictureBox();
             this.button10 = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.cmbMap = new System.Windows.Forms.ComboBox();
             this.button11 = new System.Windows.Forms.Button();
             this.lblMap = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
@@ -890,7 +890,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpMap.Controls.Add(this.picMap);
             this.grpMap.Controls.Add(this.button10);
-            this.grpMap.Controls.Add(this.comboBox1);
+            this.grpMap.Controls.Add(this.cmbMap);
             this.grpMap.Controls.Add(this.button11);
             this.grpMap.Controls.Add(this.lblMap);
             this.grpMap.Location = new System.Drawing.Point(6, 181);
@@ -920,17 +920,17 @@
             this.button10.Text = "Reset";
             this.button10.UseVisualStyleBackColor = true;
             // 
-            // comboBox1
+            // cmbMap
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
+            this.cmbMap.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbMap.FormattingEnabled = true;
+            this.cmbMap.Items.AddRange(new object[] {
             "Official",
             "Custom"});
-            this.comboBox1.Location = new System.Drawing.Point(251, 17);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(115, 21);
-            this.comboBox1.TabIndex = 5;
+            this.cmbMap.Location = new System.Drawing.Point(251, 17);
+            this.cmbMap.Name = "cmbMap";
+            this.cmbMap.Size = new System.Drawing.Size(115, 21);
+            this.cmbMap.TabIndex = 5;
             // 
             // button11
             // 
@@ -1793,7 +1793,7 @@
         private System.Windows.Forms.GroupBox grpMap;
         private System.Windows.Forms.PictureBox picMap;
         private System.Windows.Forms.Button button10;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox cmbMap;
         private System.Windows.Forms.Button button11;
         private System.Windows.Forms.Label lblMap;
         private System.Windows.Forms.GroupBox grpRules;

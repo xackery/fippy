@@ -25,6 +25,8 @@ namespace EQEmu_Launcher
         QueryServ, // manage section used for queryServ status text
         SharedMemory, // manage section used for sharedMemory status text
         Database, // checkup section for database prep work
+        Quest,
+        Map,
     }
 
     /// <summary>
@@ -303,7 +305,7 @@ namespace EQEmu_Launcher
             if (!checks.ContainsKey(name))
             {
                 mux.ReleaseMutex();
-                throw new System.Exception($"status get description for {name} not found in dictionary");
+                throw new System.Exception($"Status get description for {name} not found in dictionary");
             }
             string value = checks[name].Description;
             mux.ReleaseMutex();
@@ -316,7 +318,7 @@ namespace EQEmu_Launcher
             if (!checks.ContainsKey(name))
             {
                 mux.ReleaseMutex();
-                throw new System.Exception($"status set description for {name} not found in dictionary");
+                throw new System.Exception($"Status set description for {name} not found in dictionary");
             }
 
             checks[name].Description = value;

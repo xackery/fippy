@@ -98,63 +98,66 @@ namespace EQEmu_Launcher
                     Directory.CreateDirectory($"{Application.StartupPath}\\{outDir}");
                 }
 
-
-                ZipArchive archive = ZipFile.OpenRead(srcPath);
-                int entryCount = archive.Entries.Count;
-                int entryReportStep = 1;
-                int entryReportCounter = 0;
-                if (entryCount > 100)
+                using (ZipArchive archive = ZipFile.OpenRead(srcPath))
                 {
-                    entryReportStep = 10;
-                }
-
-                for (int i = 0; i < entryCount; i++)
-                {
-                    entryReportCounter++;
-                    bool isReportNeeded = false;
-                    if (entryReportCounter >= entryReportStep)
+                    int entryCount = archive.Entries.Count;
+                    int entryReportStep = 1;
+                    int entryReportCounter = 0;
+                    if (entryCount > 100)
                     {
-                        isReportNeeded = true;
-                        entryReportCounter = 0;
-                    }
-                    ZipArchiveEntry entry = archive.Entries[i];
-
-                    int value = startProgress + (int)((endProgress - startProgress) * (float)((float)i / (float)entryCount));
-                    if (isReportNeeded) {
-                        StatusLibrary.SetProgress(value);
+                        entryReportStep = 10;
                     }
 
-                    string zipPath = entry.FullName.Replace("/", "\\").Replace("EQEmuMaps-master\\", "").Replace("projecteqquests-master\\", "");
-                    if (zipPath.StartsWith("c\\"))
+                    for (int i = 0; i < entryCount; i++)
                     {
-                        zipPath = zipPath.Substring(2);
-                    }
-                    if (zipPath.Length == 0)
-                    {
-                        continue;
-                    }
-                    string outPath = $"{Application.StartupPath}\\{outDir}\\{zipPath}";
+                        entryReportCounter++;
+                        bool isReportNeeded = false;
+                        if (entryReportCounter >= entryReportStep)
+                        {
+                            isReportNeeded = true;
+                            entryReportCounter = 0;
+                        }
+                        ZipArchiveEntry entry = archive.Entries[i];
 
-                    string zipDir = outPath.Substring(0, outPath.LastIndexOf("\\"));
-                    if (!Directory.Exists(zipDir))
-                    {
-                        StatusLibrary.Log($"Creating directory {zipDir}");
-                        Directory.CreateDirectory(zipDir);
-                    }
+                        int value = startProgress + (int)((endProgress - startProgress) * (float)((float)i / (float)entryCount));
+                        if (isReportNeeded)
+                        {
+                            StatusLibrary.SetProgress(value);
+                        }
 
-                    if (outPath.EndsWith("\\"))
-                    {
-                        continue;
-                    }
-                    if (isReportNeeded)
-                    {
-                        StatusLibrary.SetStatusBar($"Extracting {outDir}\\{zipPath}...");
-                        StatusLibrary.Log($"Extracting to {outPath}");
-                    }
+                        string zipPath = entry.FullName.Replace("/", "\\").Replace("EQEmuMaps-master\\", "").Replace("projecteqquests-master\\", "");
+                        if (zipPath.StartsWith("c\\"))
+                        {
+                            zipPath = zipPath.Substring(2);
+                        }
+                        if (zipPath.Length == 0)
+                        {
+                            continue;
+                        }
+                        string outPath = $"{Application.StartupPath}\\{outDir}\\{zipPath}";
 
-                    Stream zipStream = entry.Open();
-                    FileStream fileStream = File.Create(outPath);
-                    await zipStream.CopyToAsync(fileStream);
+                        string zipDir = outPath.Substring(0, outPath.LastIndexOf("\\"));
+                        if (!Directory.Exists(zipDir))
+                        {
+                            StatusLibrary.Log($"Creating directory {zipDir}");
+                            Directory.CreateDirectory(zipDir);
+                        }
+
+                        if (outPath.EndsWith("\\"))
+                        {
+                            continue;
+                        }
+                        if (isReportNeeded)
+                        {
+                            StatusLibrary.SetStatusBar($"Extracting {outDir}\\{zipPath}...");
+                            StatusLibrary.Log($"Extracting to {outPath}");
+                        }
+                        using (Stream zipStream = entry.Open())
+                        {
+                            FileStream fileStream = File.Create(outPath);
+                            await zipStream.CopyToAsync(fileStream);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -318,7 +321,6 @@ namespace EQEmu_Launcher
                 proc.Start();
                 proc.BeginErrorReadLine();
                 proc.BeginOutputReadLine();
-                StatusLibrary.SetStatusBar("Downloading latest PEQ Database...");
 
                 proc.WaitForExit();
                 StatusLibrary.SetStatusBar($"Injected successfully");

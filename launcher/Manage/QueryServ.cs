@@ -94,7 +94,7 @@ namespace EQEmu_Launcher.Manage
                 StatusLibrary.Log($"Found {workers.Length} QueryServ instances");
                 foreach (Process worker in workers)
                 {
-                    StatusLibrary.Log($"stopping QueryServ pid {worker.Id}");
+                    StatusLibrary.Log($"Stopping QueryServ pid {worker.Id}");
                     worker.Kill();
                     worker.WaitForExit();
                     worker.Dispose();

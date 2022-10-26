@@ -54,11 +54,26 @@ namespace EQEmu_Launcher
                     //btnContentDownloadAll.Enabled = value;
             });
             }));
-            Server.Check();
+
+            context = StatusType.QueryServ;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblQueryServ.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picQueryServ.BackColor = value ? Color.Red : Color.Lime; }); }));
+            QueryServ.Check();
+
+            context = StatusType.Quest;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblQuest.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picQuest.BackColor = value ? Color.Red : Color.Lime; }); }));
+
+            context = StatusType.Map;
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblMap.Text = value; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picMap.BackColor = value ? Color.Red : Color.Lime; }); }));
+
 
             context = StatusType.Database;
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblDatabase.Text = value; }); }));
             StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picDatabase.BackColor = value ? Color.Red : Color.Lime; }); }));
+
+            Server.Check();
             Database.Check();
 
             // Manage
@@ -84,11 +99,6 @@ namespace EQEmu_Launcher
             StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picUCS.BackColor = value ? Color.Red : Color.Lime; }); }));
             UCS.Check();
 
-
-            context = StatusType.QueryServ;
-            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblQueryServ.Text = value; }); }));
-            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picQueryServ.BackColor = value ? Color.Red : Color.Lime; }); }));
-            QueryServ.Check();
 
             context = StatusType.StatusBar;
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate 
@@ -138,6 +148,13 @@ namespace EQEmu_Launcher
                 grpQueryServ.Enabled = isRunning;
             }); }));
 
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => {
+                Invoke((MethodInvoker)delegate {
+                    picSharedMemory.BackColor = value ? Color.Red : Color.Lime;
+                });
+            }));
+
+
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate {
                     lblSharedMemory.Text = value;
                 });
@@ -172,6 +189,7 @@ namespace EQEmu_Launcher
             cmbQuest.SelectedIndex = 0;
             cmbDatabase.SelectedIndex = 0;
             cmbServer.SelectedIndex = 0;
+            cmbMap.SelectedIndex = 0;
             string dirName = new DirectoryInfo($"{Application.StartupPath}").Name;
             Text = $"Fippy Darklauncher v{Assembly.GetEntryAssembly().GetName().Version} ({dirName} Folder)";
             if (Assembly.GetEntryAssembly().GetName().Version.ToString().Equals("1.0.0.0"))
@@ -337,7 +355,7 @@ namespace EQEmu_Launcher
                 return;
             }
 
-            StatusLibrary.SetStatusBar($"starting heidi via {path}");
+            StatusLibrary.SetStatusBar($"Starting heidi via {path}");
             var proc = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -850,14 +868,25 @@ namespace EQEmu_Launcher
             }
             Task.Run(async () =>
             {
-                using (MySqlConnection connection = new MySqlConnection($"Server=localhost;User ID={Config.Data?["server"]?["database"]?["user"]};Password={Config.Data?["server"]?["database"]?["password"]};Database={Config.Data?["server"]?["database"]?["db"]}"))
+                try
                 {
-                    await connection.OpenAsync(StatusLibrary.CancelToken());
+                    
+                    string connString = $"Server=localhost;User ID={Config.Data?["server"]?["database"]?["username"]};Password={Config.Data?["server"]?["database"]?["password"]};Database={Config.Data?["server"]?["database"]?["db"]}";
+                    StatusLibrary.SetStatusBar($"Setting user ID {btnMakeGM.Tag} to GM using {connString}");
+                    using (MySqlConnection connection = new MySqlConnection(connString))
+                    {
+                        await connection.OpenAsync(StatusLibrary.CancelToken());
 
-                    MySqlCommand command = new MySqlCommand("UPDATE account SET status = 255 WHERE id = @id", connection);
-                    command.Parameters.AddWithValue("@id", (int)btnMakeGM.Tag);
-                    command.ExecuteNonQuery();
+                        MySqlCommand command = new MySqlCommand("UPDATE account SET status = 255 WHERE id = @id", connection);
+                        command.Parameters.AddWithValue("@id", (int)btnMakeGM.Tag);
+                        command.ExecuteNonQuery();
 
+                        RefreshGM();
+                        StatusLibrary.SetStatusBar($"Finished setting GM");
+                    }
+                } catch (Exception ex)
+                {
+                    StatusLibrary.SetStatusBar($"Failed to set GM: {ex.Message}");
                     RefreshGM();
                 }
             });

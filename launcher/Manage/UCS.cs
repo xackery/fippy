@@ -36,7 +36,7 @@ namespace EQEmu_Launcher.Manage
         {
             try
             {
-                StatusLibrary.SetStatusBar($"starting ucs");
+                StatusLibrary.SetStatusBar($"Starting ucs");
                 var proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
