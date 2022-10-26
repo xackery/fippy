@@ -98,3 +98,4 @@ FieldColor_Spatial<|||>3<|||>13553267
 FieldColor_Other<|||>3<|||>7586241
 FieldEditor_Set<|||>3<|||>1
 MainWinMaximized<|||>3<|||>1
+PromptSaveFileOnTabClose<|||>3<|||>0

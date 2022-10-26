@@ -271,9 +271,6 @@ sub check_for_world_bootup_database_update
             print "[Update] Updating database...\n";
             sleep(1);
             main_db_management();
-
-            analytics_insertion("auto database upgrade world",
-                $db . " :: Binary DB Version / Local DB Version :: " . $binary_database_version . " / " . $local_database_version);
         }
 
         #::: Make sure that we didn't pass any arugments to the script
@@ -306,9 +303,6 @@ sub check_for_world_bootup_database_update
                 print "[Update] Updating bots database...\n";
                 sleep(1);
                 bots_db_management();
-
-                analytics_insertion("auto database bots upgrade world",
-                    $db . " :: Binary DB Version / Local DB Version :: " . $binary_database_version . " / " . $local_database_version);
             }
 
             #::: Make sure that we didn't pass any arugments to the script
@@ -657,7 +651,6 @@ sub show_menu_prompt
             $input = $last_menu;
         }
         elsif ($dc == 1) {
-            analytics_insertion("menu", trim($input));
             $dc    = 0;
             $input = "";
         }
@@ -667,7 +660,6 @@ sub show_menu_prompt
 
         #::: If we're processing a CLI command, kill the loop
         if ($ARGV[0] ne "") {
-            analytics_insertion("cli", trim($input));
             $input   = "";
             $ARGV[0] = "";
             exit;
