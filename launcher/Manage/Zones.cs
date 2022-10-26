@@ -9,9 +9,15 @@ using System.Windows.Forms;
 
 namespace EQEmu_Launcher.Manage
 {
-    internal class Zone
+    internal class Zones
     {
         static readonly StatusType status = StatusType.Zone;
+
+        public static bool IsRunning()
+        {
+            Process[] processes = Process.GetProcessesByName("zone");
+            return processes.Length > 0;
+        }
 
         public static void Check()
         {
@@ -33,7 +39,7 @@ namespace EQEmu_Launcher.Manage
                 
                 for (int i = 0; i < 3; i++)
                 {
-                    StatusLibrary.SetStatusBar($"starting {i} zone");
+                    StatusLibrary.SetStatusBar($"Starting Zone #{i}");
                     var proc = new Process
                     {
                         StartInfo = new ProcessStartInfo
@@ -43,25 +49,41 @@ namespace EQEmu_Launcher.Manage
                             Arguments = "",
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
+                            RedirectStandardError = true,
                             CreateNoWindow = true
                         }
                     };
 
+                    proc.OutputDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+                    {
+                        string line = earg.Data;
+                        if (line == null)
+                        {
+                            return;
+                        }
+                        StatusLibrary.Log($"Zone: {line}");
+                    });
+
+                    proc.ErrorDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+                    {
+                        string line = earg.Data;
+                        if (line == null)
+                        {
+                            return;
+                        }
+                        StatusLibrary.Log($"Zone error: {line}");
+                    });
+
                     proc.StartInfo.EnvironmentVariables["PATH"] = UtilityLibrary.EnvironmentPath();
                     proc.Start();
-
-                    Task.Run(() => {
-                        while (!proc.StandardOutput.EndOfStream)
-                        {
-                            StatusLibrary.Log($"Zone {i}: {proc.StandardOutput.ReadLine()}");
-                        }
-                        StatusLibrary.Log($"Zone: exited");
-                    });
+                    proc.BeginErrorReadLine();
+                    proc.BeginOutputReadLine();
                     Check();
+                    StatusLibrary.SetStatusBar("Zones started");
                 }
             } catch (Exception e)
             {
-                string result = $"failed zone start \"server\\zone.exe\": {e.Message}";
+                string result = $"Failed zone start \"server\\zone.exe\": {e.Message}";
                 StatusLibrary.SetStatusBar(result);
                 MessageBox.Show(result, "Zone Start", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

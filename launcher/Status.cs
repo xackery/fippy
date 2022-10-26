@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.IO;
@@ -37,11 +38,10 @@ namespace EQEmu_Launcher
 
         public delegate void ProgressHandler(int value);
         static event ProgressHandler progressChange;
+        static int progressValue;
 
         public delegate void DescriptionHandler(string value);
         static event DescriptionHandler descriptionChange;
-
-        static FileStream logw;
 
         /// <summary>
         /// When the UI is locked/unlocked, cancellation is fired. This is a thread safe operation to access
@@ -64,26 +64,20 @@ namespace EQEmu_Launcher
         public static void Log(string message)
         {   
             mux.WaitOne();
-            using (var logw = File.Open("fippy.log", FileMode.Append))
+            try
             {
-                string rawMessage = $"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ff")} INFO {message}\n";
-                logw.Write(Encoding.ASCII.GetBytes(rawMessage), 0, rawMessage.Length);
-                logw.Flush();
+                using (var logw = File.Open("fippy.log", FileMode.Append))
+                {
+                    string rawMessage = $"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ff")} INFO {message}\n";
+                    logw.Write(Encoding.ASCII.GetBytes(rawMessage), 0, rawMessage.Length);
+                    logw.Flush();
+                }
+            } catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to write to log: {ex.Message}");
             }
             Console.WriteLine(message);
             mux.ReleaseMutex();
-        }
-
-        public static void Initialize()
-        {
-            foreach (StatusType key in System.Enum.GetValues(typeof(StatusType)))
-            {
-                Status value = new Status
-                {
-                    Name = key.ToString()
-                };
-                Add(key, value);
-            }
         }
 
         public static Status Get(StatusType name)
@@ -91,8 +85,7 @@ namespace EQEmu_Launcher
             mux.WaitOne();
             if (!checks.ContainsKey(name))
             {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status get {name} invalid, not found in dictionary");
+                checks[name] = new Status();
             }
             mux.ReleaseMutex();
             return checks[name];
@@ -101,10 +94,9 @@ namespace EQEmu_Launcher
         public static void Add(StatusType name, Status value)
         {
             mux.WaitOne();
-            if (checks.ContainsKey(name))
+            if (!checks.ContainsKey(name))
             {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status add {name} already exists in dictionary");
+                checks[name] = new Status();
             }
             checks[name] = value;
             mux.ReleaseMutex();
@@ -161,8 +153,7 @@ namespace EQEmu_Launcher
             mux.WaitOne();
             if (!checks.ContainsKey(name))
             {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status get isfixneeded for {name} not found in dictionary");
+                checks[name] = new Status();
             }
             Status status = checks[name];
             bool isFixNeeded = status.IsFixNeeded;
@@ -177,11 +168,35 @@ namespace EQEmu_Launcher
             mux.WaitOne();
             if (!checks.ContainsKey(name))
             {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status set text for {name} not found in dictionary");
+                checks[name] = new Status();
             }
 
             checks[name].Text = value;
+            mux.ReleaseMutex();
+        }
+
+
+        public static void SetIsEnabled(StatusType name, bool value)
+        {
+            mux.WaitOne();
+            if (!checks.ContainsKey(name))
+            {
+                checks[name] = new Status();
+            }
+
+            checks[name].IsEnabled = value;
+            mux.ReleaseMutex();
+        }
+
+        public static void SubscribeIsEnabled(StatusType name, EventHandler<bool> f)
+        {
+            mux.WaitOne();
+            if (!checks.ContainsKey(name))
+            {
+                checks[name] = new Status();
+            }
+            Status status = checks[name];
+            status.IsEnabledChange += f;
             mux.ReleaseMutex();
         }
 
@@ -190,8 +205,7 @@ namespace EQEmu_Launcher
             mux.WaitOne();
             if (!checks.ContainsKey(name))
             {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status set isfixneeded for {name} not found in dictionary");
+                checks[name] = new Status();
             }
 
             checks[name].IsFixNeeded = value;
@@ -203,61 +217,19 @@ namespace EQEmu_Launcher
             mux.WaitOne();
             if (!checks.ContainsKey(name))
             {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status subscribe stage for {name} not found in dictionary");
+                checks[name] = new Status();
             }
             Status status = checks[name];
             status.IsFixNeededChange += f;
             mux.ReleaseMutex();
         }
 
-        public static string Name(StatusType name)
-        {
-            mux.WaitOne();
-            if (!checks.ContainsKey(name))
-            {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status get name for {name} not found in dictionary");
-            }
-            string value = checks[name].Name;
-            mux.ReleaseMutex();
-            return value;
-        }
-
-        public static void SetName(StatusType name, string value)
-        {
-            mux.WaitOne();
-            if (!checks.ContainsKey(name))
-            {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status set name for {name} not found in dictionary");
-            }
-
-            checks[name].Name = value;
-            mux.ReleaseMutex();
-        }
-
-        public static void SubscribeName(StatusType name, EventHandler<string> f)
-        {
-            mux.WaitOne();
-            if (!checks.ContainsKey(name))
-            {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status get text for {name} not found in dictionary");
-            }
-            Status status = checks[name];
-            status.NameChange += f;
-            mux.ReleaseMutex();
-        }
-
-
         public static string Text(StatusType name)
         {
             mux.WaitOne();
             if (!checks.ContainsKey(name))
             {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status get text for {name} not found in dictionary");
+                checks[name] = new Status();
             }
             string value = checks[name].Text;
             mux.ReleaseMutex();
@@ -269,8 +241,7 @@ namespace EQEmu_Launcher
             mux.WaitOne();
             if (!checks.ContainsKey(name))
             {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status set text for {name} not found in dictionary");
+                checks[name] = new Status();
             }
 
             checks[name].Text = value;
@@ -282,17 +253,25 @@ namespace EQEmu_Launcher
             mux.WaitOne();
             if (!checks.ContainsKey(name))
             {
-                mux.ReleaseMutex();
-                throw new System.Exception($"status subscribe stage for {name} not found in dictionary");
+                checks[name] = new Status();                
             }
             Status status = checks[name];
             status.TextChange += f;
             mux.ReleaseMutex();
         }
 
+        public static int Progress()
+        {
+            mux.WaitOne();
+            int value = progressValue;
+            mux.ReleaseMutex();
+            return value;
+        }
+
         public static void SetProgress(int value)
         {
             mux.WaitOne();
+            progressValue = value;
             progressChange?.BeginInvoke(value, null, null);
             mux.ReleaseMutex();
         }
@@ -349,9 +328,9 @@ namespace EQEmu_Launcher
         /// </summary>
         internal class Status
         {
-            string name;
-            public string Name { get { return name; } set { name = value; NameChange?.BeginInvoke(this, value, null, null); } }
-            public event EventHandler<string> NameChange;
+            bool isLocked;
+            public bool IsEnabled { get { return isLocked; } set { isLocked = value; IsEnabledChange?.BeginInvoke(this, value, null, null); } }
+            public event EventHandler<bool> IsEnabledChange;
 
             string text;
             public string Text { get { return text; } set { text = value; TextChange?.BeginInvoke(this, value, null, null); } }

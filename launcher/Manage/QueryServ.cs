@@ -13,6 +13,12 @@ namespace EQEmu_Launcher.Manage
     {
         static readonly StatusType status = StatusType.QueryServ;
 
+        public static bool IsRunning()
+        {
+            Process[] processes = Process.GetProcessesByName("QueryServ");
+            return processes.Length > 0;
+        }
+
         public static void Check()
         {
             Process[] pname = Process.GetProcessesByName("QueryServ");
@@ -40,20 +46,34 @@ namespace EQEmu_Launcher.Manage
                         Arguments = "",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
+                        RedirectStandardError = true,
                         CreateNoWindow = true
                     }
                 };
+                proc.OutputDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+                {
+                    string line = earg.Data;
+                    if (line == null)
+                    {
+                        return;
+                    }
+                    StatusLibrary.Log($"QueryServ: {line}");
+                });
 
+                proc.ErrorDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+                {
+                    string line = earg.Data;
+                    if (line == null)
+                    {
+                        return;
+                    }
+                    StatusLibrary.Log($"QueryServ error: {line}");
+                });
                 proc.StartInfo.EnvironmentVariables["PATH"] = UtilityLibrary.EnvironmentPath();
                 proc.Start();
+                proc.BeginErrorReadLine();
+                proc.BeginOutputReadLine();
 
-                Task.Run(() => {
-                    while (!proc.StandardOutput.EndOfStream)
-                    {
-                        StatusLibrary.Log($"QueryServ: {proc.StandardOutput.ReadLine()}");
-                    }
-                    StatusLibrary.Log($"queryServ: exited");
-                });
                 Check();
             }
             catch (Exception e)

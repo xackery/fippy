@@ -261,7 +261,7 @@
     <Compile Include="Manage\SharedMemory.cs" />
     <Compile Include="Manage\World.cs" />
     <Compile Include="Manage\UCS.cs" />
-    <Compile Include="Manage\Zone.cs" />
+    <Compile Include="Manage\Zones.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status.cs" />

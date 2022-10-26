@@ -31,24 +31,34 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.lblStatusBar = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabGM = new System.Windows.Forms.TabPage();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.btnMakeGMRefresh = new System.Windows.Forms.Button();
+            this.btnMakeGM = new System.Windows.Forms.Button();
+            this.lblMakeGM = new System.Windows.Forms.Label();
             this.tabMonitor = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
             this.tabManage = new System.Windows.Forms.TabPage();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.grpSharedMemory = new System.Windows.Forms.GroupBox();
+            this.picSharedMemory = new System.Windows.Forms.PictureBox();
+            this.btnSharedMemory = new System.Windows.Forms.Button();
+            this.lblSharedMemory = new System.Windows.Forms.Label();
+            this.grpQueryServ = new System.Windows.Forms.GroupBox();
             this.picQueryServ = new System.Windows.Forms.PictureBox();
             this.btnQueryServLogs = new System.Windows.Forms.Button();
             this.btnQueryServStop = new System.Windows.Forms.Button();
             this.btnQueryServRestart = new System.Windows.Forms.Button();
             this.btnQueryServStart = new System.Windows.Forms.Button();
             this.lblQueryServ = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.grpUCS = new System.Windows.Forms.GroupBox();
             this.picUCS = new System.Windows.Forms.PictureBox();
             this.btnUCSLogs = new System.Windows.Forms.Button();
             this.btnUCSStop = new System.Windows.Forms.Button();
             this.btnUCSRestart = new System.Windows.Forms.Button();
             this.btnUCSStart = new System.Windows.Forms.Button();
             this.lblUCS = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.grpZone = new System.Windows.Forms.GroupBox();
             this.picZone = new System.Windows.Forms.PictureBox();
             this.btnZoneLogs = new System.Windows.Forms.Button();
             this.txtZoneCount = new System.Windows.Forms.TextBox();
@@ -56,7 +66,7 @@
             this.btnZoneRestart = new System.Windows.Forms.Button();
             this.btnZoneStart = new System.Windows.Forms.Button();
             this.lblZone = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.grpWorld = new System.Windows.Forms.GroupBox();
             this.picWorld = new System.Windows.Forms.PictureBox();
             this.btnWorldLogs = new System.Windows.Forms.Button();
             this.btnWorldStop = new System.Windows.Forms.Button();
@@ -66,10 +76,10 @@
             this.grpSQL = new System.Windows.Forms.GroupBox();
             this.picSQL = new System.Windows.Forms.PictureBox();
             this.btnHeidi = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.btnSQLRestore = new System.Windows.Forms.Button();
+            this.btnSQLBackup = new System.Windows.Forms.Button();
             this.btnSQLStop = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnSQLRestart = new System.Windows.Forms.Button();
             this.btnSQLStart = new System.Windows.Forms.Button();
             this.lblSQL = new System.Windows.Forms.Label();
             this.tabControlMain = new System.Windows.Forms.TabControl();
@@ -151,23 +161,21 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.lblDescription = new System.Windows.Forms.LinkLabel();
             this.mySqlDataAdapter1 = new MySqlConnector.MySqlDataAdapter();
-            this.lblStatusBar = new System.Windows.Forms.ToolStripStatusLabel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.btnMakeGM = new System.Windows.Forms.Button();
-            this.lblMakeGM = new System.Windows.Forms.Label();
-            this.btnMakeGMRefresh = new System.Windows.Forms.Button();
+            this.secondTimer = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1.SuspendLayout();
             this.tabGM.SuspendLayout();
+            this.groupBox8.SuspendLayout();
             this.tabMonitor.SuspendLayout();
             this.tabManage.SuspendLayout();
-            this.groupBox4.SuspendLayout();
+            this.grpSharedMemory.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picSharedMemory)).BeginInit();
+            this.grpQueryServ.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picQueryServ)).BeginInit();
-            this.groupBox3.SuspendLayout();
+            this.grpUCS.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picUCS)).BeginInit();
-            this.groupBox2.SuspendLayout();
+            this.grpZone.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picZone)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            this.grpWorld.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picWorld)).BeginInit();
             this.grpSQL.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSQL)).BeginInit();
@@ -193,7 +201,6 @@
             this.grpRules.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridRules)).BeginInit();
             this.contextSystrayMenu.SuspendLayout();
-            this.groupBox8.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -206,6 +213,12 @@
             this.statusStrip1.TabIndex = 10;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // lblStatusBar
+            // 
+            this.lblStatusBar.Name = "lblStatusBar";
+            this.lblStatusBar.Size = new System.Drawing.Size(69, 17);
+            this.lblStatusBar.Text = "lblStatusBar";
+            // 
             // tabGM
             // 
             this.tabGM.Controls.Add(this.groupBox8);
@@ -215,6 +228,50 @@
             this.tabGM.TabIndex = 4;
             this.tabGM.Text = "GM";
             this.tabGM.UseVisualStyleBackColor = true;
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox8.Controls.Add(this.btnMakeGMRefresh);
+            this.groupBox8.Controls.Add(this.btnMakeGM);
+            this.groupBox8.Controls.Add(this.lblMakeGM);
+            this.groupBox8.Location = new System.Drawing.Point(3, 3);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(544, 53);
+            this.groupBox8.TabIndex = 12;
+            this.groupBox8.TabStop = false;
+            // 
+            // btnMakeGMRefresh
+            // 
+            this.btnMakeGMRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMakeGMRefresh.Location = new System.Drawing.Point(342, 15);
+            this.btnMakeGMRefresh.Name = "btnMakeGMRefresh";
+            this.btnMakeGMRefresh.Size = new System.Drawing.Size(63, 23);
+            this.btnMakeGMRefresh.TabIndex = 9;
+            this.btnMakeGMRefresh.Text = "Refresh";
+            this.btnMakeGMRefresh.UseVisualStyleBackColor = true;
+            this.btnMakeGMRefresh.Click += new System.EventHandler(this.btnMakeGMRefresh_Click);
+            // 
+            // btnMakeGM
+            // 
+            this.btnMakeGM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMakeGM.Enabled = false;
+            this.btnMakeGM.Location = new System.Drawing.Point(411, 15);
+            this.btnMakeGM.Name = "btnMakeGM";
+            this.btnMakeGM.Size = new System.Drawing.Size(126, 23);
+            this.btnMakeGM.TabIndex = 8;
+            this.btnMakeGM.Text = "Make GM";
+            this.btnMakeGM.UseVisualStyleBackColor = true;
+            this.btnMakeGM.Click += new System.EventHandler(this.btnMakeGM_Click);
+            // 
+            // lblMakeGM
+            // 
+            this.lblMakeGM.Location = new System.Drawing.Point(6, 20);
+            this.lblMakeGM.Name = "lblMakeGM";
+            this.lblMakeGM.Size = new System.Drawing.Size(330, 13);
+            this.lblMakeGM.TabIndex = 0;
+            this.lblMakeGM.Text = "No account has been made yet";
             // 
             // tabMonitor
             // 
@@ -226,12 +283,23 @@
             this.tabMonitor.Text = "Monitor";
             this.tabMonitor.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(15, 18);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(517, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Monitor is not yet coded. This will list accounts and other statistics like how m" +
+    "any are online and such for you";
+            // 
             // tabManage
             // 
-            this.tabManage.Controls.Add(this.groupBox4);
-            this.tabManage.Controls.Add(this.groupBox3);
-            this.tabManage.Controls.Add(this.groupBox2);
-            this.tabManage.Controls.Add(this.groupBox1);
+            this.tabManage.Controls.Add(this.grpSharedMemory);
+            this.tabManage.Controls.Add(this.grpQueryServ);
+            this.tabManage.Controls.Add(this.grpUCS);
+            this.tabManage.Controls.Add(this.grpZone);
+            this.tabManage.Controls.Add(this.grpWorld);
             this.tabManage.Controls.Add(this.grpSQL);
             this.tabManage.Location = new System.Drawing.Point(4, 22);
             this.tabManage.Name = "tabManage";
@@ -240,22 +308,65 @@
             this.tabManage.Text = "Manage";
             this.tabManage.UseVisualStyleBackColor = true;
             // 
-            // groupBox4
+            // grpSharedMemory
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.grpSharedMemory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox4.Controls.Add(this.picQueryServ);
-            this.groupBox4.Controls.Add(this.btnQueryServLogs);
-            this.groupBox4.Controls.Add(this.btnQueryServStop);
-            this.groupBox4.Controls.Add(this.btnQueryServRestart);
-            this.groupBox4.Controls.Add(this.btnQueryServStart);
-            this.groupBox4.Controls.Add(this.lblQueryServ);
-            this.groupBox4.Location = new System.Drawing.Point(3, 219);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(546, 48);
-            this.groupBox4.TabIndex = 12;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "QueryServ";
+            this.grpSharedMemory.Controls.Add(this.picSharedMemory);
+            this.grpSharedMemory.Controls.Add(this.btnSharedMemory);
+            this.grpSharedMemory.Controls.Add(this.lblSharedMemory);
+            this.grpSharedMemory.Location = new System.Drawing.Point(3, 57);
+            this.grpSharedMemory.Name = "grpSharedMemory";
+            this.grpSharedMemory.Size = new System.Drawing.Size(546, 48);
+            this.grpSharedMemory.TabIndex = 13;
+            this.grpSharedMemory.TabStop = false;
+            this.grpSharedMemory.Text = "Shared Memory";
+            // 
+            // picSharedMemory
+            // 
+            this.picSharedMemory.BackColor = System.Drawing.Color.Lime;
+            this.picSharedMemory.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picSharedMemory.Location = new System.Drawing.Point(6, 17);
+            this.picSharedMemory.Name = "picSharedMemory";
+            this.picSharedMemory.Size = new System.Drawing.Size(16, 16);
+            this.picSharedMemory.TabIndex = 12;
+            this.picSharedMemory.TabStop = false;
+            // 
+            // btnSharedMemory
+            // 
+            this.btnSharedMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSharedMemory.Location = new System.Drawing.Point(203, 15);
+            this.btnSharedMemory.Name = "btnSharedMemory";
+            this.btnSharedMemory.Size = new System.Drawing.Size(42, 23);
+            this.btnSharedMemory.TabIndex = 1;
+            this.btnSharedMemory.Text = "Run";
+            this.btnSharedMemory.UseVisualStyleBackColor = true;
+            this.btnSharedMemory.Click += new System.EventHandler(this.btnSharedMemory_Click);
+            // 
+            // lblSharedMemory
+            // 
+            this.lblSharedMemory.Location = new System.Drawing.Point(28, 20);
+            this.lblSharedMemory.Name = "lblSharedMemory";
+            this.lblSharedMemory.Size = new System.Drawing.Size(197, 13);
+            this.lblSharedMemory.TabIndex = 0;
+            this.lblSharedMemory.Text = "Shared Memory needs to be ran";
+            // 
+            // grpQueryServ
+            // 
+            this.grpQueryServ.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpQueryServ.Controls.Add(this.picQueryServ);
+            this.grpQueryServ.Controls.Add(this.btnQueryServLogs);
+            this.grpQueryServ.Controls.Add(this.btnQueryServStop);
+            this.grpQueryServ.Controls.Add(this.btnQueryServRestart);
+            this.grpQueryServ.Controls.Add(this.btnQueryServStart);
+            this.grpQueryServ.Controls.Add(this.lblQueryServ);
+            this.grpQueryServ.Location = new System.Drawing.Point(3, 273);
+            this.grpQueryServ.Name = "grpQueryServ";
+            this.grpQueryServ.Size = new System.Drawing.Size(546, 48);
+            this.grpQueryServ.TabIndex = 12;
+            this.grpQueryServ.TabStop = false;
+            this.grpQueryServ.Text = "QueryServ";
             // 
             // picQueryServ
             // 
@@ -319,22 +430,22 @@
             this.lblQueryServ.TabIndex = 0;
             this.lblQueryServ.Text = "QueryServ is running";
             // 
-            // groupBox3
+            // grpUCS
             // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.grpUCS.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.picUCS);
-            this.groupBox3.Controls.Add(this.btnUCSLogs);
-            this.groupBox3.Controls.Add(this.btnUCSStop);
-            this.groupBox3.Controls.Add(this.btnUCSRestart);
-            this.groupBox3.Controls.Add(this.btnUCSStart);
-            this.groupBox3.Controls.Add(this.lblUCS);
-            this.groupBox3.Location = new System.Drawing.Point(3, 165);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(546, 48);
-            this.groupBox3.TabIndex = 11;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "UCS";
+            this.grpUCS.Controls.Add(this.picUCS);
+            this.grpUCS.Controls.Add(this.btnUCSLogs);
+            this.grpUCS.Controls.Add(this.btnUCSStop);
+            this.grpUCS.Controls.Add(this.btnUCSRestart);
+            this.grpUCS.Controls.Add(this.btnUCSStart);
+            this.grpUCS.Controls.Add(this.lblUCS);
+            this.grpUCS.Location = new System.Drawing.Point(3, 219);
+            this.grpUCS.Name = "grpUCS";
+            this.grpUCS.Size = new System.Drawing.Size(546, 48);
+            this.grpUCS.TabIndex = 11;
+            this.grpUCS.TabStop = false;
+            this.grpUCS.Text = "UCS";
             // 
             // picUCS
             // 
@@ -398,23 +509,23 @@
             this.lblUCS.TabIndex = 0;
             this.lblUCS.Text = "UCS is running";
             // 
-            // groupBox2
+            // grpZone
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.grpZone.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.picZone);
-            this.groupBox2.Controls.Add(this.btnZoneLogs);
-            this.groupBox2.Controls.Add(this.txtZoneCount);
-            this.groupBox2.Controls.Add(this.btnZoneStop);
-            this.groupBox2.Controls.Add(this.btnZoneRestart);
-            this.groupBox2.Controls.Add(this.btnZoneStart);
-            this.groupBox2.Controls.Add(this.lblZone);
-            this.groupBox2.Location = new System.Drawing.Point(3, 57);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(546, 48);
-            this.groupBox2.TabIndex = 10;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Zone";
+            this.grpZone.Controls.Add(this.picZone);
+            this.grpZone.Controls.Add(this.btnZoneLogs);
+            this.grpZone.Controls.Add(this.txtZoneCount);
+            this.grpZone.Controls.Add(this.btnZoneStop);
+            this.grpZone.Controls.Add(this.btnZoneRestart);
+            this.grpZone.Controls.Add(this.btnZoneStart);
+            this.grpZone.Controls.Add(this.lblZone);
+            this.grpZone.Location = new System.Drawing.Point(3, 165);
+            this.grpZone.Name = "grpZone";
+            this.grpZone.Size = new System.Drawing.Size(546, 48);
+            this.grpZone.TabIndex = 10;
+            this.grpZone.TabStop = false;
+            this.grpZone.Text = "Zone";
             // 
             // picZone
             // 
@@ -487,22 +598,22 @@
             this.lblZone.TabIndex = 0;
             this.lblZone.Text = "3 of          zone instances running";
             // 
-            // groupBox1
+            // grpWorld
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.grpWorld.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.picWorld);
-            this.groupBox1.Controls.Add(this.btnWorldLogs);
-            this.groupBox1.Controls.Add(this.btnWorldStop);
-            this.groupBox1.Controls.Add(this.btnWorldRestart);
-            this.groupBox1.Controls.Add(this.btnWorldStart);
-            this.groupBox1.Controls.Add(this.lblWorld);
-            this.groupBox1.Location = new System.Drawing.Point(3, 111);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(546, 48);
-            this.groupBox1.TabIndex = 8;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "World";
+            this.grpWorld.Controls.Add(this.picWorld);
+            this.grpWorld.Controls.Add(this.btnWorldLogs);
+            this.grpWorld.Controls.Add(this.btnWorldStop);
+            this.grpWorld.Controls.Add(this.btnWorldRestart);
+            this.grpWorld.Controls.Add(this.btnWorldStart);
+            this.grpWorld.Controls.Add(this.lblWorld);
+            this.grpWorld.Location = new System.Drawing.Point(3, 111);
+            this.grpWorld.Name = "grpWorld";
+            this.grpWorld.Size = new System.Drawing.Size(546, 48);
+            this.grpWorld.TabIndex = 8;
+            this.grpWorld.TabStop = false;
+            this.grpWorld.Text = "World";
             // 
             // picWorld
             // 
@@ -572,10 +683,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpSQL.Controls.Add(this.picSQL);
             this.grpSQL.Controls.Add(this.btnHeidi);
-            this.grpSQL.Controls.Add(this.button5);
-            this.grpSQL.Controls.Add(this.button4);
+            this.grpSQL.Controls.Add(this.btnSQLRestore);
+            this.grpSQL.Controls.Add(this.btnSQLBackup);
             this.grpSQL.Controls.Add(this.btnSQLStop);
-            this.grpSQL.Controls.Add(this.button1);
+            this.grpSQL.Controls.Add(this.btnSQLRestart);
             this.grpSQL.Controls.Add(this.btnSQLStart);
             this.grpSQL.Controls.Add(this.lblSQL);
             this.grpSQL.Location = new System.Drawing.Point(3, 3);
@@ -607,25 +718,27 @@
             this.btnHeidi.UseVisualStyleBackColor = true;
             this.btnHeidi.Click += new System.EventHandler(this.btnHeidi_Click);
             // 
-            // button5
+            // btnSQLRestore
             // 
-            this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button5.Location = new System.Drawing.Point(411, 15);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(53, 23);
-            this.button5.TabIndex = 7;
-            this.button5.Text = "Restore";
-            this.button5.UseVisualStyleBackColor = true;
+            this.btnSQLRestore.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSQLRestore.Location = new System.Drawing.Point(411, 15);
+            this.btnSQLRestore.Name = "btnSQLRestore";
+            this.btnSQLRestore.Size = new System.Drawing.Size(53, 23);
+            this.btnSQLRestore.TabIndex = 7;
+            this.btnSQLRestore.Text = "Restore";
+            this.btnSQLRestore.UseVisualStyleBackColor = true;
+            this.btnSQLRestore.Click += new System.EventHandler(this.btnSQLRestore_Click);
             // 
-            // button4
+            // btnSQLBackup
             // 
-            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button4.Location = new System.Drawing.Point(470, 15);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(53, 23);
-            this.button4.TabIndex = 6;
-            this.button4.Text = "Backup";
-            this.button4.UseVisualStyleBackColor = true;
+            this.btnSQLBackup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSQLBackup.Location = new System.Drawing.Point(470, 15);
+            this.btnSQLBackup.Name = "btnSQLBackup";
+            this.btnSQLBackup.Size = new System.Drawing.Size(53, 23);
+            this.btnSQLBackup.TabIndex = 6;
+            this.btnSQLBackup.Text = "Backup";
+            this.btnSQLBackup.UseVisualStyleBackColor = true;
+            this.btnSQLBackup.Click += new System.EventHandler(this.btnSQLBackup_Click);
             // 
             // btnSQLStop
             // 
@@ -638,15 +751,16 @@
             this.btnSQLStop.UseVisualStyleBackColor = true;
             this.btnSQLStop.Click += new System.EventHandler(this.btnSQLStop_Click);
             // 
-            // button1
+            // btnSQLRestart
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(299, 15);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(53, 23);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Restart";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnSQLRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSQLRestart.Location = new System.Drawing.Point(299, 15);
+            this.btnSQLRestart.Name = "btnSQLRestart";
+            this.btnSQLRestart.Size = new System.Drawing.Size(53, 23);
+            this.btnSQLRestart.TabIndex = 4;
+            this.btnSQLRestart.Text = "Restart";
+            this.btnSQLRestart.UseVisualStyleBackColor = true;
+            this.btnSQLRestart.Click += new System.EventHandler(this.btnSQLRestart_Click);
             // 
             // btnSQLStart
             // 
@@ -1097,7 +1211,7 @@
             // 
             this.txtLongName.Location = new System.Drawing.Point(78, 18);
             this.txtLongName.Name = "txtLongName";
-            this.txtLongName.Size = new System.Drawing.Size(154, 20);
+            this.txtLongName.Size = new System.Drawing.Size(212, 20);
             this.txtLongName.TabIndex = 10;
             this.txtLongName.MouseMove += new System.Windows.Forms.MouseEventHandler(this.txtLongName_MouseMove);
             // 
@@ -1488,65 +1602,10 @@
             this.mySqlDataAdapter1.UpdateBatchSize = 0;
             this.mySqlDataAdapter1.UpdateCommand = null;
             // 
-            // lblStatusBar
+            // secondTimer
             // 
-            this.lblStatusBar.Name = "lblStatusBar";
-            this.lblStatusBar.Size = new System.Drawing.Size(69, 17);
-            this.lblStatusBar.Text = "lblStatusBar";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 18);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(517, 13);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Monitor is not yet coded. This will list accounts and other statistics like how m" +
-    "any are online and such for you";
-            // 
-            // groupBox8
-            // 
-            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox8.Controls.Add(this.btnMakeGMRefresh);
-            this.groupBox8.Controls.Add(this.btnMakeGM);
-            this.groupBox8.Controls.Add(this.lblMakeGM);
-            this.groupBox8.Location = new System.Drawing.Point(3, 3);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(544, 53);
-            this.groupBox8.TabIndex = 12;
-            this.groupBox8.TabStop = false;
-            // 
-            // btnMakeGM
-            // 
-            this.btnMakeGM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMakeGM.Enabled = false;
-            this.btnMakeGM.Location = new System.Drawing.Point(411, 15);
-            this.btnMakeGM.Name = "btnMakeGM";
-            this.btnMakeGM.Size = new System.Drawing.Size(126, 23);
-            this.btnMakeGM.TabIndex = 8;
-            this.btnMakeGM.Text = "Make GM";
-            this.btnMakeGM.UseVisualStyleBackColor = true;
-            this.btnMakeGM.Click += new System.EventHandler(this.btnMakeGM_Click);
-            // 
-            // lblMakeGM
-            // 
-            this.lblMakeGM.Location = new System.Drawing.Point(6, 20);
-            this.lblMakeGM.Name = "lblMakeGM";
-            this.lblMakeGM.Size = new System.Drawing.Size(330, 13);
-            this.lblMakeGM.TabIndex = 0;
-            this.lblMakeGM.Text = "No account has been made yet";
-            // 
-            // btnMakeGMRefresh
-            // 
-            this.btnMakeGMRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMakeGMRefresh.Location = new System.Drawing.Point(342, 15);
-            this.btnMakeGMRefresh.Name = "btnMakeGMRefresh";
-            this.btnMakeGMRefresh.Size = new System.Drawing.Size(63, 23);
-            this.btnMakeGMRefresh.TabIndex = 9;
-            this.btnMakeGMRefresh.Text = "Refresh";
-            this.btnMakeGMRefresh.UseVisualStyleBackColor = true;
-            this.btnMakeGMRefresh.Click += new System.EventHandler(this.btnMakeGMRefresh_Click);
+            this.secondTimer.Interval = 1000;
+            this.secondTimer.Tick += new System.EventHandler(this.secondTimer_Tick);
             // 
             // MainForm
             // 
@@ -1569,17 +1628,20 @@
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.tabGM.ResumeLayout(false);
+            this.groupBox8.ResumeLayout(false);
             this.tabMonitor.ResumeLayout(false);
             this.tabMonitor.PerformLayout();
             this.tabManage.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
+            this.grpSharedMemory.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.picSharedMemory)).EndInit();
+            this.grpQueryServ.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picQueryServ)).EndInit();
-            this.groupBox3.ResumeLayout(false);
+            this.grpUCS.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picUCS)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.grpZone.ResumeLayout(false);
+            this.grpZone.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picZone)).EndInit();
-            this.groupBox1.ResumeLayout(false);
+            this.grpWorld.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picWorld)).EndInit();
             this.grpSQL.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picSQL)).EndInit();
@@ -1610,7 +1672,6 @@
             this.grpRules.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridRules)).EndInit();
             this.contextSystrayMenu.ResumeLayout(false);
-            this.groupBox8.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1623,30 +1684,30 @@
         private System.Windows.Forms.TabPage tabManage;
         private System.Windows.Forms.TabControl tabControlMain;
         private System.Windows.Forms.GroupBox grpSQL;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button btnSQLRestore;
+        private System.Windows.Forms.Button btnSQLBackup;
         private System.Windows.Forms.Button btnSQLStop;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnSQLRestart;
         private System.Windows.Forms.Button btnSQLStart;
         private System.Windows.Forms.Label lblSQL;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox grpWorld;
         private System.Windows.Forms.Button btnWorldStop;
         private System.Windows.Forms.Button btnWorldRestart;
         private System.Windows.Forms.Button btnWorldStart;
         private System.Windows.Forms.Label lblWorld;
-        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.GroupBox grpQueryServ;
         private System.Windows.Forms.Button btnQueryServLogs;
         private System.Windows.Forms.Button btnQueryServStop;
         private System.Windows.Forms.Button btnQueryServRestart;
         private System.Windows.Forms.Button btnQueryServStart;
         private System.Windows.Forms.Label lblQueryServ;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox grpUCS;
         private System.Windows.Forms.Button btnUCSLogs;
         private System.Windows.Forms.Button btnUCSStop;
         private System.Windows.Forms.Button btnUCSRestart;
         private System.Windows.Forms.Button btnUCSStart;
         private System.Windows.Forms.Label lblUCS;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox grpZone;
         private System.Windows.Forms.Button btnZoneLogs;
         private System.Windows.Forms.TextBox txtZoneCount;
         private System.Windows.Forms.Button btnZoneStop;
@@ -1744,6 +1805,11 @@
         private System.Windows.Forms.Button btnMakeGM;
         private System.Windows.Forms.Label lblMakeGM;
         private System.Windows.Forms.Button btnMakeGMRefresh;
+        private System.Windows.Forms.GroupBox grpSharedMemory;
+        private System.Windows.Forms.PictureBox picSharedMemory;
+        private System.Windows.Forms.Button btnSharedMemory;
+        private System.Windows.Forms.Label lblSharedMemory;
+        private System.Windows.Forms.Timer secondTimer;
     }
 }
 

@@ -42,14 +42,18 @@ namespace EQEmu_Launcher
                                       ref preference, sizeof(uint));
                 ChangeTheme(this.Controls, true);
             }
-            StatusLibrary.Initialize();
 
             StatusType context;
 
             // Content
             context = StatusType.Server;
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblServer.Text = value; }); }));
-            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picServer.BackColor = value ? Color.Red : Color.Lime; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate {
+                    picContent.BackColor = value ? Color.Red : Color.Lime;
+                    picServer.BackColor = value ? Color.Red : Color.Lime;
+                    //btnContentDownloadAll.Enabled = value;
+            });
+            }));
             Server.Check();
 
             context = StatusType.Database;
@@ -60,13 +64,15 @@ namespace EQEmu_Launcher
             // Manage
             context = StatusType.SQL;
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblSQL.Text = value; }); }));
-            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picSQL.BackColor = value ? Color.Red : Color.Lime; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { 
+                picSQL.BackColor = value ? Color.Red : Color.Lime; }); 
+            }));
             SQL.Check();
 
             context = StatusType.Zone;
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblZone.Text = value; }); }));
             StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picZone.BackColor = value ? Color.Red : Color.Lime; }); }));
-            Zone.Check();
+            Zones.Check();
 
             context = StatusType.World;
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblWorld.Text = value; }); }));
@@ -122,8 +128,47 @@ namespace EQEmu_Launcher
                 lblDescription.LinkArea = area;
             }); }));
 
-            ConfigLoad();
+            context = StatusType.SharedMemory;
+            StatusLibrary.SubscribeIsEnabled(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate {
+                grpSharedMemory.Enabled = value;
+                grpWorld.Enabled = value;
+                bool isRunning = World.IsRunning();
+                grpZone.Enabled = isRunning;
+                grpUCS.Enabled = isRunning;
+                grpQueryServ.Enabled = isRunning;
+            }); }));
 
+            StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate {
+                    lblSharedMemory.Text = value;
+                });
+            }));
+
+            context = StatusType.World;
+            StatusLibrary.SubscribeIsEnabled(context, new EventHandler<bool>((object src, bool value) => {
+                Invoke((MethodInvoker)delegate {
+                    grpWorld.Enabled = value;
+                    bool isRunning = World.IsRunning();
+                    grpZone.Enabled = isRunning;
+                    grpUCS.Enabled = isRunning;
+                    grpQueryServ.Enabled = isRunning;
+                });
+            }));
+
+            Config.SubscribeOnLoad(new Config.NullHandler(() => { Invoke((MethodInvoker)delegate {
+                    txtKey.Text = Config.Data?["server"]?["world"]?["key"];
+                    txtLongName.Text = Config.Data?["server"]?["world"]?["longname"];
+                    txtShortName.Text = Config.Data?["server"]?["world"]?["shortname"];
+                    txtUsername.Text = Config.Data?["server"]?["database"]?["username"];
+                    txtPassword.Text = Config.Data?["server"]?["database"]?["password"];
+                    txtPort.Text = Config.Data?["server"]?["database"]?["port"];
+                    txtHost.Text = Config.Data?["server"]?["database"]?["host"];
+                    txtDatabase.Text = Config.Data?["server"]?["database"]?["db"];
+                    chkTelnet.Checked = (Config.Data?["server"]?["world"]?["telnet"]?["enabled"] == "true");
+                }); 
+            }));
+            Config.Load();
+
+            SharedMemory.Check();
             cmbQuest.SelectedIndex = 0;
             cmbDatabase.SelectedIndex = 0;
             cmbServer.SelectedIndex = 0;
@@ -144,6 +189,7 @@ namespace EQEmu_Launcher
                 Application.Exit();
             }
 
+            SQL.Check();
             StatusLibrary.SetStatusBar("Ready");
 
         }
@@ -256,19 +302,19 @@ namespace EQEmu_Launcher
         private void manageTimer_Tick(object sender, EventArgs e)
         {
             SQL.Check();
-            Zone.Check();
+            Zones.Check();
         }
 
         private void btnZoneStart_Click(object sender, EventArgs e)
         {
-            Zone.Start();
-            Zone.Check();
+            Zones.Start();
+            Zones.Check();
         }
 
         private void btnZoneStop_Click(object sender, EventArgs e)
         {
-            Zone.Stop();
-            Zone.Check();
+            Zones.Stop();
+            Zones.Check();
         }
 
         private void btnHeidi_Click(object sender, EventArgs e)
@@ -300,29 +346,16 @@ namespace EQEmu_Launcher
                     Arguments = $"-h {Config.Data?["server"]?["database"]?["host"]} -u {Config.Data?["server"]?["database"]?["username"]} -p {Config.Data?["server"]?["database"]?["password"]} -P {Config.Data?["server"]?["database"]?["port"]}",
                     UseShellExecute = false,
                     RedirectStandardOutput = false,
+                    RedirectStandardError = false,
                     CreateNoWindow = true
                 }
             };
             proc.Start();
         }
 
-        public void ConfigLoad()
-        {
-            Config.Load();
-            txtKey.Text = Config.Data?["server"]?["world"]?["key"];
-            txtLongName.Text = Config.Data?["server"]?["world"]?["longname"];
-            txtShortName.Text = Config.Data?["server"]?["world"]?["shortname"];
-            txtUsername.Text = Config.Data?["server"]?["database"]?["username"];
-            txtPassword.Text = Config.Data?["server"]?["database"]?["password"];
-            txtPort.Text = Config.Data?["server"]?["database"]?["port"];
-            txtHost.Text = Config.Data?["server"]?["database"]?["host"];
-            txtDatabase.Text = Config.Data?["server"]?["database"]?["db"];
-            chkTelnet.Checked = (Config.Data?["server"]?["world"]?["telnet"]?["enabled"] == "true");
-        }
-
         private void btnConfigLoad_Click(object sender, EventArgs e)
         {
-            ConfigLoad();
+            Config.Load();
         }
 
         private void btnConfigSave_Click(object sender, EventArgs e)
@@ -358,19 +391,41 @@ namespace EQEmu_Launcher
                 File.WriteAllText(rootPath, $"UPDATE mysql.user SET Password=PASSWORD('{txtPassword.Text}') WHERE User='root';\nFLUSH PRIVILEGES;");
 
                 // Start SQL with no root password
-                string path = $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqld.exe";
+                string path = $"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin\\mysqld.exe";
                 var proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = path,
-                        Arguments = $"--init-file=\"{rootPath}\"",
+                        Arguments = $"--init-file=\"{rootPath}\" --sql-mode=\"NO_ZERO_DATE\"",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
+                        RedirectStandardError = true,
                         CreateNoWindow = true
                     }
                 };
+                proc.OutputDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+                {
+                    string line = earg.Data;
+                    if (line == null)
+                    {
+                        return;
+                    }
+                    StatusLibrary.Log($"sql: {line}");
+                });
+                proc.ErrorDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+                {
+                    string line = earg.Data;
+                    if (line == null)
+                    {
+                        return;
+                    }
+                    StatusLibrary.Log($"sql error: {line}");
+                });
+                
                 proc.Start();
+                proc.BeginErrorReadLine();
+                proc.BeginOutputReadLine();
                 Task.Run(() => { 
                     Thread.Sleep(3000);
                     try
@@ -457,9 +512,9 @@ namespace EQEmu_Launcher
 
         private void btnZoneRestart_Click(object sender, EventArgs e)
         {
-            Zone.Stop();
-            Zone.Start();
-            Zone.Check();
+            Zones.Stop();
+            Zones.Start();
+            Zones.Check();
         }
 
         private void btnUCSStart_Click(object sender, EventArgs e)
@@ -512,7 +567,14 @@ namespace EQEmu_Launcher
 
         private void chkContentAdvanced_CheckedChanged(object sender, EventArgs e)
         {
-            grpContentAdvanced.Enabled = chkContentAdvanced.Checked;
+
+            if (chkContentAdvanced.Checked)
+            {
+                chkContentAdvanced.Checked = false;
+                MessageBox.Show("The advanced content area is not yet ready, and is just a placeholder for now\nDownload via the big button on top and move to next step", "Not yet available");
+            }
+            
+            //grpContentAdvanced.Enabled = chkContentAdvanced.Checked;
         }
 
         private void chkContentAdvanced_MouseMove(object sender, MouseEventArgs e)
@@ -799,6 +861,59 @@ namespace EQEmu_Launcher
                     RefreshGM();
                 }
             });
+        }
+
+        private void btnSQLRestore_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("not yet implemented");
+        }
+
+        private void btnSQLBackup_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("not yet implemented");
+        }
+
+        private void btnSQLRestart_Click(object sender, EventArgs e)
+        {
+            if (SQL.Stop())
+            {
+                SQL.Start();
+            }
+        }
+
+        private void btnSharedMemory_Click(object sender, EventArgs e)
+        {
+            if (World.IsRunning() || Zones.IsRunning())
+            {
+                StatusLibrary.Log("Asking if user wants to run shared memory with world/zone running");
+                var response = MessageBox.Show("Running Shared Memory while World or Zone is up can cause negative side effects.\nRun anyways?", "Run Shared Memory", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (response == DialogResult.No)
+                {
+                    return;
+                }
+            }
+            Task.Run(async () => {
+                StatusLibrary.SetProgress(1);
+                secondTimer.Enabled = true;
+                StatusLibrary.LockUI();                
+                StatusLibrary.SetProgress(1);
+                secondTimer.Enabled = true;
+                SharedMemory.Stop();
+                await SharedMemory.Start();
+                StatusLibrary.UnlockUI();
+                secondTimer.Enabled = false;
+            });
+        }
+
+        private void secondTimer_Tick(object sender, EventArgs e)
+        {
+            int value = StatusLibrary.Progress()+5;
+            if (value > 100)
+            {
+                value = 100;
+                secondTimer.Enabled = false;
+            }
+            StatusLibrary.SetProgress(value);
         }
     }
 }

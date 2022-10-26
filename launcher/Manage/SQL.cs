@@ -1,7 +1,9 @@
-﻿using MS.WindowsAPICodePack.Internal;
+﻿using EQEmu_Launcher.Manage;
+using MS.WindowsAPICodePack.Internal;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -12,54 +14,122 @@ namespace EQEmu_Launcher
 {
     internal class SQL
     {
-        static CancellationTokenSource CancelToken;
         static readonly StatusType status = StatusType.SQL;
+
+        public static bool IsRunning()
+        {
+            Process[] processes = Process.GetProcessesByName("mysqld");
+            if (processes.Length == 0)
+            {
+                return false;
+            }
+            foreach (Process process in processes)
+            {
+                if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin\\mysqld.exe"))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         public static void Check()
         {
-            Process[] pname = Process.GetProcessesByName("mysqld");
-            if (pname.Length > 0)
+            Process[] processes = Process.GetProcessesByName("mysqld");
+            if (processes.Length == 0)
             {
-                StatusLibrary.SetText(status, "SQL is running");
-                StatusLibrary.SetIsFixNeeded(status, false);
+                StatusLibrary.SetText(status, "SQL is not running");
+                StatusLibrary.SetIsFixNeeded(status, true);
+                StatusLibrary.SetIsEnabled(StatusType.SharedMemory, false);
                 return;
             }
-            StatusLibrary.SetText(status, "SQL is not running");
-            StatusLibrary.SetIsFixNeeded(status, true);
+
+            bool isExited = true;
+            foreach (Process process in processes)
+            {
+                if (process.HasExited)
+                {                    
+                    continue;
+                }
+                try
+                {
+                    if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin\\mysqld.exe"))
+                    {
+                        StatusLibrary.SetText(status, "Another SQL instance running");
+                        StatusLibrary.SetIsFixNeeded(status, true);
+                        StatusLibrary.SetIsEnabled(StatusType.SharedMemory, false);
+                        return;
+                    }
+                }  catch (Exception ex)
+                {
+                    StatusLibrary.Log($"Failed to get SQL process list: {ex.Message}");
+                }
+                isExited = false;
+            }
+            if (isExited)
+            {
+                StatusLibrary.SetText(status, "SQL is not running");
+                StatusLibrary.SetIsFixNeeded(status, true);
+                StatusLibrary.SetIsEnabled(StatusType.SharedMemory, false);
+                return;
+            }
+
+            StatusLibrary.SetText(status, "SQL is running");
+            StatusLibrary.SetIsFixNeeded(status, false);
+            StatusLibrary.SetIsEnabled(StatusType.SharedMemory, true);
+            return;
+           
         }
 
         public static void Start() {            
-            if (CancelToken != null)
-            {
-                CancelToken.Cancel();
-            }
-            CancelToken = new CancellationTokenSource();
-
             Stop();
             StatusLibrary.SetStatusBar($"starting sql");
+            string path = $"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\data";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             var proc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqld.exe",
-                    Arguments = "--console",
+                    FileName = $"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin\\mysqld.exe",
+                    Arguments = "--console --sql-mode=\"NO_ZERO_DATE\"",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     CreateNoWindow = true
                 }
             };
-
-            proc.Start();
-            Task.Run(() =>
+            proc.OutputDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
             {
-                while (!proc.StandardOutput.EndOfStream)
+                string line = earg.Data;
+                if (line == null)
                 {
-                    string line = proc.StandardOutput.ReadLine();
-                    StatusLibrary.Log($"SQL: {line}");
+                    return;
                 }
+                StatusLibrary.Log($"sql: {line}");
             });
+
+            proc.ErrorDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+            {
+                string line = earg.Data;
+                if (line == null)
+                {
+                    return;
+                }
+                StatusLibrary.Log($"sql error: {line}");
+            });
+            proc.Start();
+            proc.BeginErrorReadLine();
+            proc.BeginOutputReadLine();
            
             Check();
+            SharedMemory.Check();
+            World.Check();
+            Zones.Check();
+            UCS.Check();
+            QueryServ.Check();
         }
 
         public static bool Stop()
@@ -68,17 +138,13 @@ namespace EQEmu_Launcher
             int sqlCount = 0;
             try
             {
-                if (CancelToken != null)
-                {
-                    CancelToken.Cancel();
-                }
 
                 Process[] processes = Process.GetProcessesByName("mysqld");
                 StatusLibrary.Log($"Found {processes.Length} mysqld instances");
                 bool isMySQLForeign = false;
                 foreach (Process process in processes)
                 {
-                    if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqld.exe"))
+                    if (!process.MainModule.FileName.Equals($"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin\\mysqld.exe"))
                     {
                         isMySQLForeign = true;
                     }

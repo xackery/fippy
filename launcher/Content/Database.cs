@@ -19,7 +19,7 @@ namespace EQEmu_Launcher
         {
             StatusLibrary.SetIsFixNeeded(status, true);
 
-            string path = Application.StartupPath + "\\db\\mariadb-5.5.29-winx64";
+            string path = Application.StartupPath + "\\db\\mariadb-10.6.10-winx64";
             if (!Directory.Exists(path))
             {
                 StatusLibrary.SetText(status, "mariadb not found");
@@ -39,7 +39,7 @@ namespace EQEmu_Launcher
             }
 
             StatusLibrary.SetIsFixNeeded(status, false);
-            StatusLibrary.SetText(status, "database found");
+            StatusLibrary.SetText(status, "Database found");
             return 100;
         }
 
@@ -60,11 +60,11 @@ namespace EQEmu_Launcher
             int startStage = Check();
             int stage;
 
-            stage = await UtilityLibrary.Download(40, 80, "https://archive.mariadb.org/mariadb-5.5.29/winx64-packages/mariadb-5.5.29-winx64.zip", "cache", "mariadb-5.5.29-winx64.zip", 136);
+            stage = await UtilityLibrary.Download(40, 80, "https://archive.mariadb.org/mariadb-10.6.10/winx64-packages/mariadb-10.6.10-winx64.zip", "cache", "mariadb-10.6.10-winx64.zip", 136);
             if (stage == -1) { return; }
             if (!fixAll && stage > startStage) { return; }
 
-            stage = await UtilityLibrary.Extract(40, 80, "cache", "mariadb-5.5.29-winx64.zip", "db", $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\bin\\mysqld.exe", 136);
+            stage = await UtilityLibrary.Extract(40, 80, "cache", "mariadb-10.6.10-winx64.zip", "db", $"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\bin\\mysqld.exe", 136);
             if (stage == -1) { return; }
             if (!fixAll && stage > startStage) { return; }
 

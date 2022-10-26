@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,26 +12,41 @@ namespace EQEmu_Launcher.Manage
 {
     internal class SharedMemory
     {
+        public static bool IsRunning()
+        {
+            Process[] processes = Process.GetProcessesByName("shared_memory");
+            return processes.Length > 0;
+        }
+
         static readonly StatusType status = StatusType.SharedMemory;
 
         public static void Check()
         {
-            Process[] pname = Process.GetProcessesByName("sharedMemory");
-            if (pname.Length > 0)
+            try
             {
-                StatusLibrary.SetText(status, $"sharedMemory is running");
+                string path = $"{Application.StartupPath}\\server\\shared\\base_data";
+                if (!File.Exists(path))
+                {
+                    StatusLibrary.SetText(status, "SharedMemory needs to be ran");
+                    StatusLibrary.SetIsFixNeeded(status, true);
+                    StatusLibrary.SetIsEnabled(StatusType.World, false);
+                    return;
+                }
+                StatusLibrary.SetText(status, "SharedMemory is valid");
                 StatusLibrary.SetIsFixNeeded(status, false);
-                return;
+                StatusLibrary.SetIsEnabled(StatusType.World, true);
             }
-            StatusLibrary.SetText(status, "sharedMemory is not running");
-            StatusLibrary.SetIsFixNeeded(status, true);
+            catch (Exception ex)
+            {
+                StatusLibrary.Log($"Failed to check SharedMemory: {ex.Message}");
+            }
         }
 
-        public static void Start()
+        public static async Task Start()
         {
             try
             {
-                StatusLibrary.SetStatusBar($"starting SharedMemory");
+                StatusLibrary.SetStatusBar($"Starting SharedMemory");
                 var proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
@@ -40,25 +56,43 @@ namespace EQEmu_Launcher.Manage
                         Arguments = "",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
+                        RedirectStandardError = true,
                         CreateNoWindow = true
                     }
                 };
 
+                proc.OutputDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+                {
+                    string line = earg.Data;
+                    if (line == null)
+                    {
+                        return;
+                    }
+                    StatusLibrary.Log($"SharedMemory: {line}");
+                });
+
+                proc.ErrorDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+                {
+                    string line = earg.Data;
+                    if (line == null)
+                    {
+                        return;
+                    }
+                    StatusLibrary.Log($"SharedMemory error: {line}");
+                });
                 proc.StartInfo.EnvironmentVariables["PATH"] = UtilityLibrary.EnvironmentPath();
                 proc.Start();
-
-                while (!proc.StandardOutput.EndOfStream)
-                {
-                    StatusLibrary.Log($"SharedMemory: {proc.StandardOutput.ReadLine()}");
-                }
-                StatusLibrary.Log($"sharedMemory: exited");
-                Check();
+                proc.BeginErrorReadLine();
+                proc.BeginOutputReadLine();
+                proc.WaitForExit();
             } catch (Exception e)
             {
-                string result = $"failed sharedMemory start \"server\\sharedMemory.exe\": {e.Message}";
+                string result = $"Failed SharedMemory start \"server\\sharedMemory.exe\": {e.Message}";
                 StatusLibrary.SetStatusBar(result);
                 MessageBox.Show(result, "SharedMemory Start", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            Check();
         }
 
         public static void Stop()
@@ -67,7 +101,7 @@ namespace EQEmu_Launcher.Manage
             try
             {
 
-                Process[] workers = Process.GetProcessesByName("sharedMemory");
+                Process[] workers = Process.GetProcessesByName("sharedmemory");
                 StatusLibrary.Log($"Found {workers.Length} sharedMemory instances");
                 foreach (Process worker in workers)
                 {

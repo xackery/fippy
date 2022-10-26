@@ -23,7 +23,7 @@ namespace EQEmu_Launcher
     {
         public static string EnvironmentPath()
         {
-            return $"{Environment.GetEnvironmentVariable("PATH")};{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin";
+            return $"{Environment.GetEnvironmentVariable("PATH")};{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin";
         }
 
         public static async Task<int> Download(int startProgress, int endProgress, string source, string outDir, string fileName, int sizeMB)
@@ -169,13 +169,77 @@ namespace EQEmu_Launcher
             return endProgress;
         }
 
+        public static async Task<bool> CreatePEQDB(int startProgress, int endProgress)
+        {
+            bool isDBCreated = false;
+            string dbName = Config.Data?["server"]?["database"]?["db"];
+            string user = "root";
+            string password = Config.Data?["server"]?["database"]?["password"];
+            StatusLibrary.Log($"Checking if {dbName} exists");
+            MySqlConnection connection = new MySqlConnection($"Server=localhost;User ID={user};Password={password}");
+            await connection.OpenAsync(StatusLibrary.CancelToken());
+
+            MySqlCommand command = new MySqlCommand("SHOW databases;", connection);
+
+            var reader = await command.ExecuteReaderAsync(StatusLibrary.CancelToken());
+            while (await reader.ReadAsync(StatusLibrary.CancelToken()))
+            {
+                string line = reader.GetString(0);
+                if (line.Equals(dbName))
+                {
+                    isDBCreated = true;
+                    break;
+                }
+            }
+            reader.Close();
+
+            if (!isDBCreated)
+            {
+                StatusLibrary.Log($"Creating database {dbName}");
+                command = new MySqlCommand($"CREATE DATABASE {dbName};", connection);
+                reader = await command.ExecuteReaderAsync(StatusLibrary.CancelToken());
+                while (await reader.ReadAsync())
+                {
+                    string line = reader.GetString(0);
+                    StatusLibrary.Log(line);
+                }
+            }
+            connection.Close();
+
+
+            connection = new MySqlConnection($"Server=localhost;User ID={user};Password={password};Database={dbName}");
+            await connection.OpenAsync(StatusLibrary.CancelToken());
+            command = new MySqlCommand("SHOW tables;", connection);
+            reader = await command.ExecuteReaderAsync(StatusLibrary.CancelToken());
+            bool isTableOK = false;
+            while (await reader.ReadAsync(StatusLibrary.CancelToken()))
+            {
+                string line = reader.GetString(0);
+                if (line.Equals("account"))
+                {
+                    isTableOK = true;
+                    break;
+                }
+            }
+            reader.Close();
+            connection.Close();
+
+            if (isTableOK)
+            {
+                StatusLibrary.SetStatusBar("Database is already sourced, skipping");
+                StatusLibrary.SetProgress(endProgress);
+                return false;
+            }
+            return true;
+        }
+
         public static async Task<int> SourcePEQDB(int startProgress, int endProgress)
         {
 
             try
             {
                 StatusLibrary.SetProgress(startProgress);
-
+                StatusLibrary.SetStatusBar("Sourcing database...");
                 string path = $"{Application.StartupPath}\\server\\perl\\perl\\bin\\perl.exe";
                 var proc = new Process
                 {
@@ -183,9 +247,10 @@ namespace EQEmu_Launcher
                     {
                         WorkingDirectory = $"{Application.StartupPath}\\server",
                         FileName = path,
-                        Arguments = $"eqemu_server.pl source_peq_db",
+                        Arguments = $"peq_download.pl source_peq_db",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
+                        RedirectStandardError = true,
                         CreateNoWindow = true,
                     }
                 };
@@ -193,24 +258,27 @@ namespace EQEmu_Launcher
                 proc.StartInfo.EnvironmentVariables["PATH"] = EnvironmentPath();
 
                 StatusLibrary.Log($"Running command {path} {proc.StartInfo.Arguments}");
-                proc.Start();
-                StatusLibrary.SetStatusBar("Downloading latest PEQ Database...");
-                while (!proc.StandardOutput.EndOfStream)
+
+                proc.OutputDataReceived += new DataReceivedEventHandler((object sender, DataReceivedEventArgs e) =>
                 {
                     if (StatusLibrary.CancelToken().IsCancellationRequested)
                     {
                         StatusLibrary.Log("Killing peq downloader perl script, cancellation token invoked");
                         var process = Process.GetProcessById(proc.Id);
                         process.Kill();
-                        return -1;
+                        return;
                     }
-                    string line = proc.StandardOutput.ReadLine();
+                    string line = e.Data;
+                    if (line == null)
+                    {
+                        return;
+                    }
                     StatusLibrary.Log($"peq: {line}");
-                    
+
                     if (line.Contains("create_tables_content"))
                     {
-                        StatusLibrary.SetStatusBar("Database sourcing [create_tables_content.sql]...");
-                        StatusLibrary.SetProgress(startProgress + (int)((endProgress - startProgress) * 0.2));
+                        StatusLibrary.SetStatusBar("Database sourcing [create_tables_content.sql] (this will take a while)...");
+                        StatusLibrary.SetProgress(startProgress + (int)((endProgress - startProgress) * 0.1));
                     }
                     if (line.Contains("create_tables_login.sql"))
                     {
@@ -235,24 +303,24 @@ namespace EQEmu_Launcher
                     if (line.Contains("create_tables_system.sql"))
                     {
                         StatusLibrary.SetStatusBar("Database sourcing [create_tables_system.sql]...");
-                        StatusLibrary.SetProgress(startProgress + (int)((endProgress-startProgress) * 0.95));
+                        StatusLibrary.SetProgress(startProgress + (int)((endProgress - startProgress) * 0.95));
                     }
-                    //ERROR 1067 (42000) at line 54: Invalid default value for 'report_datetime'
-                    if (line.Contains("ERROR"))
-                    {
-
-                    }
-                }
-                if (StatusLibrary.CancelToken().IsCancellationRequested)
+                });
+                proc.ErrorDataReceived += new DataReceivedEventHandler((object sender, DataReceivedEventArgs e) =>
                 {
-                    StatusLibrary.Log("Killing peq downloader perl script, cancellation token invoked");
-                    var process = Process.GetProcessById(proc.Id);
-                    if (process != null)
+                    string line = e.Data;
+                    if (line == null)
                     {
-                        process.Kill();
-                        return -1;
+                        return;
                     }
-                }
+                    StatusLibrary.Log($"peq error: {line}");
+                });
+                proc.Start();
+                proc.BeginErrorReadLine();
+                proc.BeginOutputReadLine();
+                StatusLibrary.SetStatusBar("Downloading latest PEQ Database...");
+
+                proc.WaitForExit();
                 StatusLibrary.SetStatusBar($"Injected successfully");
                 StatusLibrary.SetProgress(endProgress);
                 return endProgress;
@@ -395,7 +463,7 @@ namespace EQEmu_Launcher
                     }
 
                     entry.ExtractToFile(outPath);
-                    string path = $"{Application.StartupPath}\\db\\mariadb-5.5.29-winx64\\bin\\mysqld.exe";
+                    string path = $"{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin\\mysqld.exe";
                     var proc = new Process
                     {
                         StartInfo = new ProcessStartInfo
@@ -404,15 +472,32 @@ namespace EQEmu_Launcher
                             Arguments = $"-u {user} -p{password} {dbName} < {outPath}",
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
+                            RedirectStandardError = true,
                             CreateNoWindow = true
                         }
                     };
-                    proc.Start();
-                    while (!proc.StandardOutput.EndOfStream)
+                    proc.OutputDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
                     {
-                        string line = proc.StandardOutput.ReadLine();
+                        string line = earg.Data;
+                        if (line == null)
+                        {
+                            return;
+                        }
                         StatusLibrary.Log($"sql: {line}");
-                    }
+                    });
+
+                    proc.ErrorDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+                    {
+                        string line = earg.Data;
+                        if (line == null)
+                        {
+                            return;
+                        }
+                        StatusLibrary.Log($"sql error: {line}");
+                    });
+
+                    proc.Start();
+                    proc.WaitForExit();
                 }
             }
             catch (Exception ex)

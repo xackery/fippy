@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,26 +14,25 @@ namespace EQEmu_Launcher.Manage
     {
         static readonly StatusType status = StatusType.World;
 
+        public static bool IsRunning()
+        {
+            Process[] processes = Process.GetProcessesByName("world");
+            return processes.Length > 0;
+        }
+
         public static void Check()
         {
-            Process[] pname = Process.GetProcessesByName("world");
-            if (pname.Length > 0)
-            {
-                StatusLibrary.SetText(status, $"World is running");
-                StatusLibrary.SetIsFixNeeded(status, false);
-                return;
-            }
-            StatusLibrary.SetText(status, "World is not running");
-            StatusLibrary.SetIsFixNeeded(status, true);
+            bool isRunning = IsRunning();
+            StatusLibrary.SetText(status, $"World is {(isRunning ? "" : "not ")}running");
+            StatusLibrary.SetIsFixNeeded(status, !isRunning);
+            StatusLibrary.SetIsEnabled(status, true);
         }
 
         public static void Start()
         {
             try
             {
-                SharedMemory.Start();
-
-                StatusLibrary.SetStatusBar($"Starting world...");
+                StatusLibrary.SetStatusBar($"Starting World...");
                 StatusLibrary.SetIsFixNeeded(StatusType.World, true);
                 var proc = new Process
                 {
@@ -43,26 +43,40 @@ namespace EQEmu_Launcher.Manage
                         Arguments = "",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
+                        RedirectStandardError = true,
                         CreateNoWindow = true
                     }
                 };
 
+                proc.OutputDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+                {
+                    string line = earg.Data;
+                    if (line == null)
+                    {
+                        return;
+                    }
+                    StatusLibrary.Log($"World: {line}");
+                    if (line.Contains("Server(TCP) listener started on port"))
+                    {
+                        StatusLibrary.SetStatusBar($"World is started");
+                        StatusLibrary.SetIsFixNeeded(StatusType.World, false);
+                    }
+                });
+
+                proc.ErrorDataReceived += new DataReceivedEventHandler((object src, DataReceivedEventArgs earg) =>
+                {
+                    string line = earg.Data;
+                    if (line == null)
+                    {
+                        return;
+                    }
+                    StatusLibrary.Log($"World error: {line}");
+                });
+
                 proc.StartInfo.EnvironmentVariables["PATH"] = UtilityLibrary.EnvironmentPath();
                 proc.Start();
-
-                Task.Run(() => {
-                    while (!proc.StandardOutput.EndOfStream)
-                    {
-                        string line = proc.StandardOutput.ReadLine();
-                        StatusLibrary.Log($"World: {line}");
-                        if (line.Contains("Server(TCP) listener started on port"))
-                        {
-                            StatusLibrary.SetStatusBar($"World is started");
-                            StatusLibrary.SetIsFixNeeded(StatusType.World, false);
-                        }
-                    }
-                    StatusLibrary.Log($"World: exited");
-                });
+                proc.BeginErrorReadLine();
+                proc.BeginOutputReadLine();
             } catch (Exception e)
             {
                 string result = $"failed world start \"server\\world.exe\": {e.Message}";
