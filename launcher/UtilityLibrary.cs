@@ -23,7 +23,7 @@ namespace EQEmu_Launcher
     {
         public static string EnvironmentPath()
         {
-            return $"{Environment.GetEnvironmentVariable("PATH")};{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin";
+            return $"{Environment.GetEnvironmentVariable("PATH")};{Application.StartupPath}\\db\\mariadb-10.6.10-winx64\\bin;{Application.StartupPath}\\server\\perl\\perl\\bin";
         }
 
         public static async Task<int> Download(int startProgress, int endProgress, string source, string outDir, string fileName, int sizeMB)

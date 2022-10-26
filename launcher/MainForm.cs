@@ -80,13 +80,18 @@ namespace EQEmu_Launcher
             context = StatusType.SQL;
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblSQL.Text = value; }); }));
             StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { 
-                picSQL.BackColor = value ? Color.Red : Color.Lime; }); 
-            }));
+                picSQL.BackColor = value ? Color.Red : Color.Lime;
+                btnHeidi.Enabled = !value;
+                btnSQLBackup.Enabled = !value;
+                btnSQLRestore.Enabled = !value;
+            }); }));
             SQL.Check();
 
             context = StatusType.Zone;
             StatusLibrary.SubscribeText(context, new EventHandler<string>((object src, string value) => { Invoke((MethodInvoker)delegate { lblZone.Text = value; }); }));
-            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { picZone.BackColor = value ? Color.Red : Color.Lime; }); }));
+            StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => { Invoke((MethodInvoker)delegate { 
+                picZone.BackColor = value ? Color.Red : Color.Lime;
+            }); }));
             Zones.Check();
 
             context = StatusType.World;
@@ -151,6 +156,7 @@ namespace EQEmu_Launcher
             StatusLibrary.SubscribeIsFixNeeded(context, new EventHandler<bool>((object src, bool value) => {
                 Invoke((MethodInvoker)delegate {
                     picSharedMemory.BackColor = value ? Color.Red : Color.Lime;
+                    picSharedMemory.Visible = value;
                 });
             }));
 
@@ -951,6 +957,7 @@ namespace EQEmu_Launcher
         }
     }
 }
+
 
 
 
