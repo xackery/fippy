@@ -645,7 +645,7 @@ sub show_menu_prompt
             $dc = 1;
         }        
         elsif ($input eq "source_peq_db") {
-            fetch_peq_db_full();
+            source_peq_db();
             $dc = 1;
         }
         elsif ($input eq "exit") {
@@ -1135,27 +1135,6 @@ sub fetch_server_dlls
     # get_remote_file($install_repository_request_url . "zlib1.dll", "zlib1.dll", 1);
     # get_remote_file($install_repository_request_url . "zlib1.pdb", "zlib1.pdb", 1);
     # get_remote_file($install_repository_request_url . "libmysql.dll", "libmysql.dll", 1);
-}
-
-sub fetch_peq_db_full
-{
-    print "[Install] Downloading latest PEQ Database... Please wait...\n";
-    get_remote_file("http://db.projecteq.net/api/v1/dump/latest", "updates_staged/peq-latest.zip", 1);
-    print "[Install] Downloaded latest PEQ Database... Extracting...\n";
-    unzip('updates_staged/peq-latest.zip', 'updates_staged/peq_db/');
-    my $start_dir = "updates_staged/peq_db/peq-dump";
-    find(
-        sub { push @files, $File::Find::name unless -d; },
-        $start_dir
-    );
-    for my $file (@files) {
-        $destination_file = $file;
-        $destination_file =~ s/updates_staged\/peq_db\/peq-dump\///g;
-        if ($file =~ /create_tables_content|create_tables_login|create_tables_player|create_tables_queryserv|create_tables_state|create_tables_system/i) {
-            print "[Install] Database sourcing [" . $destination_file . "]\n";
-            get_mysql_result_from_file($file);
-        }
-    }
 }
 
 sub source_peq_db
