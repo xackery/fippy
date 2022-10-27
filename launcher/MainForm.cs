@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +32,14 @@ namespace EQEmu_Launcher
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            if (principal.IsInRole(WindowsBuiltInRole.Administrator))
+            {
+                MessageBox.Show("Fippy does not need admin access.\nRestart fippy without admin mode","Admin Mode Detected", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
+            
             StatusLibrary.InitLog();
             int darkThemeValue = (int)Registry.GetValue("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "AppsUseLightTheme", -1);
             bool isDarkTheme = darkThemeValue == 0;
