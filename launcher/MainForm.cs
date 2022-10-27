@@ -955,6 +955,12 @@ namespace EQEmu_Launcher
         {
             StatusLibrary.SetDescription(StatusLibrary.Description(StatusType.SQL));
         }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            notifyIcon.Visible = false;
+            notifyIcon.Dispose();
+        }
     }
 }
 

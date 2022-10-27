@@ -156,11 +156,9 @@
             this.menuUCS = new System.Windows.Forms.ToolStripMenuItem();
             this.menuQueryServ = new System.Windows.Forms.ToolStripMenuItem();
             this.manageTimer = new System.Windows.Forms.Timer(this.components);
-            this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.prgStatus = new System.Windows.Forms.ProgressBar();
             this.btnCancel = new System.Windows.Forms.Button();
             this.lblDescription = new System.Windows.Forms.LinkLabel();
-            this.mySqlDataAdapter1 = new MySqlConnector.MySqlDataAdapter();
             this.secondTimer = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1.SuspendLayout();
             this.tabGM.SuspendLayout();
@@ -1595,14 +1593,6 @@
             this.lblDescription.TabIndex = 14;
             this.lblDescription.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblDescription_Click);
             // 
-            // mySqlDataAdapter1
-            // 
-            this.mySqlDataAdapter1.DeleteCommand = null;
-            this.mySqlDataAdapter1.InsertCommand = null;
-            this.mySqlDataAdapter1.SelectCommand = null;
-            this.mySqlDataAdapter1.UpdateBatchSize = 0;
-            this.mySqlDataAdapter1.UpdateCommand = null;
-            // 
             // secondTimer
             // 
             this.secondTimer.Interval = 1000;
@@ -1624,6 +1614,7 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Fippy Darklauncher";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.statusStrip1.ResumeLayout(false);
@@ -1784,7 +1775,6 @@
         private System.Windows.Forms.Label lblContent;
         private System.Windows.Forms.GroupBox grpContentAdvanced;
         private System.Windows.Forms.PictureBox picContent;
-        private System.IO.Ports.SerialPort serialPort1;
         private System.Windows.Forms.ProgressBar prgStatus;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.PictureBox picQuest;
@@ -1799,7 +1789,6 @@
         private System.Windows.Forms.Label lblMap;
         private System.Windows.Forms.GroupBox grpRules;
         private System.Windows.Forms.DataGridView gridRules;
-        private MySqlConnector.MySqlDataAdapter mySqlDataAdapter1;
         private System.Windows.Forms.ToolStripStatusLabel lblStatusBar;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox groupBox8;
