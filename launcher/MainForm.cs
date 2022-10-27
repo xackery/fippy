@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Shapes;
 //using System.Windows.Shell;
 
 namespace EQEmu_Launcher
@@ -36,7 +37,7 @@ namespace EQEmu_Launcher
             var principal = new WindowsPrincipal(identity);
             if (principal.IsInRole(WindowsBuiltInRole.Administrator))
             {
-                MessageBox.Show("Fippy does not need admin access.\nRestart fippy without admin mode","Admin Mode Detected", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Fippy does not need admin access.\nRestart fippy without running as an Administrator.","Admin Mode Detected", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
             
@@ -135,20 +136,41 @@ namespace EQEmu_Launcher
                 lastDescription = value;
                 lblDescription.Tag = "";
                 var area = new LinkArea();
-                MatchCollection matches = descriptionLinkRegex.Matches(value);
-                if (matches.Count == 0)
-                {
-                    lblDescription.LinkArea = area;
-                    lblDescription.Text = value;
-                    return;
-                }
+                var lines = value.Split('\n');
+                bool isFirstLine = true;
 
-                lblDescription.Text = matches[0].Groups[1].Value;
-                area.Start = lblDescription.Text.Length;
-                area.Length = matches[0].Groups[2].Value.Length;
-                lblDescription.Text += matches[0].Groups[2].Value;
-                lblDescription.Tag = matches[0].Groups[3].Value;
-                lblDescription.Text += matches[0].Groups[4].Value;
+                foreach (var line in lines)
+                {
+                    MatchCollection matches = descriptionLinkRegex.Matches(line);
+                    if (matches.Count == 0)
+                    {
+                        if (isFirstLine)
+                        {
+                            lblDescription.Text = line;
+                            isFirstLine = false;
+                        } else
+                        {
+                            lblDescription.Text += "\n"+line;
+                        }                        
+                        continue;
+                    }
+
+                    if (isFirstLine)
+                    {
+                        lblDescription.Text = matches[0].Groups[1].Value;
+                        isFirstLine = false;
+                    }
+                    else
+                    {
+                        lblDescription.Text += "\n"+matches[0].Groups[1].Value;
+                    }
+                    
+                    area.Start = lblDescription.Text.Length;
+                    area.Length = matches[0].Groups[2].Value.Length;
+                    lblDescription.Text += matches[0].Groups[2].Value;
+                    lblDescription.Tag = matches[0].Groups[3].Value;
+                    lblDescription.Text += matches[0].Groups[4].Value;
+                }
                 lblDescription.LinkArea = area;
             }); }));
 
@@ -493,7 +515,7 @@ namespace EQEmu_Launcher
 
         private void txtShortName_MouseMove(object sender, MouseEventArgs e)
         {
-            StatusLibrary.SetDescription("Short Name is used for a prefix on profiles of players when they create characters on your server.");
+            StatusLibrary.SetDescription("Short Name is used for a prefix on profiles of players when they create characters on your server. [Learn More](https://docs.eqemu.io/server/operation/server-management/#short-name)");
         }
 
         private void lblDatabase_Click(object sender, EventArgs e)
@@ -627,13 +649,13 @@ namespace EQEmu_Launcher
 
         private void txtLongName_MouseMove(object sender, MouseEventArgs e)
         {
-           StatusLibrary.SetDescription("This is how your server is displayed on [server select](https://google.com)");
+           StatusLibrary.SetDescription("This is your server name on [server select](https://docs.eqemu.io/server/operation/server-management/#long-name)");
         }
 
 
         private void btnContentDownloadAll_MouseMove(object sender, MouseEventArgs e)
         {
-            StatusLibrary.SetDescription("Downloads all out of date content, and installs it to the portable copy emu launcher is handling");
+            StatusLibrary.SetDescription("Downloads all content required to run a private EverQuest server.\n[Learn more about EQEmu and ProjectEQ Content](https://docs.eqemu.io/server/operation/server-management/#content-from-projecteq-and-eqemu)");
         }
 
         private void lblDescription_Click(object sender, LinkLabelLinkClickedEventArgs e)
@@ -970,6 +992,17 @@ namespace EQEmu_Launcher
             notifyIcon.Visible = false;
             notifyIcon.Dispose();
         }
+
+        private void chkAutoUpdate_MouseMove(object sender, MouseEventArgs e)
+        {
+            StatusLibrary.SetDescription("When turned on, if a new update for Fippy is detected, this program will download, exit, and immediately start after.");
+        }
+
+        private void chkAutoUpdateContent_CheckedChanged(object sender, EventArgs e)
+        {
+            
+        }
+
     }
 }
 

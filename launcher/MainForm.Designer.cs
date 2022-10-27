@@ -143,6 +143,11 @@
             this.btnRandomize = new System.Windows.Forms.Button();
             this.lblKey = new System.Windows.Forms.Label();
             this.btnConfigSave = new System.Windows.Forms.Button();
+            this.tabSettings = new System.Windows.Forms.TabPage();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.chkAutoUpdateContent = new System.Windows.Forms.CheckBox();
+            this.chkAutoUpdate = new System.Windows.Forms.CheckBox();
             this.tabRules = new System.Windows.Forms.TabPage();
             this.grpRules = new System.Windows.Forms.GroupBox();
             this.gridRules = new System.Windows.Forms.DataGridView();
@@ -195,6 +200,8 @@
             this.grpConfigAdvanced.SuspendLayout();
             this.grpConfigDatabase.SuspendLayout();
             this.grpOptions.SuspendLayout();
+            this.tabSettings.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.tabRules.SuspendLayout();
             this.grpRules.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridRules)).BeginInit();
@@ -788,6 +795,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControlMain.Controls.Add(this.tabContent);
             this.tabControlMain.Controls.Add(this.tabConfig);
+            this.tabControlMain.Controls.Add(this.tabSettings);
             this.tabControlMain.Controls.Add(this.tabManage);
             this.tabControlMain.Controls.Add(this.tabRules);
             this.tabControlMain.Controls.Add(this.tabMonitor);
@@ -833,6 +841,7 @@
             this.picContent.Size = new System.Drawing.Size(16, 16);
             this.picContent.TabIndex = 10;
             this.picContent.TabStop = false;
+            this.picContent.MouseMove += new System.Windows.Forms.MouseEventHandler(this.btnContentDownloadAll_MouseMove);
             // 
             // btnContentDownloadAll
             // 
@@ -1185,6 +1194,7 @@
             this.grpInfo.Size = new System.Drawing.Size(545, 53);
             this.grpInfo.TabIndex = 13;
             this.grpInfo.TabStop = false;
+            this.grpInfo.Text = "General Options Inside eqemu_config.json";
             // 
             // txtShortName
             // 
@@ -1458,6 +1468,58 @@
             this.btnConfigSave.UseVisualStyleBackColor = true;
             this.btnConfigSave.Click += new System.EventHandler(this.btnConfigSave_Click);
             // 
+            // tabSettings
+            // 
+            this.tabSettings.Controls.Add(this.groupBox1);
+            this.tabSettings.Location = new System.Drawing.Point(4, 22);
+            this.tabSettings.Name = "tabSettings";
+            this.tabSettings.Size = new System.Drawing.Size(552, 408);
+            this.tabSettings.TabIndex = 8;
+            this.tabSettings.Text = "Settings";
+            this.tabSettings.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.dateTimePicker1);
+            this.groupBox1.Controls.Add(this.chkAutoUpdateContent);
+            this.groupBox1.Controls.Add(this.chkAutoUpdate);
+            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(546, 97);
+            this.groupBox1.TabIndex = 1;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Auto-Update";
+            // 
+            // dateTimePicker1
+            // 
+            this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.dateTimePicker1.Location = new System.Drawing.Point(380, 42);
+            this.dateTimePicker1.Name = "dateTimePicker1";
+            this.dateTimePicker1.Size = new System.Drawing.Size(104, 20);
+            this.dateTimePicker1.TabIndex = 2;
+            // 
+            // chkAutoUpdateContent
+            // 
+            this.chkAutoUpdateContent.AutoSize = true;
+            this.chkAutoUpdateContent.Location = new System.Drawing.Point(6, 42);
+            this.chkAutoUpdateContent.Name = "chkAutoUpdateContent";
+            this.chkAutoUpdateContent.Size = new System.Drawing.Size(378, 17);
+            this.chkAutoUpdateContent.TabIndex = 1;
+            this.chkAutoUpdateContent.Text = "Automatically Update Database and Server Binaries every day if needed at";
+            this.chkAutoUpdateContent.UseVisualStyleBackColor = true;
+            this.chkAutoUpdateContent.CheckedChanged += new System.EventHandler(this.chkAutoUpdateContent_CheckedChanged);
+            // 
+            // chkAutoUpdate
+            // 
+            this.chkAutoUpdate.AutoSize = true;
+            this.chkAutoUpdate.Location = new System.Drawing.Point(6, 19);
+            this.chkAutoUpdate.Name = "chkAutoUpdate";
+            this.chkAutoUpdate.Size = new System.Drawing.Size(227, 17);
+            this.chkAutoUpdate.TabIndex = 0;
+            this.chkAutoUpdate.Text = "Automatically Update Fippy While Running";
+            this.chkAutoUpdate.UseVisualStyleBackColor = true;
+            this.chkAutoUpdate.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chkAutoUpdate_MouseMove);
+            // 
             // tabRules
             // 
             this.tabRules.Controls.Add(this.grpRules);
@@ -1660,6 +1722,9 @@
             this.grpConfigDatabase.PerformLayout();
             this.grpOptions.ResumeLayout(false);
             this.grpOptions.PerformLayout();
+            this.tabSettings.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.tabRules.ResumeLayout(false);
             this.grpRules.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridRules)).EndInit();
@@ -1800,6 +1865,11 @@
         private System.Windows.Forms.Button btnSharedMemory;
         private System.Windows.Forms.Label lblSharedMemory;
         private System.Windows.Forms.Timer secondTimer;
+        private System.Windows.Forms.TabPage tabSettings;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox chkAutoUpdate;
+        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.CheckBox chkAutoUpdateContent;
     }
 }
 
